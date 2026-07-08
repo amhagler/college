@@ -27,7 +27,7 @@
         radial-gradient(760px 420px at 60% 100%,rgba(215,181,109,.09),transparent 58%),
         linear-gradient(180deg,var(--bg0),var(--bg1));
     }
-    #matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.38;mix-blend-mode:screen}
+    #matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.11;mix-blend-mode:screen}
     .fog,.scan{position:fixed;inset:0;pointer-events:none;z-index:1}
     .fog{background:radial-gradient(900px 520px at 24% 60%,rgba(123,231,255,.10),transparent 62%),radial-gradient(720px 420px at 74% 44%,rgba(45,125,255,.08),transparent 62%);filter:blur(12px);animation:fog 16s ease-in-out infinite alternate}
     .scan{background:repeating-linear-gradient(to bottom,rgba(255,255,255,.03),rgba(255,255,255,.03) 1px,transparent 1px,transparent 3px);opacity:.14}
@@ -76,6 +76,15 @@
     @media(max-width:820px){.topInner{display:grid;grid-template-columns:1fr auto;align-items:start}.navTabs{grid-column:1/-1;justify-content:stretch}.tab{flex:1}.topActions{justify-self:end}.toolbar,.dashboardGrid{display:grid;grid-template-columns:1fr}.summary{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.formGrid,.checkGroup{grid-template-columns:1fr}.modalActions{grid-template-columns:1fr}.brand{min-width:0}.title{font-size:17px}}
     @media(max-width:430px){.topbar{padding:11px 10px}.shell{padding:0 10px;margin-top:12px}.topActions .cloudStatus{display:none}.btn,.tab{padding:9px 8px}.schoolName{font-size:13px}.item{grid-template-columns:auto minmax(0,1fr)}.item .miniBtn{grid-column:2}.itemMeta{grid-column:2}}
     @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}.fog,#matrix{display:none}}
+    .saveText{font:10px var(--mono);color:rgba(234,240,255,.62);min-width:100px;text-align:right}
+    .quickStrip{display:grid;grid-template-columns:1fr;gap:8px}.quickStrip .item{cursor:pointer}
+    .overallProgress{display:grid;gap:8px}.overallProgress .progress{height:16px}.sortGrid{display:flex;gap:8px;flex-wrap:wrap}
+    .sortBtn.on,.toggleBtn.on{color:#07101f;background:linear-gradient(180deg,rgba(123,231,255,.96),rgba(45,125,255,.92))}
+    .cardActions{display:flex;gap:7px;flex-wrap:wrap}.cardActions .btn{padding:7px 9px;font-size:10px}
+    .checkItem{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 9px;border-radius:12px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.035);font:11px var(--mono)}
+    .checkItem input{width:17px;height:17px;accent-color:var(--cyan)}.checkItem.done{opacity:.68}.checkItem.done span{text-decoration:line-through;color:rgba(183,194,230,.76)}
+    .schoolDetails{display:grid;gap:8px}.schoolDetails.hidden{display:none}.noteBlock{font:12px var(--mono);line-height:1.45;color:rgba(234,240,255,.70);padding:9px;border-radius:12px;background:rgba(7,11,26,.22);border:1px solid rgba(255,255,255,.08)}
+    .helpText{font:11px var(--mono);line-height:1.4;color:rgba(234,240,255,.58);margin-top:6px}
   </style>
 </head>
 <body>
@@ -111,6 +120,9 @@
       </nav>
       <div class="topActions">
         <div class="cloudStatus" id="saveLight" title="Save status" aria-label="Save status"></div>
+        <div class="saveText" id="saveText">Saved</div>
+        <button class="btn ghost" id="manualSaveBtn">Save</button>
+        <button class="btn ghost" id="loadBtn">Load</button>
         <button class="btn ghost iconOnly" id="privacyBtn" title="Privacy screen">Hide</button>
         <button class="btn primary" id="addTopBtn">Add School</button>
       </div>
@@ -135,6 +147,10 @@
           <option value="deadline">Deadline</option>
           <option value="school">School Name</option>
           <option value="status">Status</option>
+          <option value="progress">Progress</option>
+          <option value="theater">Theater</option>
+          <option value="submitted">Submitted</option>
+          <option value="needsAction">Needs Action</option>
         </select>
       </div>
     </section>
@@ -164,7 +180,7 @@
       <div class="formGrid">
         <div class="wide"><label for="schoolName">School Name</label><input id="schoolName" required placeholder="Northwestern"></div>
         <div><label for="schoolStatus">Status</label><select id="schoolStatus"></select></div>
-        <div><label for="schoolPlan">Plan</label><select id="schoolPlan"></select></div>
+        <div><label for="schoolPlan">Plan</label><select id="schoolPlan"></select><div class="helpText">ED means binding Early Decision. EA means non-binding Early Action. RD means Regular Decision.</div></div>
         <div><label for="schoolDeadline">Deadline</label><input type="date" id="schoolDeadline"></div>
         <div><label for="schoolTheater">Theater</label><select id="schoolTheater"><option value="false">No</option><option value="true">Yes</option></select></div>
         <div><label for="schoolPrescreen">Prescreen</label><select id="schoolPrescreen"></select></div>
@@ -226,6 +242,16 @@
     const OPTIONS = {
       statuses: ['Researching','Considering','Applying','In Progress','Ready','Submitted','Accepted','Waitlisted','Denied','Withdrawn'],
       plans: ['ED','ED II','EA','REA','RD','Rolling','Priority','Other'],
+      planLabels: {
+        ED:'ED — Early Decision (binding)',
+        'ED II':'ED II — Early Decision 2 (binding)',
+        EA:'EA — Early Action (non-binding)',
+        REA:'REA — Restrictive Early Action',
+        RD:'RD — Regular Decision',
+        Rolling:'Rolling — reviewed as received',
+        Priority:'Priority — earlier priority deadline',
+        Other:'Other — custom or unusual plan'
+      },
       owners: ['Ari','Elana','Asher','Shared','Unassigned'],
       prescreens: ['Not Required','Required','Submitted','Passed','Not Advanced'],
       categories: ['Application','Essay','Recommendation','Theater','Financial Aid','Visit','Research','Other']
@@ -238,6 +264,11 @@
       search: '',
       schoolSort: 'deadline',
       taskFilter: 'open',
+      showSchoolDetails: true,
+      showSchoolNotes: true,
+      showCompletedChecklist: true,
+      autosaveTimer: null,
+      lastSaveKind: '',
       familyId: DEFAULT_FAMILY_ID,
       profile: null,
       demoMode: false,
@@ -280,6 +311,7 @@
       $('cycleLabel').textContent = 'College Tracker | Explore mode';
       setSaving('saved');
       setView(state.view);
+      startAutosave();
       flash('Explore mode uses local sample data. Connect Supabase for shared family data.');
     }
 
@@ -298,6 +330,8 @@
       $('searchInput').addEventListener('input', event => { state.search = event.target.value.trim().toLowerCase(); render(); });
       $('sortSelect').addEventListener('change', event => { state.schoolSort = event.target.value; render(); });
       $('addTopBtn').addEventListener('click', () => state.view === 'tasks' ? openTask() : openSchool());
+      $('manualSaveBtn').addEventListener('click', () => saveSnapshot('manual'));
+      $('loadBtn').addEventListener('click', loadSnapshotChoice);
       $('privacyBtn').addEventListener('click', togglePrivacy);
       document.addEventListener('keydown', event => {
         if (event.key === 'Escape') {
@@ -338,6 +372,7 @@
         $('signedInLabel').innerHTML = `${escapeHtml(member.display_name || email)} <button class="miniBtn" onclick="signOut()">Sign out</button>`;
         setView(state.view);
         setSaving('saved');
+        startAutosave();
       } catch (error) {
         $('authGate').hidden = false;
         $('authCopy').textContent = messageOf(error);
@@ -360,6 +395,7 @@
       $('cycleLabel').textContent = `${state.settings.StudentName || 'Asher'} | ${state.settings.ApplicationCycle || 'College applications'}`;
       refreshTaskSchoolSelect();
       render();
+      startAutosave();
     }
 
     function loadDemoData() {
@@ -367,7 +403,7 @@
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          state.schools = parsed.schools || [];
+          state.schools = (parsed.schools || []).map(fromSchoolRow);
           state.tasks = parsed.tasks || [];
           return;
         } catch {}
@@ -419,12 +455,88 @@
         { id: demoId(), family_id: state.familyId, done: false, task: 'Record contemporary monologue', school_id: uscId, owner: 'Asher', due_date: nextDate(7), category: 'Theater', notes: '' },
         { id: demoId(), family_id: state.familyId, done: false, task: 'Submit FAFSA', school_id: null, owner: 'Ari', due_date: nextDate(21), category: 'Financial Aid', notes: '' }
       ];
+      state.schools = state.schools.map(fromSchoolRow);
       saveDemoData();
     }
 
     function saveDemoData() {
       if (!state.demoMode) return;
       localStorage.setItem('act:demo-data', JSON.stringify({ schools: state.schools, tasks: state.tasks }));
+    }
+
+    function snapshotPayload() {
+      return {
+        savedAt: new Date().toISOString(),
+        schools: state.schools,
+        tasks: state.tasks,
+        settings: state.settings
+      };
+    }
+
+    function startAutosave() {
+      if (state.autosaveTimer) clearInterval(state.autosaveTimer);
+      state.autosaveTimer = setInterval(() => saveSnapshot('autosave', true), 10000);
+    }
+
+    async function saveSnapshot(kind = 'manual', quiet = false) {
+      try {
+        const payload = snapshotPayload();
+        setSaving('saving');
+        if (state.demoMode) {
+          localStorage.setItem(`act:${kind}-snapshot`, JSON.stringify(payload));
+        } else {
+          const { error } = await db.from('snapshots').upsert({
+            family_id: state.familyId,
+            kind,
+            data: payload,
+            saved_at: payload.savedAt
+          }, { onConflict: 'family_id,kind' });
+          if (error) throw error;
+        }
+        state.lastSaveKind = kind;
+        setSaving('saved');
+        $('saveText').textContent = kind === 'autosave' ? 'Autosaved just now' : 'Manual save created';
+        if (!quiet) flash(kind === 'autosave' ? 'Autosaved' : 'Manual save created');
+      } catch (error) {
+        setSaving('error');
+        if (!quiet) showError(error);
+      }
+    }
+
+    async function loadSnapshotChoice() {
+      const useAutosave = confirm('Load latest autosave?\n\nOK = latest autosave\nCancel = last manual save');
+      await loadSnapshot(useAutosave ? 'autosave' : 'manual');
+    }
+
+    async function loadSnapshot(kind) {
+      try {
+        let payload = null;
+        if (state.demoMode) {
+          const raw = localStorage.getItem(`act:${kind}-snapshot`);
+          if (raw) payload = JSON.parse(raw);
+        } else {
+          const { data, error } = await db.from('snapshots')
+            .select('data')
+            .eq('family_id', state.familyId)
+            .eq('kind', kind)
+            .maybeSingle();
+          if (error) throw error;
+          payload = data && data.data;
+        }
+        if (!payload) {
+          flash(`No ${kind === 'autosave' ? 'autosave' : 'manual save'} found yet`);
+          return;
+        }
+        state.schools = (payload.schools || []).map(fromSchoolRow);
+        state.tasks = (payload.tasks || []).map(fromTaskRow);
+        state.settings = payload.settings || state.settings;
+        if (state.demoMode) saveDemoData();
+        refreshTaskSchoolSelect();
+        render();
+        flash(`Loaded ${kind === 'autosave' ? 'latest autosave' : 'last manual save'}`);
+      } catch (error) {
+        showError(error);
+      }
     }
 
     function demoId() {
@@ -444,7 +556,7 @@
 
     function fillSelects() {
       fillSelect('schoolStatus', OPTIONS.statuses);
-      fillSelect('schoolPlan', OPTIONS.plans);
+      $('schoolPlan').innerHTML = OPTIONS.plans.map(value => `<option value="${escapeAttr(value)}">${escapeHtml(OPTIONS.planLabels[value] || value)}</option>`).join('');
       fillSelect('schoolPrescreen', OPTIONS.prescreens);
       fillSelect('taskOwner', OPTIONS.owners);
       fillSelect('taskCategory', OPTIONS.categories);
@@ -474,7 +586,18 @@
       const upcoming = schools.filter(school => school.deadline).slice(0, 5);
       const submitted = state.schools.filter(school => school.submitted || school.status === 'Submitted').length;
       const openTasks = state.tasks.filter(task => !task.done).length;
+      const overall = state.schools.length ? Math.round(submitted / state.schools.length * 100) : 0;
+      const nextActions = whatNextItems().slice(0, 5);
       $('dashboardView').innerHTML = schools.length || state.tasks.length ? `
+        <section class="panel overallProgress">
+          <div class="panelTitle"><b>Overall Application Progress</b><span>${submitted} submitted of ${state.schools.length} schools</span></div>
+          <div class="progress"><span style="width:${overall}%"></span></div>
+          <p class="hint">This only tracks applications submitted. It does not measure admission odds.</p>
+        </section>
+        <section class="panel">
+          <div class="panelTitle"><b>What Should We Do Next?</b><span>Most useful actions first</span></div>
+          <div class="quickStrip">${nextActions.length ? nextActions.map(renderNextActionItem).join('') : `<p class="hint">Nothing urgent right now.</p>`}</div>
+        </section>
         <div class="dashboardGrid">
           <section class="panel nextDeadline">
             ${next ? `
@@ -495,7 +618,16 @@
 
     function renderSchools() {
       const schools = sortedSchools().filter(matchesSearchSchool);
-      $('schoolsView').innerHTML = schools.length ? `<div class="grid">${schools.map(renderSchoolCard).join('')}</div>` : emptyState('No schools are being tracked yet.', 'Add School', 'openSchool()');
+      $('schoolsView').innerHTML = schools.length ? `
+        <section class="panel">
+          <div class="taskTools">
+            <button class="btn ghost toggleBtn ${state.showSchoolDetails ? 'on' : ''}" onclick="toggleSchoolView('details')">Checklist</button>
+            <button class="btn ghost toggleBtn ${state.showSchoolNotes ? 'on' : ''}" onclick="toggleSchoolView('notes')">Notes</button>
+            <button class="btn ghost toggleBtn ${state.showCompletedChecklist ? 'on' : ''}" onclick="toggleSchoolView('completed')">Completed Items</button>
+          </div>
+        </section>
+        <div class="grid">${schools.map(renderSchoolCard).join('')}</div>
+      ` : emptyState('No schools are being tracked yet.', 'Add School', 'openSchool()');
     }
 
     function renderTasks() {
@@ -517,13 +649,26 @@
 
     function renderSchoolCard(school) {
       const progress = schoolProgress(school);
+      const checklist = normalizedChecklist(school);
+      const visibleChecklist = state.showCompletedChecklist ? checklist : checklist.filter(item => !item.done);
+      const linkedTasks = state.tasks.filter(task => task.school_id === school.id && !task.done).slice(0, 4);
+      const needsAction = !school.submitted && school.status !== 'Submitted' && !String(school.next_action || '').trim();
       return `
-        <article class="card" onclick="openSchool('${escapeAttr(school.id)}')">
+        <article class="card">
           <div class="cardTop"><div><div class="schoolName">${escapeHtml(school.school)}</div><div class="cardMeta">${escapeHtml(school.plan || 'Plan TBD')} | ${school.deadline ? escapeHtml(formatDate(school.deadline)) : 'No deadline'}</div></div><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span></div>
           <div class="progress" aria-label="Completion ${progress}%"><span style="width:${progress}%"></span></div>
-          <div class="checks">${checkLine('Application', school.application_done)}${checkLine('Essay', school.essay_done)}${checkLine('Recommendations', school.recommendations_done)}${checkLine('Submitted', school.submitted)}</div>
-          <div class="pillRow"><span class="pill calm">${escapeHtml(school.status)}</span>${school.theater ? `<span class="pill good">Theater</span>` : ''}<span class="pill">${escapeHtml(school.prescreen || 'Not Required')}</span><span class="pill">${escapeHtml(school.owner || 'Unassigned')}</span></div>
-          <p class="hint">${school.next_action ? `Next: ${escapeHtml(school.next_action)}` : 'No next action yet.'}</p>
+          <div class="cardActions">
+            <button class="btn primary" onclick="openSchool('${escapeAttr(school.id)}')">Edit School</button>
+            <button class="btn ghost" onclick="openTaskForSchool('${escapeAttr(school.id)}')">Add Task</button>
+            <button class="btn ghost" onclick="markSchoolSubmitted('${escapeAttr(school.id)}')">Mark Submitted</button>
+          </div>
+          <div class="pillRow"><span class="pill calm">${escapeHtml(school.status)}</span>${school.theater ? `<span class="pill good">Theater</span>` : ''}<span class="pill">${escapeHtml(school.prescreen || 'Not Required')}</span>${needsAction ? `<span class="pill hot">Needs next action</span>` : ''}</div>
+          <p class="hint">${school.submitted || school.status === 'Submitted' ? 'Submitted. Follow-up items can live as tasks.' : school.next_action ? `Next: ${escapeHtml(school.next_action)}` : 'Needs next action.'}</p>
+          <div class="schoolDetails ${state.showSchoolDetails ? '' : 'hidden'}">
+            ${visibleChecklist.length ? visibleChecklist.map(item => renderChecklistItem(school.id, item)).join('') : `<p class="hint">Completed checklist hidden.</p>`}
+            ${linkedTasks.length ? `<div class="hint">Open tasks</div>${linkedTasks.map(renderTaskItem).join('')}` : ''}
+          </div>
+          ${state.showSchoolNotes && school.notes ? `<div class="noteBlock">${escapeHtml(school.notes)}</div>` : ''}
         </article>
       `;
     }
@@ -540,6 +685,12 @@
     }
     function renderDeadlineItem(school) {
       return `<div class="item"><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span><div><div class="txt">${escapeHtml(school.school)}</div><div class="itemMeta"><span class="pill">${escapeHtml(formatDate(school.deadline))}</span><span class="pill">${escapeHtml(school.owner || 'Unassigned')}</span></div></div><button class="miniBtn" onclick="openSchool('${escapeAttr(school.id)}')">Edit</button></div>`;
+    }
+    function renderNextActionItem(item) {
+      return `<div class="item" onclick="${item.kind === 'task' ? `openTask('${escapeAttr(item.id)}')` : `openSchool('${escapeAttr(item.id)}')`}"><span class="pill hot">${escapeHtml(item.label)}</span><div><div class="txt">${escapeHtml(item.text)}</div><div class="itemMeta"><span class="pill">${escapeHtml(item.context)}</span></div></div><button class="miniBtn">Open</button></div>`;
+    }
+    function renderChecklistItem(schoolId, item) {
+      return `<label class="checkItem ${item.done ? 'done' : ''}"><input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleChecklistItem('${escapeAttr(schoolId)}','${escapeAttr(item.id)}',this.checked)"><span>${escapeHtml(item.label)}</span><button type="button" class="miniBtn" onclick="event.preventDefault(); makeTaskFromChecklist('${escapeAttr(schoolId)}','${escapeAttr(item.id)}')">Task</button></label>`;
     }
     function checkLine(label, done) { return `<div class="checkLine ${done ? 'done' : ''}"><span>${escapeHtml(label)}</span><span>${done ? 'Done' : 'Open'}</span></div>`; }
     function emptyState(text, button, action) { return `<section class="empty"><div><div class="kicker">STANDBY</div><h1>${escapeHtml(text)}</h1><button class="btn primary" onclick="${action}">${escapeHtml(button)}</button></div></section>`; }
@@ -601,7 +752,8 @@
         submitted: $('schoolSubmitted').checked,
         next_action: $('schoolNext').value,
         owner: id ? (state.schools.find(item => item.id === id)?.owner || 'Unassigned') : 'Unassigned',
-        notes: $('schoolNotes').value
+        notes: $('schoolNotes').value,
+        checklist: id ? normalizedChecklist(state.schools.find(item => item.id === id) || {}) : defaultChecklist($('schoolTheater').value === 'true')
       });
       try {
         if (state.demoMode) {
@@ -710,6 +862,112 @@
       } catch (error) { task.done = previous; setSaving('error'); render(); showError(error); }
     }
 
+    function defaultChecklist(theater) {
+      const items = ['Application', 'Supplement', 'Essay', 'Recommendations', 'Transcript', 'Submit Application', 'Check Portal'];
+      if (theater) items.splice(5, 0, 'Prescreen');
+      return items.map(label => ({ id: demoId(), label, done: false }));
+    }
+
+    function normalizedChecklist(school) {
+      let list = Array.isArray(school && school.checklist) ? school.checklist : [];
+      if (!list.length) list = defaultChecklist(!!(school && school.theater));
+      return list.map(item => ({
+        id: item.id || demoId(),
+        label: String(item.label || 'Checklist item'),
+        done: !!item.done
+      }));
+    }
+
+    async function saveSchoolObject(school, quiet = false) {
+      school = fromSchoolRow(school);
+      upsertById(state.schools, school);
+      if (state.demoMode) {
+        saveDemoData();
+        render();
+        if (!quiet) flash('School updated');
+        return;
+      }
+      const { id, ...row } = school;
+      const { data, error } = await db.from('schools').update(row).eq('id', id).eq('family_id', state.familyId).select().single();
+      if (error) throw error;
+      upsertById(state.schools, fromSchoolRow(data));
+      render();
+      if (!quiet) flash('School updated');
+    }
+
+    async function toggleChecklistItem(schoolId, itemId, done) {
+      const school = state.schools.find(item => item.id === schoolId);
+      if (!school) return;
+      const checklist = normalizedChecklist(school).map(item => item.id === itemId ? { ...item, done } : item);
+      school.checklist = checklist;
+      syncSchoolFlagsFromChecklist(school);
+      try {
+        await saveSchoolObject(school, true);
+        if (done) sparkRect(document.querySelector(`[data-task-id="${cssEscape(itemId)}"]`)?.getBoundingClientRect?.());
+      } catch (error) {
+        showError(error);
+      }
+    }
+
+    function syncSchoolFlagsFromChecklist(school) {
+      const done = label => normalizedChecklist(school).some(item => item.done && item.label.toLowerCase().includes(label));
+      school.application_done = done('application');
+      school.essay_done = done('essay') || done('supplement');
+      school.recommendations_done = done('recommend');
+      school.submitted = done('submit application') || school.submitted;
+      if (school.submitted) {
+        school.status = 'Submitted';
+        school.next_action = '';
+      }
+    }
+
+    function toggleSchoolView(kind) {
+      if (kind === 'details') state.showSchoolDetails = !state.showSchoolDetails;
+      if (kind === 'notes') state.showSchoolNotes = !state.showSchoolNotes;
+      if (kind === 'completed') state.showCompletedChecklist = !state.showCompletedChecklist;
+      renderSchools();
+    }
+
+    function openTaskForSchool(schoolId) {
+      openTask();
+      $('taskSchool').value = schoolId;
+    }
+
+    async function markSchoolSubmitted(schoolId) {
+      const school = state.schools.find(item => item.id === schoolId);
+      if (!school) return;
+      school.submitted = true;
+      school.status = 'Submitted';
+      school.next_action = '';
+      school.checklist = normalizedChecklist(school).map(item => item.label.toLowerCase().includes('submit application') ? { ...item, done: true } : item);
+      try {
+        await saveSchoolObject(school);
+      } catch (error) {
+        showError(error);
+      }
+    }
+
+    function makeTaskFromChecklist(schoolId, itemId) {
+      const school = state.schools.find(item => item.id === schoolId);
+      const item = normalizedChecklist(school).find(entry => entry.id === itemId);
+      if (!school || !item) return;
+      openTaskForSchool(schoolId);
+      $('taskTitle').value = item.label;
+      $('taskCategory').value = item.label.toLowerCase().includes('prescreen') ? 'Theater' : item.label.toLowerCase().includes('recommend') ? 'Recommendation' : item.label.toLowerCase().includes('essay') || item.label.toLowerCase().includes('supplement') ? 'Essay' : 'Application';
+    }
+
+    function whatNextItems() {
+      const items = [];
+      sortedTasks().filter(task => !task.done).slice(0, 4).forEach(task => {
+        items.push({ kind:'task', id:task.id, label:deadlineLabel(task.due_date), text:task.task, context:task.owner || 'Unassigned' });
+      });
+      sortedSchools().filter(school => !school.submitted && school.status !== 'Submitted').forEach(school => {
+        if (!school.next_action) items.push({ kind:'school', id:school.id, label:'Needs action', text:`Add next action for ${school.school}`, context:school.deadline ? formatDate(school.deadline) : 'No deadline' });
+        else items.push({ kind:'school', id:school.id, label:'Next', text:school.next_action, context:school.school });
+      });
+      return items;
+    }
+
     function cleanSchoolRow(row) {
       row.school = row.school.trim();
       if (!row.school) throw new Error('School name is required.');
@@ -727,7 +985,11 @@
       return row;
     }
     function allow(value, allowed, fallback) { return allowed.includes(value) ? value : fallback; }
-    function fromSchoolRow(row) { return row; }
+    function fromSchoolRow(row) {
+      row = row || {};
+      row.checklist = normalizedChecklist(row);
+      return row;
+    }
     function fromTaskRow(row) { return row; }
     function setTaskFilter(filter) { state.taskFilter = filter; renderTasks(); }
     function openOverlay(id) { $(id).classList.add('on'); $(id).setAttribute('aria-hidden','false'); }
@@ -737,6 +999,10 @@
       const schools = [...state.schools];
       if (state.schoolSort === 'school') return schools.sort((a,b) => a.school.localeCompare(b.school));
       if (state.schoolSort === 'status') return schools.sort((a,b) => a.status.localeCompare(b.status) || dateRank(a.deadline) - dateRank(b.deadline));
+      if (state.schoolSort === 'progress') return schools.sort((a,b) => schoolProgress(a) - schoolProgress(b) || dateRank(a.deadline) - dateRank(b.deadline));
+      if (state.schoolSort === 'theater') return schools.sort((a,b) => Number(!!b.theater) - Number(!!a.theater) || dateRank(a.deadline) - dateRank(b.deadline));
+      if (state.schoolSort === 'submitted') return schools.sort((a,b) => Number(!!a.submitted) - Number(!!b.submitted) || dateRank(a.deadline) - dateRank(b.deadline));
+      if (state.schoolSort === 'needsAction') return schools.sort((a,b) => Number(!!a.next_action || !!a.submitted) - Number(!!b.next_action || !!b.submitted) || dateRank(a.deadline) - dateRank(b.deadline));
       return schools.sort((a,b) => dateRank(a.deadline) - dateRank(b.deadline) || a.school.localeCompare(b.school));
     }
     function sortedTasks() { return [...state.tasks].sort((a,b) => taskRank(a) - taskRank(b) || dateRank(a.due_date) - dateRank(b.due_date) || a.task.localeCompare(b.task)); }
@@ -744,7 +1010,12 @@
     function nextDeadlineSchool(schools) { const today = startOfToday(); return schools.filter(school => school.deadline && parseLocalDate(school.deadline) >= today)[0] || null; }
     function matchesSearchSchool(school) { if (!state.search) return true; return `${school.school} ${school.next_action} ${school.owner} ${school.status}`.toLowerCase().includes(state.search); }
     function matchesSearchTask(task) { if (!state.search) return true; const school = state.schools.find(item => item.id === task.school_id); return `${task.task} ${task.owner} ${task.category} ${school ? school.school : ''}`.toLowerCase().includes(state.search); }
-    function schoolProgress(school) { const checks = [school.application_done, school.essay_done, school.recommendations_done, school.submitted]; return Math.round(checks.filter(Boolean).length / checks.length * 100); }
+    function schoolProgress(school) {
+      const checklist = normalizedChecklist(school);
+      if (checklist.length) return Math.round(checklist.filter(item => item.done).length / checklist.length * 100);
+      const checks = [school.application_done, school.essay_done, school.recommendations_done, school.submitted];
+      return Math.round(checks.filter(Boolean).length / checks.length * 100);
+    }
     function urgency(dateText) { if (!dateText) return 'later'; const diff = Math.round((parseLocalDate(dateText) - startOfToday()) / 86400000); if (diff < 0) return 'overdue'; if (diff === 0) return 'today'; if (diff === 1) return 'tomorrow'; if (diff <= 7) return 'soon'; return 'later'; }
     function urgencyClass(dateText) { const value = urgency(dateText); return ['overdue','today','tomorrow','soon'].includes(value) ? 'hot' : 'calm'; }
     function deadlineLabel(dateText) { if (!dateText) return 'No deadline'; const diff = Math.round((parseLocalDate(dateText) - startOfToday()) / 86400000); if (diff < 0) return 'Overdue'; if (diff === 0) return 'Due today'; if (diff === 1) return 'Due tomorrow'; return `${diff} days remaining`; }
@@ -753,7 +1024,13 @@
     function startOfToday() { const now = new Date(); return new Date(now.getFullYear(), now.getMonth(), now.getDate()); }
     function formatDate(dateText) { return dateText ? parseLocalDate(dateText).toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' }) : ''; }
     function upsertById(list, item) { const index = list.findIndex(existing => existing.id === item.id); if (index === -1) list.push(item); else list.splice(index, 1, item); }
-    function setSaving(mode) { const light = $('saveLight'); if (!light) return; light.classList.toggle('on', mode === 'saved'); light.title = mode === 'saving' ? 'Saving' : mode === 'error' ? 'Save failed' : 'Saved'; }
+    function setSaving(mode) {
+      const light = $('saveLight');
+      if (!light) return;
+      light.classList.toggle('on', mode === 'saved');
+      light.title = mode === 'saving' ? 'Saving' : mode === 'error' ? 'Save failed' : 'Saved';
+      if ($('saveText')) $('saveText').textContent = mode === 'saving' ? 'Saving...' : mode === 'error' ? 'Save failed' : 'Saved';
+    }
     function flash(message) { const toast = $('toast'); toast.textContent = message; toast.classList.add('on'); clearTimeout(flash.timer); flash.timer = setTimeout(() => toast.classList.remove('on'), 2300); }
     function showError(error) { flash(messageOf(error)); }
     function messageOf(error) { return String(error && error.message ? error.message : error || 'Something went wrong.'); }
