@@ -17,6 +17,7 @@
       --serif:ui-serif,Georgia,"Times New Roman",serif;
     }
     *{box-sizing:border-box}
+    [hidden]{display:none!important}
     html{color-scheme:dark}
     body{
       margin:0;min-height:100vh;color:var(--ink);font-family:var(--sans);overflow-x:hidden;
@@ -239,6 +240,7 @@
       taskFilter: 'open',
       familyId: DEFAULT_FAMILY_ID,
       profile: null,
+      demoMode: false,
       schools: [],
       tasks: [],
       settings: { StudentName:'Asher', ApplicationCycle:'College applications', Timezone:'America/Los_Angeles' }
@@ -249,8 +251,7 @@
       fillSelects();
       startAtmosphere();
       if (!configured()) {
-        $('authCopy').textContent = 'Before hosting, paste your Supabase URL and anon key into the top of this HTML file.';
-        $('loginForm').hidden = true;
+        enterDemoApp();
         return;
       }
       const { data } = await db.auth.getSession();
@@ -260,6 +261,19 @@
 
     function configured() {
       return SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length > 40;
+    }
+
+    function enterDemoApp() {
+      state.demoMode = true;
+      loadDemoData();
+      $('authGate').hidden = true;
+      $('topbar').hidden = false;
+      $('appShell').hidden = false;
+      $('signedInLabel').textContent = 'Demo mode | Supabase not connected';
+      $('cycleLabel').textContent = 'Asher | Local demo data';
+      setSaving('saved');
+      setView(state.view);
+      flash('Demo mode: add your Supabase URL and anon key before using real data.');
     }
 
     function bindEvents() {
@@ -338,6 +352,81 @@
       $('cycleLabel').textContent = `${state.settings.StudentName || 'Asher'} | ${state.settings.ApplicationCycle || 'College applications'}`;
       refreshTaskSchoolSelect();
       render();
+    }
+
+    function loadDemoData() {
+      const saved = localStorage.getItem('act:demo-data');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          state.schools = parsed.schools || [];
+          state.tasks = parsed.tasks || [];
+          return;
+        } catch {}
+      }
+      const uscId = demoId();
+      const northwesternId = demoId();
+      state.schools = [
+        {
+          id: northwesternId,
+          family_id: state.familyId,
+          school: 'Northwestern',
+          status: 'In Progress',
+          plan: 'ED',
+          deadline: nextDate(18),
+          deadline_time: '',
+          deadline_timezone: 'America/Los_Angeles',
+          theater: true,
+          prescreen: 'Required',
+          application_done: true,
+          essay_done: false,
+          recommendations_done: true,
+          submitted: false,
+          next_action: 'Finish supplement',
+          owner: 'Asher',
+          notes: 'Demo school. Replace once Supabase is connected.'
+        },
+        {
+          id: uscId,
+          family_id: state.familyId,
+          school: 'USC',
+          status: 'Applying',
+          plan: 'RD',
+          deadline: nextDate(42),
+          deadline_time: '',
+          deadline_timezone: 'America/Los_Angeles',
+          theater: true,
+          prescreen: 'Required',
+          application_done: false,
+          essay_done: false,
+          recommendations_done: false,
+          submitted: false,
+          next_action: 'Record monologue',
+          owner: 'Shared',
+          notes: ''
+        }
+      ];
+      state.tasks = [
+        { id: demoId(), family_id: state.familyId, done: false, task: 'Ask teacher for recommendation', school_id: northwesternId, owner: 'Asher', due_date: nextDate(3), category: 'Recommendation', notes: '' },
+        { id: demoId(), family_id: state.familyId, done: false, task: 'Record contemporary monologue', school_id: uscId, owner: 'Asher', due_date: nextDate(7), category: 'Theater', notes: '' },
+        { id: demoId(), family_id: state.familyId, done: false, task: 'Submit FAFSA', school_id: null, owner: 'Ari', due_date: nextDate(21), category: 'Financial Aid', notes: '' }
+      ];
+      saveDemoData();
+    }
+
+    function saveDemoData() {
+      if (!state.demoMode) return;
+      localStorage.setItem('act:demo-data', JSON.stringify({ schools: state.schools, tasks: state.tasks }));
+    }
+
+    function demoId() {
+      return crypto.randomUUID ? crypto.randomUUID() : `demo-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function nextDate(days) {
+      const date = new Date();
+      date.setDate(date.getDate() + days);
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     }
 
     async function signOut() {
@@ -509,6 +598,13 @@
         notes: $('schoolNotes').value
       });
       try {
+        if (state.demoMode) {
+          const saved = fromSchoolRow({ id: id || demoId(), ...row });
+          upsertById(state.schools, saved);
+          saveDemoData();
+          refreshTaskSchoolSelect(); closeOverlay('schoolOverlay'); setSaving('saved'); flash('Demo school saved'); render();
+          return;
+        }
         setSaving('saving');
         const query = id ? db.from('schools').update(row).eq('id', id).select().single() : db.from('schools').insert(row).select().single();
         const { data, error } = await query;
@@ -532,6 +628,13 @@
         notes: $('taskNotes').value
       });
       try {
+        if (state.demoMode) {
+          const saved = fromTaskRow({ id: id || demoId(), ...row });
+          upsertById(state.tasks, saved);
+          saveDemoData();
+          closeOverlay('taskOverlay'); setSaving('saved'); flash('Demo task saved'); render();
+          return;
+        }
         setSaving('saving');
         const query = id ? db.from('tasks').update(row).eq('id', id).select().single() : db.from('tasks').insert(row).select().single();
         const { data, error } = await query;
@@ -545,6 +648,13 @@
       const id = $('schoolId').value;
       if (!id || !confirm('Delete this school? Tasks linked to it will remain, but their school link will be cleared.')) return;
       try {
+        if (state.demoMode) {
+          state.schools = state.schools.filter(school => school.id !== id);
+          state.tasks.forEach(task => { if (task.school_id === id) task.school_id = null; });
+          saveDemoData();
+          closeOverlay('schoolOverlay'); setSaving('saved'); flash('Demo school deleted'); render();
+          return;
+        }
         setSaving('saving');
         let result = await db.from('tasks').update({ school_id:null }).eq('school_id', id).eq('family_id', state.familyId);
         if (result.error) throw result.error;
@@ -559,6 +669,12 @@
       const id = $('taskId').value;
       if (!id || !confirm('Delete this task?')) return;
       try {
+        if (state.demoMode) {
+          state.tasks = state.tasks.filter(task => task.id !== id);
+          saveDemoData();
+          closeOverlay('taskOverlay'); setSaving('saved'); flash('Demo task deleted'); render();
+          return;
+        }
         setSaving('saving');
         const { error } = await db.from('tasks').delete().eq('id', id).eq('family_id', state.familyId);
         if (error) throw error;
@@ -574,6 +690,12 @@
       const row = document.querySelector(`[data-task-id="${cssEscape(id)}"]`);
       if (row && done) sparkRect(row.getBoundingClientRect());
       try {
+        if (state.demoMode) {
+          saveDemoData();
+          setSaving('saved');
+          render();
+          return;
+        }
         setSaving('saving');
         const { data, error } = await db.from('tasks').update({ done }).eq('id', id).eq('family_id', state.familyId).select().single();
         if (error) throw error;
