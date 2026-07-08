@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="app-version" content="asher-college-tracker-supabase-v1">
+  <title>Asher College Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{
+      --bg0:#070B1A;--bg1:#0B1230;--panel:#0C1638;--ink:#EAF0FF;--muted:#B7C2E6;
+      --cyan:#7BE7FF;--blue:#2D7DFF;--mako:#4BFFD3;--gold:#FFE066;--orange:#FF9A3D;
+      --red:#FF3B3B;--purple:#B66BFF;--line:rgba(255,255,255,.12);
+      --shadow:0 18px 60px rgba(0,0,0,.55);
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      --serif:ui-serif,Georgia,"Times New Roman",serif;
+    }
+    *{box-sizing:border-box}
+    html{color-scheme:dark}
+    body{
+      margin:0;min-height:100vh;color:var(--ink);font-family:var(--sans);overflow-x:hidden;
+      background:
+        radial-gradient(1100px 650px at 20% 0%,rgba(45,125,255,.18),transparent 58%),
+        radial-gradient(900px 520px at 80% 16%,rgba(123,231,255,.10),transparent 62%),
+        radial-gradient(760px 420px at 60% 100%,rgba(215,181,109,.09),transparent 58%),
+        linear-gradient(180deg,var(--bg0),var(--bg1));
+    }
+    #matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.38;mix-blend-mode:screen}
+    .fog,.scan{position:fixed;inset:0;pointer-events:none;z-index:1}
+    .fog{background:radial-gradient(900px 520px at 24% 60%,rgba(123,231,255,.10),transparent 62%),radial-gradient(720px 420px at 74% 44%,rgba(45,125,255,.08),transparent 62%);filter:blur(12px);animation:fog 16s ease-in-out infinite alternate}
+    .scan{background:repeating-linear-gradient(to bottom,rgba(255,255,255,.03),rgba(255,255,255,.03) 1px,transparent 1px,transparent 3px);opacity:.14}
+    @keyframes fog{to{transform:translate(14px,-9px) scale(1.03)}}
+    .topbar{position:sticky;top:0;z-index:95;padding:14px 16px;background:linear-gradient(to bottom,rgba(7,11,26,.86),rgba(7,11,26,.48));backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.10)}
+    .topInner{max-width:1320px;margin:auto;display:flex;gap:14px;align-items:center;justify-content:space-between}
+    .brand{display:grid;gap:3px;min-width:210px}.title{font-family:var(--serif);font-size:19px;font-weight:900;letter-spacing:.7px}.subtle{font-family:var(--mono);font-size:11px;color:rgba(234,240,255,.70)}
+    .navTabs{display:flex;gap:7px;justify-content:center;flex:1}.tab,.btn{border:0;cursor:pointer;border-radius:14px;padding:9px 10px;font:900 12px var(--mono);white-space:nowrap}
+    .tab{color:rgba(234,240,255,.84);background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.12)}
+    .tab.on{color:#07101f;background:linear-gradient(180deg,rgba(123,231,255,.96),rgba(45,125,255,.92));box-shadow:0 0 0 1px rgba(255,255,255,.16) inset,0 12px 22px rgba(0,0,0,.34)}
+    .topActions{display:flex;gap:7px;align-items:center}.primary{color:#07101f;background:linear-gradient(180deg,rgba(123,231,255,.96),rgba(45,125,255,.92));box-shadow:0 0 0 1px rgba(255,255,255,.16) inset,0 12px 22px rgba(0,0,0,.34)}
+    .ghost{color:rgba(234,240,255,.90);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14)}.danger{color:rgba(255,90,90,.95);background:rgba(255,90,90,.08);border-color:rgba(255,90,90,.22)}.iconOnly{min-width:38px}
+    .cloudStatus{width:34px;height:30px;border-radius:999px;border:1px solid rgba(123,231,255,.16);background:rgba(255,255,255,.045);position:relative;display:inline-flex;align-items:center;justify-content:center}
+    .cloudStatus:before{content:"";width:17px;height:9px;border-radius:999px;background:rgba(183,194,230,.46);box-shadow:-5px 1px 0 -1px rgba(183,194,230,.46),4px -4px 0 -1px rgba(183,194,230,.46),1px -2px 0 1px rgba(183,194,230,.32)}
+    .cloudStatus.on:before{background:rgba(183,230,255,.72);box-shadow:-5px 1px 0 -1px rgba(183,230,255,.72),4px -4px 0 -1px rgba(183,230,255,.72),1px -2px 0 1px rgba(183,230,255,.48)}
+    .shell{position:relative;z-index:3;max-width:1320px;margin:18px auto 40px;padding:0 16px;display:grid;gap:16px}
+    .heroPanel,.panel,.card,.modal,.accessPanel{position:relative;overflow:hidden;border-radius:24px;background:linear-gradient(180deg,rgba(12,22,56,.78),rgba(10,18,48,.64));border:1px solid rgba(255,255,255,.12);box-shadow:var(--shadow)}
+    .heroPanel:before,.panel:before,.card:before,.modal:before,.accessPanel:before{content:"";position:absolute;inset:-2px;background:radial-gradient(820px 420px at 25% 30%,rgba(45,125,255,.20),transparent 60%),radial-gradient(680px 360px at 70% 60%,rgba(123,231,255,.12),transparent 58%);filter:blur(10px);pointer-events:none}
+    .hd,.modalHd{position:relative;z-index:2;padding:14px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;border-bottom:1px solid rgba(255,255,255,.10);background:linear-gradient(to bottom,rgba(255,255,255,.06),transparent)}
+    .hd b,.modalHd b{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}.hd span,.modalHd span{font-size:12px;color:rgba(234,240,255,.70)}
+    .toolbar{position:relative;z-index:2;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px}.search{flex:1;min-width:180px;display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:999px;background:linear-gradient(180deg,rgba(12,22,56,.86),rgba(10,18,48,.72));border:1px solid rgba(255,255,255,.14);box-shadow:0 10px 28px rgba(0,0,0,.35)}
+    .search input{flex:1;min-width:80px;border:0;outline:0;background:transparent;color:var(--ink);font:13px var(--mono)}.lens{width:18px;height:18px;border:2px solid rgba(123,231,255,.75);border-radius:50%;position:relative;flex:0 0 auto}.lens:after{content:"";position:absolute;width:10px;height:2px;right:-8px;bottom:-3px;background:rgba(123,231,255,.75);transform:rotate(45deg);border-radius:3px}
+    input,select,textarea{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(7,11,26,.35);color:var(--ink);padding:10px;outline:none;font:13px var(--mono);color-scheme:dark;box-shadow:0 0 0 1px rgba(45,125,255,.05) inset}
+    input:focus,select:focus,textarea:focus{border-color:rgba(123,231,255,.30);box-shadow:0 0 0 4px rgba(45,125,255,.16)}input::placeholder,textarea::placeholder{color:rgba(234,240,255,.42)}input::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.75)}
+    label{display:block;margin:0 0 6px;font:11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:rgba(234,240,255,.70)}
+    .view{display:none}.view.on{display:grid;gap:16px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}.dashboardGrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(300px,.95fr);gap:16px}.stack{display:grid;gap:10px}
+    .panel{padding:14px}.panelTitle{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:12px}.panelTitle b{font:900 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(123,231,255,.86)}.panelTitle span{font:11px var(--mono);color:rgba(234,240,255,.58)}
+    .nextDeadline{min-height:250px;display:grid;align-content:center;gap:10px}.kicker{font:900 10px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:rgba(123,231,255,.86)}h1{font-family:var(--serif);font-size:clamp(34px,6vw,64px);line-height:.95;margin:0;text-shadow:0 0 28px rgba(123,231,255,.22)}.bigDate{font:900 18px var(--mono);color:rgba(255,224,102,.94)}.hint{font:12px var(--mono);color:rgba(234,240,255,.62);line-height:1.45}
+    .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);padding:12px}.metric b{display:block;font:900 24px var(--mono)}.metric span{font:10px var(--mono);text-transform:uppercase;letter-spacing:.11em;color:rgba(234,240,255,.62)}
+    .card{padding:13px;display:grid;gap:10px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}.card:hover{transform:translateY(-1px);border-color:rgba(123,231,255,.24);box-shadow:0 16px 40px rgba(0,0,0,.42),0 0 22px rgba(45,125,255,.13)}
+    .card>*{position:relative;z-index:2}.cardTop{display:flex;gap:10px;justify-content:space-between;align-items:flex-start}.schoolName{font:900 15px var(--mono);letter-spacing:.08em;text-transform:uppercase;overflow-wrap:anywhere}.cardMeta{font:11px var(--mono);color:rgba(234,240,255,.70)}.pillRow{display:flex;gap:6px;flex-wrap:wrap}.pill{font:10px var(--mono);color:rgba(234,240,255,.78);border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);border-radius:999px;padding:5px 8px;display:inline-flex;align-items:center;gap:6px}
+    .pill.hot{border-color:rgba(255,154,61,.34);color:rgba(255,210,160,.96);background:rgba(255,154,61,.08)}.pill.good{border-color:rgba(75,255,211,.24);color:rgba(191,246,239,.94);background:rgba(75,255,211,.07)}.pill.calm{border-color:rgba(123,231,255,.18);color:rgba(123,231,255,.90);background:rgba(45,125,255,.08)}
+    .progress{height:12px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);overflow:hidden}.progress span{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,rgba(75,255,211,.80),rgba(123,231,255,.90),rgba(45,125,255,.74));transition:width .5s ease}
+    .checks{display:grid;gap:6px}.checkLine{display:flex;justify-content:space-between;gap:10px;font:11px var(--mono);color:rgba(234,240,255,.78)}.checkLine.done{color:rgba(123,231,255,.94)}
+    .item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:7px 10px;align-items:start;min-width:0;padding:10px 10px 10px 13px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font:12px var(--mono);color:rgba(234,240,255,.86);position:relative;overflow:hidden}.item input[type=checkbox]{width:18px;height:18px;margin-top:2px;accent-color:var(--cyan)}.item.done{opacity:.68}.item.done .txt{text-decoration:line-through;color:rgba(183,194,230,.76)}.txt{line-height:1.32;overflow-wrap:anywhere}.itemMeta{grid-column:2/4;display:flex;gap:6px;flex-wrap:wrap}.miniBtn{border:0;cursor:pointer;min-width:0;padding:5px 8px;border-radius:999px;color:rgba(234,240,255,.78);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);font:900 10px var(--mono)}
+    .completionBurst{--burstColor:var(--cyan);position:fixed;z-index:140;pointer-events:none;border-radius:18px;border:1px solid color-mix(in srgb,var(--burstColor) 44%,transparent);background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--burstColor) 16%,transparent),transparent 62%);box-shadow:0 0 22px color-mix(in srgb,var(--burstColor) 22%,transparent);animation:holoSoftPulse .9s ease-out both;mix-blend-mode:screen}
+    @keyframes holoSoftPulse{0%{opacity:0;transform:scale(.98)}24%{opacity:.90;transform:scale(1.01)}100%{opacity:0;transform:scale(1.035)}}
+    .empty{min-height:210px;display:grid;place-items:center;text-align:center;padding:26px;border-radius:24px;border:1px dashed rgba(123,231,255,.24);background:radial-gradient(420px 140px at 50% 0%,rgba(123,231,255,.12),transparent 70%),rgba(255,255,255,.03)}.empty div{display:grid;gap:10px;justify-items:center}
+    .taskTools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.filterBtn{border-radius:999px}.filterBtn.on{color:#07101f;background:linear-gradient(180deg,rgba(123,231,255,.96),rgba(45,125,255,.92))}
+    .overlay{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:16px;background:rgba(0,0,0,.52);backdrop-filter:blur(8px)}.overlay.on{display:grid}.modal{width:min(920px,96vw);max-height:92vh;overflow:auto}.modal.compact{width:min(760px,96vw)}.formGrid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px}.wide{grid-column:1/-1}.moreDetails{position:relative;z-index:2;margin:0 14px 14px;padding:10px;border-radius:18px;border:1px solid rgba(123,231,255,.13);background:rgba(255,255,255,.035)}.moreDetails summary{cursor:pointer;font:900 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:rgba(123,231,255,.86)}
+    .checkGroup{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.checkGroup label{display:flex;gap:8px;align-items:center;margin:0;text-transform:none;letter-spacing:0}.checkGroup input{width:18px;height:18px;accent-color:var(--cyan)}
+    .modalActions{position:relative;z-index:2;display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;padding:14px;border-top:1px solid rgba(255,255,255,.10)}
+    .toast{position:fixed;z-index:160;right:16px;bottom:16px;max-width:min(420px,calc(100vw - 32px));padding:12px 14px;border-radius:16px;border:1px solid rgba(123,231,255,.22);background:linear-gradient(180deg,rgba(12,22,56,.96),rgba(10,18,48,.92));box-shadow:var(--shadow);font:12px var(--mono);color:var(--ink);opacity:0;transform:translateY(10px);pointer-events:none;transition:.22s ease}.toast.on{opacity:1;transform:translateY(0)}
+    .privacyScreen,.loadingGate,.accessWrap{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;background:radial-gradient(620px 320px at 50% 35%,rgba(45,125,255,.20),transparent 68%),rgba(7,11,26,.94);backdrop-filter:blur(14px)}.accessWrap{position:relative;min-height:100vh}.accessPanel{width:min(680px,94vw);padding:28px;z-index:2}.accessPanel p{font:14px var(--mono);color:rgba(234,240,255,.72);line-height:1.5}.accessPanel form{display:grid;gap:10px;margin-top:18px;position:relative;z-index:2}
+    .statusPill{font:10px var(--mono);padding:7px 9px;border-radius:999px;border:1px solid rgba(123,231,255,.18);background:rgba(45,125,255,.08);color:rgba(123,231,255,.90)}
+    @media(max-width:820px){.topInner{display:grid;grid-template-columns:1fr auto;align-items:start}.navTabs{grid-column:1/-1;justify-content:stretch}.tab{flex:1}.topActions{justify-self:end}.toolbar,.dashboardGrid{display:grid;grid-template-columns:1fr}.summary{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.formGrid,.checkGroup{grid-template-columns:1fr}.modalActions{grid-template-columns:1fr}.brand{min-width:0}.title{font-size:17px}}
+    @media(max-width:430px){.topbar{padding:11px 10px}.shell{padding:0 10px;margin-top:12px}.topActions .cloudStatus{display:none}.btn,.tab{padding:9px 8px}.schoolName{font-size:13px}.item{grid-template-columns:auto minmax(0,1fr)}.item .miniBtn{grid-column:2}.itemMeta{grid-column:2}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}.fog,#matrix{display:none}}
+  </style>
+</head>
+<body>
+  <canvas id="matrix" aria-hidden="true"></canvas>
+  <div class="fog" aria-hidden="true"></div>
+  <div class="scan" aria-hidden="true"></div>
+
+  <section class="accessWrap" id="authGate">
+    <div class="accessPanel">
+      <div class="kicker">PRIVATE FAMILY TRACKER</div>
+      <h1>Asher College Tracker</h1>
+      <p id="authCopy">Sign in with an approved family email. Up to five Supabase logins can share the same tracker.</p>
+      <form id="loginForm">
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" required placeholder="name@example.com" autocomplete="email">
+        <button class="btn primary" type="submit">Send Magic Link</button>
+        <p class="hint">No password is stored in this page. Supabase sends the sign-in link.</p>
+      </form>
+    </div>
+  </section>
+
+  <header class="topbar" id="topbar" hidden>
+    <div class="topInner">
+      <div class="brand">
+        <div class="title">Asher College Tracker</div>
+        <div class="subtle" id="cycleLabel">Shared family cockpit</div>
+      </div>
+      <nav class="navTabs" aria-label="Primary views">
+        <button class="tab on" data-view="dashboard">Dashboard</button>
+        <button class="tab" data-view="schools">Schools</button>
+        <button class="tab" data-view="tasks">Tasks</button>
+      </nav>
+      <div class="topActions">
+        <div class="cloudStatus" id="saveLight" title="Save status" aria-label="Save status"></div>
+        <button class="btn ghost iconOnly" id="privacyBtn" title="Privacy screen">Hide</button>
+        <button class="btn primary" id="addTopBtn">Add School</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell" id="appShell" hidden>
+    <section class="heroPanel">
+      <div class="hd">
+        <div>
+          <b id="viewTitle">Dashboard</b>
+          <span id="viewSub">What matters right now</span>
+        </div>
+        <div class="statusPill" id="signedInLabel">Authorized</div>
+      </div>
+      <div class="toolbar">
+        <label class="search">
+          <span class="lens"></span>
+          <input id="searchInput" placeholder="Search schools and tasks">
+        </label>
+        <select id="sortSelect" aria-label="Sort">
+          <option value="deadline">Deadline</option>
+          <option value="school">School Name</option>
+          <option value="status">Status</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="view on" id="dashboardView"></section>
+    <section class="view" id="schoolsView"></section>
+    <section class="view" id="tasksView"></section>
+  </main>
+
+  <div class="privacyScreen" id="privacyScreen" hidden>
+    <div>
+      <div class="kicker">PRIVACY SCREEN</div>
+      <h1>Tracker hidden</h1>
+      <p class="hint">Press Escape or the Hide button to reveal it again.</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="overlay" id="schoolOverlay" aria-hidden="true">
+    <form class="modal" id="schoolForm">
+      <div class="modalHd">
+        <div><b id="schoolModalTitle">Add School</b><span>Keep it light. Add details only when useful.</span></div>
+        <button type="button" class="btn ghost iconOnly" data-close="schoolOverlay">X</button>
+      </div>
+      <input type="hidden" id="schoolId">
+      <div class="formGrid">
+        <div class="wide"><label for="schoolName">School Name</label><input id="schoolName" required placeholder="Northwestern"></div>
+        <div><label for="schoolStatus">Status</label><select id="schoolStatus"></select></div>
+        <div><label for="schoolPlan">Plan</label><select id="schoolPlan"></select></div>
+        <div><label for="schoolDeadline">Deadline</label><input type="date" id="schoolDeadline"></div>
+        <div><label for="schoolTheater">Theater</label><select id="schoolTheater"><option value="false">No</option><option value="true">Yes</option></select></div>
+        <div><label for="schoolPrescreen">Prescreen</label><select id="schoolPrescreen"></select></div>
+        <div><label for="schoolOwner">Owner</label><select id="schoolOwner"></select></div>
+        <div class="wide"><label for="schoolNext">Next Action</label><input id="schoolNext" placeholder="Finish supplement"></div>
+      </div>
+      <details class="moreDetails">
+        <summary>More Details</summary>
+        <div class="formGrid">
+          <div><label for="schoolDeadlineTime">Deadline Time</label><input type="time" id="schoolDeadlineTime"></div>
+          <div><label for="schoolTimezone">Timezone</label><input id="schoolTimezone" placeholder="America/Los_Angeles"></div>
+          <div class="checkGroup wide">
+            <label><input type="checkbox" id="schoolApplicationDone"> Application done</label>
+            <label><input type="checkbox" id="schoolEssayDone"> Essay done</label>
+            <label><input type="checkbox" id="schoolRecommendationsDone"> Recommendations done</label>
+            <label><input type="checkbox" id="schoolSubmitted"> Submitted</label>
+          </div>
+          <div class="wide"><label for="schoolNotes">Notes</label><textarea id="schoolNotes" rows="4"></textarea></div>
+        </div>
+      </details>
+      <div class="modalActions">
+        <button type="button" class="btn ghost danger" id="deleteSchoolBtn">Delete</button>
+        <span></span>
+        <button type="button" class="btn ghost" data-close="schoolOverlay">Cancel</button>
+        <button type="submit" class="btn primary">Save School</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="overlay" id="taskOverlay" aria-hidden="true">
+    <form class="modal compact" id="taskForm">
+      <div class="modalHd">
+        <div><b id="taskModalTitle">Add Task</b><span>Tasks are the system.</span></div>
+        <button type="button" class="btn ghost iconOnly" data-close="taskOverlay">X</button>
+      </div>
+      <input type="hidden" id="taskId">
+      <div class="formGrid">
+        <div class="wide"><label for="taskTitle">Task</label><input id="taskTitle" required placeholder="Ask teacher for recommendation"></div>
+        <div><label for="taskOwner">Owner</label><select id="taskOwner"></select></div>
+        <div><label for="taskDue">Due Date</label><input type="date" id="taskDue"></div>
+        <div><label for="taskSchool">School</label><select id="taskSchool"></select></div>
+        <div><label for="taskCategory">Category</label><select id="taskCategory"></select></div>
+        <div><label for="taskDone">Done</label><select id="taskDone"><option value="false">Open</option><option value="true">Done</option></select></div>
+        <div class="wide"><label for="taskNotes">Notes</label><textarea id="taskNotes" rows="3"></textarea></div>
+      </div>
+      <div class="modalActions">
+        <button type="button" class="btn ghost danger" id="deleteTaskBtn">Delete</button>
+        <span></span>
+        <button type="button" class="btn ghost" data-close="taskOverlay">Cancel</button>
+        <button type="submit" class="btn primary">Save Task</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
+    const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
+    const DEFAULT_FAMILY_ID = "asher-college-tracker";
+
+    const OPTIONS = {
+      statuses: ['Researching','Considering','Applying','In Progress','Ready','Submitted','Accepted','Waitlisted','Denied','Withdrawn'],
+      plans: ['ED','ED II','EA','REA','RD','Rolling','Priority','Other'],
+      owners: ['Ari','Elana','Asher','Shared','Unassigned'],
+      prescreens: ['Not Required','Required','Submitted','Passed','Not Advanced'],
+      categories: ['Application','Essay','Recommendation','Theater','Financial Aid','Visit','Research','Other']
+    };
+
+    const $ = id => document.getElementById(id);
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const state = {
+      view: localStorage.getItem('act:view') || 'dashboard',
+      search: '',
+      schoolSort: 'deadline',
+      taskFilter: 'open',
+      familyId: DEFAULT_FAMILY_ID,
+      profile: null,
+      schools: [],
+      tasks: [],
+      settings: { StudentName:'Asher', ApplicationCycle:'College applications', Timezone:'America/Los_Angeles' }
+    };
+
+    async function boot() {
+      bindEvents();
+      fillSelects();
+      startAtmosphere();
+      if (!configured()) {
+        $('authCopy').textContent = 'Before hosting, paste your Supabase URL and anon key into the top of this HTML file.';
+        $('loginForm').hidden = true;
+        return;
+      }
+      const { data } = await db.auth.getSession();
+      if (data.session) await enterApp();
+      db.auth.onAuthStateChange((_event, session) => { if (session) enterApp(); });
+    }
+
+    function configured() {
+      return SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length > 40;
+    }
+
+    function bindEvents() {
+      $('loginForm').addEventListener('submit', async event => {
+        event.preventDefault();
+        try {
+          const email = $('loginEmail').value.trim();
+          const { error } = await db.auth.signInWithOtp({ email, options: { emailRedirectTo: location.href } });
+          if (error) throw error;
+          flash('Magic link sent. Check that email account.');
+        } catch (error) { showError(error); }
+      });
+      document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
+      $('searchInput').addEventListener('input', event => { state.search = event.target.value.trim().toLowerCase(); render(); });
+      $('sortSelect').addEventListener('change', event => { state.schoolSort = event.target.value; render(); });
+      $('addTopBtn').addEventListener('click', () => state.view === 'tasks' ? openTask() : openSchool());
+      $('privacyBtn').addEventListener('click', togglePrivacy);
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          if (!$('privacyScreen').hidden) togglePrivacy(false);
+          closeOverlay('schoolOverlay'); closeOverlay('taskOverlay');
+        }
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'h') {
+          event.preventDefault(); togglePrivacy();
+        }
+      });
+      document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => closeOverlay(button.dataset.close)));
+      $('schoolOverlay').addEventListener('click', event => { if (event.target.id === 'schoolOverlay') closeOverlay('schoolOverlay'); });
+      $('taskOverlay').addEventListener('click', event => { if (event.target.id === 'taskOverlay') closeOverlay('taskOverlay'); });
+      $('schoolForm').addEventListener('submit', saveSchoolFromForm);
+      $('taskForm').addEventListener('submit', saveTaskFromForm);
+      $('deleteSchoolBtn').addEventListener('click', deleteCurrentSchool);
+      $('deleteTaskBtn').addEventListener('click', deleteCurrentTask);
+    }
+
+    async function enterApp() {
+      try {
+        setSaving('saving');
+        const { data: userData, error: userError } = await db.auth.getUser();
+        if (userError) throw userError;
+        const email = userData.user.email;
+        const { data: member, error: memberError } = await db
+          .from('app_members')
+          .select('family_id, display_name, email')
+          .ilike('email', email)
+          .single();
+        if (memberError) throw new Error('This email is signed in, but it is not on the tracker allowlist.');
+        state.profile = member;
+        state.familyId = member.family_id;
+        await loadData();
+        $('authGate').hidden = true;
+        $('topbar').hidden = false;
+        $('appShell').hidden = false;
+        $('signedInLabel').innerHTML = `${escapeHtml(member.display_name || email)} <button class="miniBtn" onclick="signOut()">Sign out</button>`;
+        setView(state.view);
+        setSaving('saved');
+      } catch (error) {
+        $('authGate').hidden = false;
+        $('authCopy').textContent = messageOf(error);
+        showError(error);
+      }
+    }
+
+    async function loadData() {
+      const [schoolsResult, tasksResult, settingsResult] = await Promise.all([
+        db.from('schools').select('*').eq('family_id', state.familyId),
+        db.from('tasks').select('*').eq('family_id', state.familyId),
+        db.from('settings').select('*').eq('family_id', state.familyId)
+      ]);
+      if (schoolsResult.error) throw schoolsResult.error;
+      if (tasksResult.error) throw tasksResult.error;
+      if (settingsResult.error) throw settingsResult.error;
+      state.schools = schoolsResult.data.map(fromSchoolRow);
+      state.tasks = tasksResult.data.map(fromTaskRow);
+      settingsResult.data.forEach(row => { state.settings[row.key] = row.value; });
+      $('cycleLabel').textContent = `${state.settings.StudentName || 'Asher'} | ${state.settings.ApplicationCycle || 'College applications'}`;
+      refreshTaskSchoolSelect();
+      render();
+    }
+
+    async function signOut() {
+      await db.auth.signOut();
+      location.reload();
+    }
+
+    function fillSelects() {
+      fillSelect('schoolStatus', OPTIONS.statuses);
+      fillSelect('schoolPlan', OPTIONS.plans);
+      fillSelect('schoolPrescreen', OPTIONS.prescreens);
+      fillSelect('schoolOwner', OPTIONS.owners);
+      fillSelect('taskOwner', OPTIONS.owners);
+      fillSelect('taskCategory', OPTIONS.categories);
+      refreshTaskSchoolSelect();
+    }
+    function fillSelect(id, values) { $(id).innerHTML = values.map(value => `<option value="${escapeAttr(value)}">${escapeHtml(value)}</option>`).join(''); }
+    function refreshTaskSchoolSelect() { $('taskSchool').innerHTML = `<option value="">No school</option>` + sortedSchools().map(school => `<option value="${escapeAttr(school.id)}">${escapeHtml(school.school)}</option>`).join(''); }
+
+    function setView(view) {
+      state.view = ['dashboard','schools','tasks'].includes(view) ? view : 'dashboard';
+      localStorage.setItem('act:view', state.view);
+      document.querySelectorAll('[data-view]').forEach(button => button.classList.toggle('on', button.dataset.view === state.view));
+      document.querySelectorAll('.view').forEach(section => section.classList.toggle('on', section.id === `${state.view}View`));
+      $('viewTitle').textContent = state.view === 'dashboard' ? 'Dashboard' : state.view === 'schools' ? 'Schools' : 'Tasks';
+      $('viewSub').textContent = state.view === 'dashboard' ? 'What matters right now' : state.view === 'schools' ? 'Status, next action, owner' : 'Small tasks, clear owners';
+      $('addTopBtn').textContent = state.view === 'tasks' ? 'Add Task' : 'Add School';
+      $('sortSelect').style.display = state.view === 'schools' ? '' : 'none';
+      render();
+    }
+
+    function render() { renderDashboard(); renderSchools(); renderTasks(); }
+
+    function renderDashboard() {
+      const schools = sortedSchools().filter(matchesSearchSchool);
+      const tasks = sortedTasks().filter(task => !task.done && matchesSearchTask(task)).slice(0, 8);
+      const next = nextDeadlineSchool(schools);
+      const upcoming = schools.filter(school => school.deadline).slice(0, 5);
+      const submitted = state.schools.filter(school => school.submitted || school.status === 'Submitted').length;
+      const openTasks = state.tasks.filter(task => !task.done).length;
+      $('dashboardView').innerHTML = schools.length || state.tasks.length ? `
+        <div class="dashboardGrid">
+          <section class="panel nextDeadline">
+            ${next ? `
+              <div class="kicker">NEXT DEADLINE</div><h1>${escapeHtml(next.school)}</h1>
+              <div class="bigDate">${escapeHtml(formatDate(next.deadline))} ${next.deadline_time ? escapeHtml(next.deadline_time) : ''}</div>
+              <div class="pillRow"><span class="pill ${urgencyClass(next.deadline)}">${escapeHtml(deadlineLabel(next.deadline))}</span><span class="pill calm">${escapeHtml(next.status)}</span><span class="pill">${escapeHtml(next.owner)}</span></div>
+              <p class="hint">${next.next_action ? `Next: ${escapeHtml(next.next_action)}` : 'No next action yet.'}</p>
+            ` : `<div class="kicker">NEXT DEADLINE</div><h1>No dated schools</h1><p class="hint">Add a deadline to a school and it will appear here.</p>`}
+          </section>
+          <div class="stack">
+            <section class="panel"><div class="panelTitle"><b>Simple Summary</b><span>Tracker counts</span></div><div class="summary"><div class="metric"><b>${state.schools.length}</b><span>Active Schools</span></div><div class="metric"><b>${submitted}</b><span>Submitted</span></div><div class="metric"><b>${openTasks}</b><span>Open Tasks</span></div></div></section>
+            <section class="panel"><div class="panelTitle"><b>Upcoming Deadlines</b><span>Chronological</span></div><div class="stack">${upcoming.length ? upcoming.map(renderDeadlineItem).join('') : `<p class="hint">No upcoming deadlines yet.</p>`}</div></section>
+          </div>
+        </div>
+        <section class="panel"><div class="panelTitle"><b>Open Tasks</b><span>Overdue first</span></div><div class="stack">${tasks.length ? tasks.map(renderTaskItem).join('') : `<p class="hint">Nothing open right now.</p>`}</div></section>
+      ` : emptyState('No schools added yet.', 'Add First School', 'openSchool()');
+    }
+
+    function renderSchools() {
+      const schools = sortedSchools().filter(matchesSearchSchool);
+      $('schoolsView').innerHTML = schools.length ? `<div class="grid">${schools.map(renderSchoolCard).join('')}</div>` : emptyState('No schools are being tracked yet.', 'Add School', 'openSchool()');
+    }
+
+    function renderTasks() {
+      const filters = ['All Open','Ari','Elana','Asher','Overdue','Completed'];
+      const tasks = sortedTasks().filter(matchesSearchTask).filter(task => {
+        if (state.taskFilter === 'completed') return task.done;
+        if (state.taskFilter === 'overdue') return !task.done && urgency(task.due_date) === 'overdue';
+        if (['ari','elana','asher'].includes(state.taskFilter)) return !task.done && task.owner.toLowerCase() === state.taskFilter;
+        return !task.done;
+      });
+      $('tasksView').innerHTML = `
+        <section class="panel"><div class="taskTools"><button class="btn primary" onclick="openTask()">Add Task</button>${filters.map(label => {
+          const key = label.toLowerCase().replace('all open','open');
+          return `<button class="btn ghost filterBtn ${state.taskFilter === key ? 'on' : ''}" onclick="setTaskFilter('${key}')">${escapeHtml(label)}</button>`;
+        }).join('')}</div></section>
+        <section class="panel"><div class="stack">${tasks.length ? tasks.map(renderTaskItem).join('') : emptyInner('Nothing open right now.', 'Add Task', 'openTask()')}</div></section>
+      `;
+    }
+
+    function renderSchoolCard(school) {
+      const progress = schoolProgress(school);
+      return `
+        <article class="card" onclick="openSchool('${escapeAttr(school.id)}')">
+          <div class="cardTop"><div><div class="schoolName">${escapeHtml(school.school)}</div><div class="cardMeta">${escapeHtml(school.plan || 'Plan TBD')} | ${school.deadline ? escapeHtml(formatDate(school.deadline)) : 'No deadline'}</div></div><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span></div>
+          <div class="progress" aria-label="Completion ${progress}%"><span style="width:${progress}%"></span></div>
+          <div class="checks">${checkLine('Application', school.application_done)}${checkLine('Essay', school.essay_done)}${checkLine('Recommendations', school.recommendations_done)}${checkLine('Submitted', school.submitted)}</div>
+          <div class="pillRow"><span class="pill calm">${escapeHtml(school.status)}</span>${school.theater ? `<span class="pill good">Theater</span>` : ''}<span class="pill">${escapeHtml(school.prescreen || 'Not Required')}</span><span class="pill">${escapeHtml(school.owner || 'Unassigned')}</span></div>
+          <p class="hint">${school.next_action ? `Next: ${escapeHtml(school.next_action)}` : 'No next action yet.'}</p>
+        </article>
+      `;
+    }
+    function renderTaskItem(task) {
+      const school = state.schools.find(item => item.id === task.school_id);
+      return `
+        <div class="item ${task.done ? 'done' : ''}" data-task-id="${escapeAttr(task.id)}">
+          <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTaskDone('${escapeAttr(task.id)}', this.checked)">
+          <div><div class="txt">${escapeHtml(task.task)}</div></div>
+          <button class="miniBtn" onclick="openTask('${escapeAttr(task.id)}')">Edit</button>
+          <div class="itemMeta"><span class="pill ${urgencyClass(task.due_date)}">${escapeHtml(task.due_date ? formatDate(task.due_date) : 'No due date')}</span><span class="pill">${escapeHtml(task.owner || 'Unassigned')}</span><span class="pill calm">${escapeHtml(task.category || 'Other')}</span>${school ? `<span class="pill">${escapeHtml(school.school)}</span>` : ''}</div>
+        </div>
+      `;
+    }
+    function renderDeadlineItem(school) {
+      return `<div class="item"><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span><div><div class="txt">${escapeHtml(school.school)}</div><div class="itemMeta"><span class="pill">${escapeHtml(formatDate(school.deadline))}</span><span class="pill">${escapeHtml(school.owner || 'Unassigned')}</span></div></div><button class="miniBtn" onclick="openSchool('${escapeAttr(school.id)}')">Edit</button></div>`;
+    }
+    function checkLine(label, done) { return `<div class="checkLine ${done ? 'done' : ''}"><span>${escapeHtml(label)}</span><span>${done ? 'Done' : 'Open'}</span></div>`; }
+    function emptyState(text, button, action) { return `<section class="empty"><div><div class="kicker">STANDBY</div><h1>${escapeHtml(text)}</h1><button class="btn primary" onclick="${action}">${escapeHtml(button)}</button></div></section>`; }
+    function emptyInner(text, button, action) { return `<div class="empty"><div><div class="kicker">CLEAR</div><h1>${escapeHtml(text)}</h1><button class="btn primary" onclick="${action}">${escapeHtml(button)}</button></div></div>`; }
+
+    function openSchool(id) {
+      const school = state.schools.find(item => item.id === id) || {};
+      $('schoolModalTitle').textContent = id ? 'Edit School' : 'Add School';
+      $('schoolId').value = school.id || '';
+      $('schoolName').value = school.school || '';
+      $('schoolStatus').value = school.status || 'Researching';
+      $('schoolPlan').value = school.plan || 'RD';
+      $('schoolDeadline').value = school.deadline || '';
+      $('schoolDeadlineTime').value = school.deadline_time || '';
+      $('schoolTimezone').value = school.deadline_timezone || state.settings.Timezone || '';
+      $('schoolTheater').value = String(!!school.theater);
+      $('schoolPrescreen').value = school.prescreen || 'Not Required';
+      $('schoolApplicationDone').checked = !!school.application_done;
+      $('schoolEssayDone').checked = !!school.essay_done;
+      $('schoolRecommendationsDone').checked = !!school.recommendations_done;
+      $('schoolSubmitted').checked = !!school.submitted;
+      $('schoolNext').value = school.next_action || '';
+      $('schoolOwner').value = school.owner || 'Unassigned';
+      $('schoolNotes').value = school.notes || '';
+      $('deleteSchoolBtn').style.visibility = id ? 'visible' : 'hidden';
+      openOverlay('schoolOverlay'); setTimeout(() => $('schoolName').focus(), 80);
+    }
+    function openTask(id) {
+      const task = state.tasks.find(item => item.id === id) || {};
+      refreshTaskSchoolSelect();
+      $('taskModalTitle').textContent = id ? 'Edit Task' : 'Add Task';
+      $('taskId').value = task.id || '';
+      $('taskTitle').value = task.task || '';
+      $('taskOwner').value = task.owner || 'Unassigned';
+      $('taskDue').value = task.due_date || '';
+      $('taskSchool').value = task.school_id || '';
+      $('taskCategory').value = task.category || 'Other';
+      $('taskDone').value = String(!!task.done);
+      $('taskNotes').value = task.notes || '';
+      $('deleteTaskBtn').style.visibility = id ? 'visible' : 'hidden';
+      openOverlay('taskOverlay'); setTimeout(() => $('taskTitle').focus(), 80);
+    }
+
+    async function saveSchoolFromForm(event) {
+      event.preventDefault();
+      const id = $('schoolId').value || null;
+      const row = cleanSchoolRow({
+        family_id: state.familyId,
+        school: $('schoolName').value,
+        status: $('schoolStatus').value,
+        plan: $('schoolPlan').value,
+        deadline: $('schoolDeadline').value || null,
+        deadline_time: $('schoolDeadlineTime').value || null,
+        deadline_timezone: $('schoolTimezone').value,
+        theater: $('schoolTheater').value === 'true',
+        prescreen: $('schoolPrescreen').value,
+        application_done: $('schoolApplicationDone').checked,
+        essay_done: $('schoolEssayDone').checked,
+        recommendations_done: $('schoolRecommendationsDone').checked,
+        submitted: $('schoolSubmitted').checked,
+        next_action: $('schoolNext').value,
+        owner: $('schoolOwner').value,
+        notes: $('schoolNotes').value
+      });
+      try {
+        setSaving('saving');
+        const query = id ? db.from('schools').update(row).eq('id', id).select().single() : db.from('schools').insert(row).select().single();
+        const { data, error } = await query;
+        if (error) throw error;
+        upsertById(state.schools, fromSchoolRow(data));
+        refreshTaskSchoolSelect(); closeOverlay('schoolOverlay'); setSaving('saved'); flash('School saved'); render();
+      } catch (error) { setSaving('error'); showError(error); }
+    }
+
+    async function saveTaskFromForm(event) {
+      event.preventDefault();
+      const id = $('taskId').value || null;
+      const row = cleanTaskRow({
+        family_id: state.familyId,
+        done: $('taskDone').value === 'true',
+        task: $('taskTitle').value,
+        school_id: $('taskSchool').value || null,
+        owner: $('taskOwner').value,
+        due_date: $('taskDue').value || null,
+        category: $('taskCategory').value,
+        notes: $('taskNotes').value
+      });
+      try {
+        setSaving('saving');
+        const query = id ? db.from('tasks').update(row).eq('id', id).select().single() : db.from('tasks').insert(row).select().single();
+        const { data, error } = await query;
+        if (error) throw error;
+        upsertById(state.tasks, fromTaskRow(data));
+        closeOverlay('taskOverlay'); setSaving('saved'); flash('Task saved'); render();
+      } catch (error) { setSaving('error'); showError(error); }
+    }
+
+    async function deleteCurrentSchool() {
+      const id = $('schoolId').value;
+      if (!id || !confirm('Delete this school? Tasks linked to it will remain, but their school link will be cleared.')) return;
+      try {
+        setSaving('saving');
+        let result = await db.from('tasks').update({ school_id:null }).eq('school_id', id).eq('family_id', state.familyId);
+        if (result.error) throw result.error;
+        result = await db.from('schools').delete().eq('id', id).eq('family_id', state.familyId);
+        if (result.error) throw result.error;
+        state.schools = state.schools.filter(school => school.id !== id);
+        state.tasks.forEach(task => { if (task.school_id === id) task.school_id = null; });
+        closeOverlay('schoolOverlay'); setSaving('saved'); flash('School deleted'); render();
+      } catch (error) { setSaving('error'); showError(error); }
+    }
+    async function deleteCurrentTask() {
+      const id = $('taskId').value;
+      if (!id || !confirm('Delete this task?')) return;
+      try {
+        setSaving('saving');
+        const { error } = await db.from('tasks').delete().eq('id', id).eq('family_id', state.familyId);
+        if (error) throw error;
+        state.tasks = state.tasks.filter(task => task.id !== id);
+        closeOverlay('taskOverlay'); setSaving('saved'); flash('Task deleted'); render();
+      } catch (error) { setSaving('error'); showError(error); }
+    }
+    async function toggleTaskDone(id, done) {
+      const task = state.tasks.find(item => item.id === id);
+      if (!task) return;
+      const previous = task.done;
+      task.done = done; render();
+      const row = document.querySelector(`[data-task-id="${cssEscape(id)}"]`);
+      if (row && done) sparkRect(row.getBoundingClientRect());
+      try {
+        setSaving('saving');
+        const { data, error } = await db.from('tasks').update({ done }).eq('id', id).eq('family_id', state.familyId).select().single();
+        if (error) throw error;
+        upsertById(state.tasks, fromTaskRow(data));
+        setSaving('saved'); render();
+      } catch (error) { task.done = previous; setSaving('error'); render(); showError(error); }
+    }
+
+    function cleanSchoolRow(row) {
+      row.school = row.school.trim();
+      if (!row.school) throw new Error('School name is required.');
+      row.status = allow(row.status, OPTIONS.statuses, 'Researching');
+      row.plan = allow(row.plan, OPTIONS.plans, 'RD');
+      row.prescreen = allow(row.prescreen, OPTIONS.prescreens, 'Not Required');
+      row.owner = allow(row.owner, OPTIONS.owners, 'Unassigned');
+      return row;
+    }
+    function cleanTaskRow(row) {
+      row.task = row.task.trim();
+      if (!row.task) throw new Error('Task title is required.');
+      row.owner = allow(row.owner, OPTIONS.owners, 'Unassigned');
+      row.category = allow(row.category, OPTIONS.categories, 'Other');
+      return row;
+    }
+    function allow(value, allowed, fallback) { return allowed.includes(value) ? value : fallback; }
+    function fromSchoolRow(row) { return row; }
+    function fromTaskRow(row) { return row; }
+    function setTaskFilter(filter) { state.taskFilter = filter; renderTasks(); }
+    function openOverlay(id) { $(id).classList.add('on'); $(id).setAttribute('aria-hidden','false'); }
+    function closeOverlay(id) { $(id).classList.remove('on'); $(id).setAttribute('aria-hidden','true'); }
+    function togglePrivacy(force) { const show = typeof force === 'boolean' ? force : $('privacyScreen').hidden; $('privacyScreen').hidden = !show; }
+    function sortedSchools() {
+      const schools = [...state.schools];
+      if (state.schoolSort === 'school') return schools.sort((a,b) => a.school.localeCompare(b.school));
+      if (state.schoolSort === 'status') return schools.sort((a,b) => a.status.localeCompare(b.status) || dateRank(a.deadline) - dateRank(b.deadline));
+      return schools.sort((a,b) => dateRank(a.deadline) - dateRank(b.deadline) || a.school.localeCompare(b.school));
+    }
+    function sortedTasks() { return [...state.tasks].sort((a,b) => taskRank(a) - taskRank(b) || dateRank(a.due_date) - dateRank(b.due_date) || a.task.localeCompare(b.task)); }
+    function taskRank(task) { if (task.done) return 10; const u = urgency(task.due_date); if (u === 'overdue') return 0; if (u === 'today') return 1; if (u === 'soon' || u === 'tomorrow') return 2; if (task.due_date) return 3; return 4; }
+    function nextDeadlineSchool(schools) { const today = startOfToday(); return schools.filter(school => school.deadline && parseLocalDate(school.deadline) >= today)[0] || null; }
+    function matchesSearchSchool(school) { if (!state.search) return true; return `${school.school} ${school.next_action} ${school.owner} ${school.status}`.toLowerCase().includes(state.search); }
+    function matchesSearchTask(task) { if (!state.search) return true; const school = state.schools.find(item => item.id === task.school_id); return `${task.task} ${task.owner} ${task.category} ${school ? school.school : ''}`.toLowerCase().includes(state.search); }
+    function schoolProgress(school) { const checks = [school.application_done, school.essay_done, school.recommendations_done, school.submitted]; return Math.round(checks.filter(Boolean).length / checks.length * 100); }
+    function urgency(dateText) { if (!dateText) return 'later'; const diff = Math.round((parseLocalDate(dateText) - startOfToday()) / 86400000); if (diff < 0) return 'overdue'; if (diff === 0) return 'today'; if (diff === 1) return 'tomorrow'; if (diff <= 7) return 'soon'; return 'later'; }
+    function urgencyClass(dateText) { const value = urgency(dateText); return ['overdue','today','tomorrow','soon'].includes(value) ? 'hot' : 'calm'; }
+    function deadlineLabel(dateText) { if (!dateText) return 'No deadline'; const diff = Math.round((parseLocalDate(dateText) - startOfToday()) / 86400000); if (diff < 0) return 'Overdue'; if (diff === 0) return 'Due today'; if (diff === 1) return 'Due tomorrow'; return `${diff} days remaining`; }
+    function dateRank(dateText) { return dateText ? parseLocalDate(dateText).getTime() : Number.MAX_SAFE_INTEGER; }
+    function parseLocalDate(dateText) { const parts = String(dateText).split('-').map(Number); return new Date(parts[0], parts[1] - 1, parts[2]); }
+    function startOfToday() { const now = new Date(); return new Date(now.getFullYear(), now.getMonth(), now.getDate()); }
+    function formatDate(dateText) { return dateText ? parseLocalDate(dateText).toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' }) : ''; }
+    function upsertById(list, item) { const index = list.findIndex(existing => existing.id === item.id); if (index === -1) list.push(item); else list.splice(index, 1, item); }
+    function setSaving(mode) { const light = $('saveLight'); if (!light) return; light.classList.toggle('on', mode === 'saved'); light.title = mode === 'saving' ? 'Saving' : mode === 'error' ? 'Save failed' : 'Saved'; }
+    function flash(message) { const toast = $('toast'); toast.textContent = message; toast.classList.add('on'); clearTimeout(flash.timer); flash.timer = setTimeout(() => toast.classList.remove('on'), 2300); }
+    function showError(error) { flash(messageOf(error)); }
+    function messageOf(error) { return String(error && error.message ? error.message : error || 'Something went wrong.'); }
+    function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
+    function escapeAttr(value) { return escapeHtml(value).replace(/`/g, '&#96;'); }
+    function cssEscape(value) { return window.CSS && CSS.escape ? CSS.escape(value) : String(value).replace(/[^a-zA-Z0-9_-]/g, '\\$&'); }
+    function sparkRect(rect) {
+      if (!rect || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const burst = document.createElement('div'), pad = 6;
+      burst.className = 'completionBurst';
+      burst.style.left = `${Math.max(0, rect.left - pad)}px`;
+      burst.style.top = `${Math.max(0, rect.top - pad)}px`;
+      burst.style.width = `${Math.max(28, rect.width + pad * 2)}px`;
+      burst.style.height = `${Math.max(24, rect.height + pad * 2)}px`;
+      document.body.appendChild(burst);
+      setTimeout(() => burst.remove(), 950);
+    }
+    function startAtmosphere() {
+      const canvas = $('matrix');
+      if (!canvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const ctx = canvas.getContext('2d'), glyphs = '01*-+.|';
+      let columns = [];
+      function resize() {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.floor(innerWidth * dpr); canvas.height = Math.floor(innerHeight * dpr);
+        canvas.style.width = `${innerWidth}px`; canvas.style.height = `${innerHeight}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        columns = Array.from({ length: Math.ceil(innerWidth / 24) }, (_, index) => ({ x:index * 24, y:Math.random() * innerHeight, speed:.45 + Math.random() * 1.2, alpha:.05 + Math.random() * .18 }));
+      }
+      function draw() {
+        ctx.fillStyle = 'rgba(7,11,26,.08)'; ctx.fillRect(0, 0, innerWidth, innerHeight);
+        ctx.font = '12px ui-monospace, monospace';
+        columns.forEach(col => { ctx.fillStyle = `rgba(123,231,255,${col.alpha})`; ctx.fillText(glyphs[Math.floor(Math.random() * glyphs.length)], col.x, col.y); col.y += col.speed; if (col.y > innerHeight + 40) col.y = -40; });
+        requestAnimationFrame(draw);
+      }
+      window.addEventListener('resize', resize); resize(); draw();
+    }
+    boot();
+  </script>
+</body>
+</html>
