@@ -53,14 +53,14 @@
     input,select,textarea{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(7,11,26,.35);color:var(--ink);padding:10px;outline:none;font:13px var(--mono);color-scheme:dark;box-shadow:0 0 0 1px rgba(45,125,255,.05) inset}
     input:focus,select:focus,textarea:focus{border-color:rgba(123,231,255,.30);box-shadow:0 0 0 4px rgba(45,125,255,.16)}input::placeholder,textarea::placeholder{color:rgba(234,240,255,.42)}input::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.75)}
     label{display:block;margin:0 0 6px;font:11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:rgba(234,240,255,.70)}
-    .view{display:none}.view.on{display:grid;gap:16px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}.dashboardGrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(300px,.95fr);gap:16px}.stack{display:grid;gap:10px}
+    .view{display:none}.view.on{display:grid;gap:16px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:10px}.dashboardGrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(300px,.95fr);gap:16px}.stack{display:grid;gap:10px}
     .panel{padding:14px}.panelTitle{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:12px}.panelTitle b{font:900 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(123,231,255,.86)}.panelTitle span{font:11px var(--mono);color:rgba(234,240,255,.58)}
     .nextDeadline{min-height:250px;display:grid;align-content:center;gap:10px}.kicker{font:900 10px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:rgba(123,231,255,.86)}h1{font-family:var(--serif);font-size:clamp(34px,6vw,64px);line-height:.95;margin:0;text-shadow:0 0 28px rgba(123,231,255,.22)}.bigDate{font:900 18px var(--mono);color:rgba(255,224,102,.94)}.hint{font:12px var(--mono);color:rgba(234,240,255,.62);line-height:1.45}
     .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);padding:12px}.metric b{display:block;font:900 24px var(--mono)}.metric span{font:10px var(--mono);text-transform:uppercase;letter-spacing:.11em;color:rgba(234,240,255,.62)}
-    .card{padding:13px;display:grid;gap:10px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}.card:hover{transform:translateY(-1px);border-color:rgba(123,231,255,.24);box-shadow:0 16px 40px rgba(0,0,0,.42),0 0 22px rgba(45,125,255,.13)}
-    .card>*{position:relative;z-index:2}.cardTop{display:flex;gap:10px;justify-content:space-between;align-items:flex-start}.schoolName{font:900 15px var(--mono);letter-spacing:.08em;text-transform:uppercase;overflow-wrap:anywhere}.cardMeta{font:11px var(--mono);color:rgba(234,240,255,.70)}.pillRow{display:flex;gap:6px;flex-wrap:wrap}.pill{font:10px var(--mono);color:rgba(234,240,255,.78);border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);border-radius:999px;padding:5px 8px;display:inline-flex;align-items:center;gap:6px}
+    .card{padding:10px;display:grid;gap:8px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}.card:hover{transform:translateY(-1px);border-color:rgba(123,231,255,.24);box-shadow:0 16px 40px rgba(0,0,0,.42),0 0 22px rgba(45,125,255,.13)}
+    .card>*{position:relative;z-index:2}.cardTop{display:flex;gap:8px;justify-content:space-between;align-items:flex-start}.schoolName{font:900 13px var(--mono);letter-spacing:.06em;text-transform:uppercase;overflow-wrap:anywhere}.cardMeta{font:10px var(--mono);color:rgba(234,240,255,.70)}.pillRow{display:flex;gap:5px;flex-wrap:wrap}.pill{font:9px var(--mono);color:rgba(234,240,255,.78);border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);border-radius:999px;padding:4px 7px;display:inline-flex;align-items:center;gap:6px}
     .pill.hot{border-color:rgba(255,154,61,.34);color:rgba(255,210,160,.96);background:rgba(255,154,61,.08)}.pill.good{border-color:rgba(75,255,211,.24);color:rgba(191,246,239,.94);background:rgba(75,255,211,.07)}.pill.calm{border-color:rgba(123,231,255,.18);color:rgba(123,231,255,.90);background:rgba(45,125,255,.08)}
-    .progress{height:12px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);overflow:hidden}.progress span{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,rgba(75,255,211,.80),rgba(123,231,255,.90),rgba(45,125,255,.74));transition:width .5s ease}
+    .progress{height:9px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);overflow:hidden}.progress span{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,rgba(75,255,211,.80),rgba(123,231,255,.90),rgba(45,125,255,.74));transition:width .5s ease}
     .checks{display:grid;gap:6px}.checkLine{display:flex;justify-content:space-between;gap:10px;font:11px var(--mono);color:rgba(234,240,255,.78)}.checkLine.done{color:rgba(123,231,255,.94)}
     .item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:7px 10px;align-items:start;min-width:0;padding:10px 10px 10px 13px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font:12px var(--mono);color:rgba(234,240,255,.86);position:relative;overflow:hidden}.item input[type=checkbox]{width:18px;height:18px;margin-top:2px;accent-color:var(--cyan)}.item.done{opacity:.68}.item.done .txt{text-decoration:line-through;color:rgba(183,194,230,.76)}.txt{line-height:1.32;overflow-wrap:anywhere}.itemMeta{grid-column:2/4;display:flex;gap:6px;flex-wrap:wrap}.miniBtn{border:0;cursor:pointer;min-width:0;padding:5px 8px;border-radius:999px;color:rgba(234,240,255,.78);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);font:900 10px var(--mono)}
     .completionBurst{--burstColor:var(--cyan);position:fixed;z-index:140;pointer-events:none;border-radius:18px;border:1px solid color-mix(in srgb,var(--burstColor) 44%,transparent);background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--burstColor) 16%,transparent),transparent 62%);box-shadow:0 0 22px color-mix(in srgb,var(--burstColor) 22%,transparent);animation:holoSoftPulse .9s ease-out both;mix-blend-mode:screen}
@@ -80,7 +80,7 @@
     .quickStrip{display:grid;grid-template-columns:1fr;gap:8px}.quickStrip .item{cursor:pointer}
     .overallProgress{display:grid;gap:8px}.overallProgress .progress{height:16px}.sortGrid{display:flex;gap:8px;flex-wrap:wrap}
     .sortBtn.on,.toggleBtn.on{color:#07101f;background:linear-gradient(180deg,rgba(123,231,255,.96),rgba(45,125,255,.92))}
-    .cardActions{display:flex;gap:7px;flex-wrap:wrap}.cardActions .btn{padding:7px 9px;font-size:10px}
+    .cardActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.cardActions .btn{padding:7px 7px;font-size:9px}
     .checkItem{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 9px;border-radius:12px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.035);font:11px var(--mono)}
     .checkItem input{width:17px;height:17px;accent-color:var(--cyan)}.checkItem.done{opacity:.68}.checkItem.done span{text-decoration:line-through;color:rgba(183,194,230,.76)}
     .schoolDetails{display:grid;gap:8px}.schoolDetails.hidden{display:none}.noteBlock{font:12px var(--mono);line-height:1.45;color:rgba(234,240,255,.70);padding:9px;border-radius:12px;background:rgba(7,11,26,.22);border:1px solid rgba(255,255,255,.08)}
@@ -264,7 +264,7 @@
       search: '',
       schoolSort: 'deadline',
       taskFilter: 'open',
-      showSchoolDetails: true,
+      expandedSchools: {},
       showSchoolNotes: true,
       showCompletedChecklist: true,
       autosaveTimer: null,
@@ -491,7 +491,14 @@
             data: payload,
             saved_at: payload.savedAt
           }, { onConflict: 'family_id,kind' });
-          if (error) throw error;
+          if (error) {
+            if (isMissingSnapshotError(error)) {
+              $('saveText').textContent = 'Run Step 3 for snapshots';
+              if (!quiet) flash('Run Step 3 SQL to enable Save/Load snapshots.');
+              return;
+            }
+            throw error;
+          }
         }
         state.lastSaveKind = kind;
         setSaving('saved');
@@ -520,7 +527,13 @@
             .eq('family_id', state.familyId)
             .eq('kind', kind)
             .maybeSingle();
-          if (error) throw error;
+          if (error) {
+            if (isMissingSnapshotError(error)) {
+              flash('Run Step 3 SQL before loading snapshots.');
+              return;
+            }
+            throw error;
+          }
           payload = data && data.data;
         }
         if (!payload) {
@@ -621,9 +634,9 @@
       $('schoolsView').innerHTML = schools.length ? `
         <section class="panel">
           <div class="taskTools">
-            <button class="btn ghost toggleBtn ${state.showSchoolDetails ? 'on' : ''}" onclick="toggleSchoolView('details')">Checklist</button>
             <button class="btn ghost toggleBtn ${state.showSchoolNotes ? 'on' : ''}" onclick="toggleSchoolView('notes')">Notes</button>
             <button class="btn ghost toggleBtn ${state.showCompletedChecklist ? 'on' : ''}" onclick="toggleSchoolView('completed')">Completed Items</button>
+            <button class="btn ghost" onclick="collapseAllSchools()">Collapse All</button>
           </div>
         </section>
         <div class="grid">${schools.map(renderSchoolCard).join('')}</div>
@@ -653,18 +666,20 @@
       const visibleChecklist = state.showCompletedChecklist ? checklist : checklist.filter(item => !item.done);
       const linkedTasks = state.tasks.filter(task => task.school_id === school.id && !task.done).slice(0, 4);
       const needsAction = !school.submitted && school.status !== 'Submitted' && !String(school.next_action || '').trim();
+      const expanded = !!state.expandedSchools[school.id];
       return `
         <article class="card">
           <div class="cardTop"><div><div class="schoolName">${escapeHtml(school.school)}</div><div class="cardMeta">${escapeHtml(school.plan || 'Plan TBD')} | ${school.deadline ? escapeHtml(formatDate(school.deadline)) : 'No deadline'}</div></div><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span></div>
           <div class="progress" aria-label="Completion ${progress}%"><span style="width:${progress}%"></span></div>
           <div class="cardActions">
             <button class="btn primary" onclick="openSchool('${escapeAttr(school.id)}')">Edit School</button>
+            <button class="btn ghost" onclick="toggleSchoolDetails('${escapeAttr(school.id)}')">${expanded ? 'Hide List' : 'Show List'}</button>
             <button class="btn ghost" onclick="openTaskForSchool('${escapeAttr(school.id)}')">Add Task</button>
             <button class="btn ghost" onclick="markSchoolSubmitted('${escapeAttr(school.id)}')">Mark Submitted</button>
           </div>
           <div class="pillRow"><span class="pill calm">${escapeHtml(school.status)}</span>${school.theater ? `<span class="pill good">Theater</span>` : ''}<span class="pill">${escapeHtml(school.prescreen || 'Not Required')}</span>${needsAction ? `<span class="pill hot">Needs next action</span>` : ''}</div>
           <p class="hint">${school.submitted || school.status === 'Submitted' ? 'Submitted. Follow-up items can live as tasks.' : school.next_action ? `Next: ${escapeHtml(school.next_action)}` : 'Needs next action.'}</p>
-          <div class="schoolDetails ${state.showSchoolDetails ? '' : 'hidden'}">
+          <div class="schoolDetails ${expanded ? '' : 'hidden'}">
             ${visibleChecklist.length ? visibleChecklist.map(item => renderChecklistItem(school.id, item)).join('') : `<p class="hint">Completed checklist hidden.</p>`}
             ${linkedTasks.length ? `<div class="hint">Open tasks</div>${linkedTasks.map(renderTaskItem).join('')}` : ''}
           </div>
@@ -922,9 +937,18 @@
     }
 
     function toggleSchoolView(kind) {
-      if (kind === 'details') state.showSchoolDetails = !state.showSchoolDetails;
       if (kind === 'notes') state.showSchoolNotes = !state.showSchoolNotes;
       if (kind === 'completed') state.showCompletedChecklist = !state.showCompletedChecklist;
+      renderSchools();
+    }
+
+    function toggleSchoolDetails(schoolId) {
+      state.expandedSchools[schoolId] = !state.expandedSchools[schoolId];
+      renderSchools();
+    }
+
+    function collapseAllSchools() {
+      state.expandedSchools = {};
       renderSchools();
     }
 
@@ -1034,6 +1058,10 @@
     function flash(message) { const toast = $('toast'); toast.textContent = message; toast.classList.add('on'); clearTimeout(flash.timer); flash.timer = setTimeout(() => toast.classList.remove('on'), 2300); }
     function showError(error) { flash(messageOf(error)); }
     function messageOf(error) { return String(error && error.message ? error.message : error || 'Something went wrong.'); }
+    function isMissingSnapshotError(error) {
+      const text = messageOf(error).toLowerCase();
+      return text.includes('snapshots') && (text.includes('not exist') || text.includes('could not find') || text.includes('schema cache'));
+    }
     function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
     function escapeAttr(value) { return escapeHtml(value).replace(/`/g, '&#96;'); }
     function cssEscape(value) { return window.CSS && CSS.escape ? CSS.escape(value) : String(value).replace(/[^a-zA-Z0-9_-]/g, '\\$&'); }
