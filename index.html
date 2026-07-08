@@ -168,7 +168,6 @@
         <div><label for="schoolDeadline">Deadline</label><input type="date" id="schoolDeadline"></div>
         <div><label for="schoolTheater">Theater</label><select id="schoolTheater"><option value="false">No</option><option value="true">Yes</option></select></div>
         <div><label for="schoolPrescreen">Prescreen</label><select id="schoolPrescreen"></select></div>
-        <div><label for="schoolOwner">Owner</label><select id="schoolOwner"></select></div>
         <div class="wide"><label for="schoolNext">Next Action</label><input id="schoolNext" placeholder="Finish supplement"></div>
       </div>
       <details class="moreDetails">
@@ -220,8 +219,8 @@
   </div>
 
   <script>
-    const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
-    const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
+    const SUPABASE_URL = "https://plqlivioeyuosevigqgu.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_Fb0HTGI04IytCmxt_NiIwA_a3e2BZwP";
     const DEFAULT_FAMILY_ID = "college-tracker";
 
     const OPTIONS = {
@@ -233,7 +232,7 @@
     };
 
     const $ = id => document.getElementById(id);
-    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let db = null;
     const state = {
       view: localStorage.getItem('act:view') || 'dashboard',
       search: '',
@@ -256,6 +255,12 @@
         $('loginForm').hidden = true;
         return;
       }
+      if (!window.supabase) {
+        $('authCopy').textContent = 'Supabase could not load in this browser. Use Explore Mode, or try again after the page can reach the Supabase script.';
+        $('loginForm').hidden = true;
+        return;
+      }
+      db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       const { data } = await db.auth.getSession();
       if (data.session) await enterApp();
       db.auth.onAuthStateChange((_event, session) => { if (session) enterApp(); });
@@ -441,7 +446,6 @@
       fillSelect('schoolStatus', OPTIONS.statuses);
       fillSelect('schoolPlan', OPTIONS.plans);
       fillSelect('schoolPrescreen', OPTIONS.prescreens);
-      fillSelect('schoolOwner', OPTIONS.owners);
       fillSelect('taskOwner', OPTIONS.owners);
       fillSelect('taskCategory', OPTIONS.categories);
       refreshTaskSchoolSelect();
@@ -558,7 +562,6 @@
       $('schoolRecommendationsDone').checked = !!school.recommendations_done;
       $('schoolSubmitted').checked = !!school.submitted;
       $('schoolNext').value = school.next_action || '';
-      $('schoolOwner').value = school.owner || 'Unassigned';
       $('schoolNotes').value = school.notes || '';
       $('deleteSchoolBtn').style.visibility = id ? 'visible' : 'hidden';
       openOverlay('schoolOverlay'); setTimeout(() => $('schoolName').focus(), 80);
@@ -597,7 +600,7 @@
         recommendations_done: $('schoolRecommendationsDone').checked,
         submitted: $('schoolSubmitted').checked,
         next_action: $('schoolNext').value,
-        owner: $('schoolOwner').value,
+        owner: id ? (state.schools.find(item => item.id === id)?.owner || 'Unassigned') : 'Unassigned',
         notes: $('schoolNotes').value
       });
       try {
