@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="app-version" content="asher-college-tracker-supabase-v1">
-  <title>Asher College Tracker</title>
+  <meta name="app-version" content="college-tracker-supabase-v1">
+  <title>College Tracker</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root{
@@ -86,8 +86,9 @@
   <section class="accessWrap" id="authGate">
     <div class="accessPanel">
       <div class="kicker">PRIVATE FAMILY TRACKER</div>
-      <h1>Asher College Tracker</h1>
-      <p id="authCopy">Sign in with an approved family email. Up to five Supabase logins can share the same tracker.</p>
+      <h1>College Tracker</h1>
+      <p id="authCopy">Sign in with an approved family email, or use Explore Mode to poke around before Supabase is connected.</p>
+      <button class="btn primary" type="button" id="exploreBtn">Explore Mode</button>
       <form id="loginForm">
         <label for="loginEmail">Email</label>
         <input id="loginEmail" type="email" required placeholder="name@example.com" autocomplete="email">
@@ -100,7 +101,7 @@
   <header class="topbar" id="topbar" hidden>
     <div class="topInner">
       <div class="brand">
-        <div class="title">Asher College Tracker</div>
+        <div class="title">College Tracker</div>
         <div class="subtle" id="cycleLabel">Shared family cockpit</div>
       </div>
       <nav class="navTabs" aria-label="Primary views">
@@ -221,7 +222,7 @@
   <script>
     const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
     const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
-    const DEFAULT_FAMILY_ID = "asher-college-tracker";
+    const DEFAULT_FAMILY_ID = "college-tracker";
 
     const OPTIONS = {
       statuses: ['Researching','Considering','Applying','In Progress','Ready','Submitted','Accepted','Waitlisted','Denied','Withdrawn'],
@@ -251,7 +252,8 @@
       fillSelects();
       startAtmosphere();
       if (!configured()) {
-        enterDemoApp();
+        $('authCopy').textContent = 'Supabase is not connected yet. Use Explore Mode to test the tracker with local sample data.';
+        $('loginForm').hidden = true;
         return;
       }
       const { data } = await db.auth.getSession();
@@ -269,14 +271,15 @@
       $('authGate').hidden = true;
       $('topbar').hidden = false;
       $('appShell').hidden = false;
-      $('signedInLabel').textContent = 'Demo mode | Supabase not connected';
-      $('cycleLabel').textContent = 'Asher | Local demo data';
+      $('signedInLabel').textContent = 'Explore mode | Local sample data';
+      $('cycleLabel').textContent = 'College Tracker | Explore mode';
       setSaving('saved');
       setView(state.view);
-      flash('Demo mode: add your Supabase URL and anon key before using real data.');
+      flash('Explore mode uses local sample data. Connect Supabase for shared family data.');
     }
 
     function bindEvents() {
+      $('exploreBtn').addEventListener('click', enterDemoApp);
       $('loginForm').addEventListener('submit', async event => {
         event.preventDefault();
         try {
