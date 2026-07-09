@@ -85,6 +85,19 @@
     .checkItem input{width:17px;height:17px;accent-color:var(--cyan)}.checkItem.done{opacity:.68}.checkItem.done span{text-decoration:line-through;color:rgba(183,194,230,.76)}
     .schoolDetails{display:grid;gap:8px}.schoolDetails.hidden{display:none}.noteBlock{font:12px var(--mono);line-height:1.45;color:rgba(234,240,255,.70);padding:9px;border-radius:12px;background:rgba(7,11,26,.22);border:1px solid rgba(255,255,255,.08)}
     .helpText{font:11px var(--mono);line-height:1.4;color:rgba(234,240,255,.58);margin-top:6px}
+    .landingActions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0;position:relative;z-index:2}.landingActions .btn{min-height:58px;font-size:13px}
+    .loginBox,.familySetup{display:grid;gap:10px;margin-top:14px;position:relative;z-index:2}.familyGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .accessGranted{position:fixed;inset:0;z-index:260;display:grid;place-items:center;background:radial-gradient(520px 280px at 50% 44%,rgba(123,231,255,.22),transparent 70%),rgba(7,11,26,.86);backdrop-filter:blur(12px)}.accessCore{width:min(520px,92vw);padding:28px;border-radius:24px;border:1px solid rgba(123,231,255,.28);background:linear-gradient(180deg,rgba(12,22,56,.88),rgba(10,18,48,.72));box-shadow:0 0 40px rgba(45,125,255,.24),var(--shadow);text-align:center;animation:accessPop 2s ease both}.accessCore h1{font-size:clamp(34px,7vw,68px)}@keyframes accessPop{0%{opacity:0;transform:scale(.92);filter:brightness(.8)}28%{opacity:1;transform:scale(1.02);filter:brightness(1.4)}72%{opacity:1;transform:scale(1);filter:brightness(1.15)}100%{opacity:0;transform:scale(.98);filter:brightness(.85)}}
+    .tourOverlay{position:fixed;inset:0;z-index:250;display:none;align-items:end;justify-content:center;padding:18px;background:linear-gradient(180deg,rgba(7,11,26,.10),rgba(7,11,26,.56));pointer-events:none}.tourOverlay.on{display:flex}.tourCard{pointer-events:auto;width:min(680px,calc(100vw - 24px));border-radius:22px;border:1px solid rgba(123,231,255,.26);background:linear-gradient(180deg,rgba(12,22,56,.96),rgba(10,18,48,.92));box-shadow:var(--shadow),0 0 34px rgba(45,125,255,.20);padding:16px;display:grid;gap:10px;animation:tourRise .35s ease both}.tourCard b{font:900 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(123,231,255,.90)}.tourCard p{margin:0;font:13px var(--mono);line-height:1.5;color:rgba(234,240,255,.78)}.tourActions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}.tourGlow{outline:2px solid rgba(123,231,255,.68)!important;box-shadow:0 0 0 6px rgba(45,125,255,.16),0 0 30px rgba(123,231,255,.26)!important}@keyframes tourRise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    .cardActions .submitTiny{font-size:8px;padding:5px 6px;opacity:.82}
+    .grid .card:nth-child(6n+1){background:linear-gradient(180deg,rgba(16,38,78,.92),rgba(9,21,52,.78))}
+    .grid .card:nth-child(6n+2){background:linear-gradient(180deg,rgba(20,52,66,.90),rgba(9,28,48,.78))}
+    .grid .card:nth-child(6n+3){background:linear-gradient(180deg,rgba(42,30,72,.88),rgba(18,18,48,.78))}
+    .grid .card:nth-child(6n+4){background:linear-gradient(180deg,rgba(48,40,22,.88),rgba(24,22,34,.78))}
+    .grid .card:nth-child(6n+5){background:linear-gradient(180deg,rgba(24,58,48,.88),rgba(10,30,42,.78))}
+    .grid .card:nth-child(6n+6){background:linear-gradient(180deg,rgba(54,28,46,.88),rgba(24,18,42,.78))}
+    .historyLine{font:10px var(--mono);line-height:1.35;color:rgba(234,240,255,.58);padding:7px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(7,11,26,.18)}
+    @media(max-width:640px){.landingActions,.familyGrid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -96,14 +109,36 @@
     <div class="accessPanel">
       <div class="kicker">PRIVATE FAMILY TRACKER</div>
       <h1>College Tracker</h1>
-      <p id="authCopy">Sign in with an approved family email, or use Explore Mode to poke around before Supabase is connected.</p>
-      <button class="btn primary" type="button" id="exploreBtn">Explore Mode</button>
-      <form id="loginForm">
+      <p id="authCopy">Learn the tracker with a guided tour, or enter your family workspace.</p>
+      <div class="landingActions">
+        <button class="btn primary" type="button" id="exploreBtn">Explore</button>
+        <button class="btn primary" type="button" id="enterBtn">Enter</button>
+      </div>
+      <form id="loginForm" class="loginBox" hidden>
         <label for="loginEmail">Email</label>
         <input id="loginEmail" type="email" required placeholder="name@example.com" autocomplete="email">
         <button class="btn primary" type="submit">Send Magic Link</button>
         <p class="hint">No password is stored in this page. Supabase sends the sign-in link.</p>
       </form>
+      <div class="familySetup" id="familySetup" hidden>
+        <p class="hint">This email is signed in but is not attached to a family workspace yet.</p>
+        <div class="familyGrid">
+          <form id="createFamilyForm">
+            <label for="familyName">Create Family Tracker</label>
+            <input id="familyName" placeholder="Hagler Family">
+            <label for="creatorName">Your Display Name</label>
+            <input id="creatorName" placeholder="Ari">
+            <button class="btn primary" type="submit">Create Family</button>
+          </form>
+          <form id="joinFamilyForm">
+            <label for="joinCode">Join Code</label>
+            <input id="joinCode" placeholder="HAGLER-8K42">
+            <label for="joinName">Your Display Name</label>
+            <input id="joinName" placeholder="Asher">
+            <button class="btn primary" type="submit">Join Family</button>
+          </form>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -169,6 +204,7 @@
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="tourOverlay" id="tourOverlay" aria-hidden="true"></div>
 
   <div class="overlay" id="schoolOverlay" aria-hidden="true">
     <form class="modal" id="schoolForm">
@@ -269,6 +305,9 @@
       showCompletedChecklist: true,
       autosaveTimer: null,
       lastSaveKind: '',
+      pendingSession: null,
+      tourIndex: 0,
+      history: [],
       familyId: DEFAULT_FAMILY_ID,
       profile: null,
       demoMode: false,
@@ -282,7 +321,7 @@
       fillSelects();
       startAtmosphere();
       if (!configured()) {
-        $('authCopy').textContent = 'Supabase is not connected yet. Use Explore Mode to test the tracker with local sample data.';
+        $('authCopy').textContent = 'Supabase is not connected yet. Explore still works with local sample data.';
         $('loginForm').hidden = true;
         return;
       }
@@ -293,8 +332,12 @@
       }
       db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       const { data } = await db.auth.getSession();
-      if (data.session) await enterApp();
-      db.auth.onAuthStateChange((_event, session) => { if (session) enterApp(); });
+      state.pendingSession = data.session || null;
+      if (state.pendingSession) $('authCopy').textContent = 'You are signed in. Press Enter to open your family tracker.';
+      db.auth.onAuthStateChange((_event, session) => {
+        state.pendingSession = session || null;
+        if (session) $('authCopy').textContent = 'Sign-in confirmed. Press Enter to open your family tracker.';
+      });
     }
 
     function configured() {
@@ -315,8 +358,141 @@
       flash('Explore mode uses local sample data. Connect Supabase for shared family data.');
     }
 
+    function startGuidedTour() {
+      enterDemoApp();
+      state.tourIndex = 0;
+      setTimeout(showTourStep, 300);
+    }
+
+    const tourSteps = [
+      {
+        title: 'Welcome To College Tracker',
+        body: 'This tour uses fake local data only. You can click around without changing your real family tracker. We will look at the dashboard, add Brandeis University, inspect school checklists, and complete a task.',
+        action: () => setView('dashboard')
+      },
+      {
+        title: 'Dashboard: What Matters Right Now',
+        body: 'The dashboard shows the next deadline, what to do next, open tasks, and overall application progress. It is meant to answer one family question: what needs attention today?',
+        target: 'dashboardView',
+        action: () => setView('dashboard')
+      },
+      {
+        title: 'Adding Brandeis University',
+        body: 'Now we open Add School and type Brandeis University. The application-plan menu explains abbreviations like ED, EA, and RD in plain language.',
+        target: 'schoolOverlay',
+        action: async () => {
+          setView('schools');
+          openSchool();
+          await typeInto('schoolName', 'Brandeis University');
+          $('schoolPlan').value = 'RD';
+          $('schoolDeadline').value = nextDate(55);
+          $('schoolNext').value = 'Draft supplement';
+        }
+      },
+      {
+        title: 'Schools Is The Overview Board',
+        body: 'School cards are compact on purpose. They show progress, deadline, status, and the next action. Use Edit School for details and Show List only when you want the checklist.',
+        target: 'schoolsView',
+        action: () => {
+          closeOverlay('schoolOverlay');
+          upsertById(state.schools, fromSchoolRow({
+            id: 'tour-brandeis',
+            family_id: state.familyId,
+            school: 'Brandeis University',
+            status: 'Considering',
+            plan: 'RD',
+            deadline: nextDate(55),
+            deadline_time: '',
+            deadline_timezone: 'America/Los_Angeles',
+            theater: false,
+            prescreen: 'Not Required',
+            application_done: false,
+            essay_done: false,
+            recommendations_done: false,
+            submitted: false,
+            next_action: 'Draft supplement',
+            owner: 'Shared',
+            notes: 'Tour example.',
+            checklist: defaultChecklist(false)
+          }));
+          render();
+        }
+      },
+      {
+        title: 'Checklist And Progress',
+        body: 'Click Show List on a school to reveal checklist items. Checking items updates that school’s progress bar. You can hide completed items to keep the page calm.',
+        target: 'schoolsView',
+        action: () => {
+          state.expandedSchools['tour-brandeis'] = true;
+          renderSchools();
+        }
+      },
+      {
+        title: 'Tasks Are Follow-Up',
+        body: 'If something needs a person and a due date, make it a task. Tasks can be tied to a school, assigned to someone, and marked done.',
+        target: 'tasksView',
+        action: () => setView('tasks')
+      },
+      {
+        title: 'Save And Load',
+        body: 'The tracker autosaves every ten seconds. You can also press Save to make a purposeful save. Load asks whether to use the latest autosave or last manual save.',
+        target: 'manualSaveBtn',
+        action: () => setView('dashboard')
+      },
+      {
+        title: 'Ready',
+        body: 'That is the rhythm: add schools, set next actions, use school checklists for progress, and use tasks for things someone needs to do.',
+        action: () => {}
+      }
+    ];
+
+    async function showTourStep() {
+      clearTourGlow();
+      const step = tourSteps[state.tourIndex];
+      if (!step) return endTour();
+      await step.action?.();
+      if (step.target && $(step.target)) $(step.target).classList.add('tourGlow');
+      $('tourOverlay').classList.add('on');
+      $('tourOverlay').innerHTML = `
+        <div class="tourCard">
+          <b>Step ${state.tourIndex + 1} of ${tourSteps.length}: ${escapeHtml(step.title)}</b>
+          <p>${escapeHtml(step.body)}</p>
+          <div class="tourActions">
+            <button class="btn ghost" onclick="endTour()">End Tour</button>
+            <button class="btn primary" onclick="nextTourStep()">${state.tourIndex === tourSteps.length - 1 ? 'Finish' : 'Next'}</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function nextTourStep() {
+      state.tourIndex += 1;
+      showTourStep();
+    }
+
+    function endTour() {
+      clearTourGlow();
+      $('tourOverlay').classList.remove('on');
+      $('tourOverlay').innerHTML = '';
+    }
+
+    function clearTourGlow() {
+      document.querySelectorAll('.tourGlow').forEach(el => el.classList.remove('tourGlow'));
+    }
+
+    async function typeInto(id, text) {
+      const el = $(id);
+      if (!el) return;
+      el.value = '';
+      for (const char of text) {
+        el.value += char;
+        await new Promise(resolve => setTimeout(resolve, 35));
+      }
+    }
+
     function bindEvents() {
-      $('exploreBtn').addEventListener('click', enterDemoApp);
+      $('exploreBtn').addEventListener('click', startGuidedTour);
+      $('enterBtn').addEventListener('click', handleEnter);
       $('loginForm').addEventListener('submit', async event => {
         event.preventDefault();
         try {
@@ -326,6 +502,8 @@
           flash('Magic link sent. Check that email account.');
         } catch (error) { showError(error); }
       });
+      $('createFamilyForm').addEventListener('submit', createFamilyWorkspace);
+      $('joinFamilyForm').addEventListener('submit', joinFamilyWorkspace);
       document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
       $('searchInput').addEventListener('input', event => { state.search = event.target.value.trim().toLowerCase(); render(); });
       $('sortSelect').addEventListener('change', event => { state.schoolSort = event.target.value; render(); });
@@ -351,6 +529,82 @@
       $('deleteTaskBtn').addEventListener('click', deleteCurrentTask);
     }
 
+    async function handleEnter() {
+      if (!configured() || !window.supabase) {
+        $('loginForm').hidden = true;
+        flash('Supabase is not connected here yet. Use Explore to tour the app.');
+        return;
+      }
+      if (!db) db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const { data } = await db.auth.getSession();
+      state.pendingSession = data.session || state.pendingSession;
+      if (!state.pendingSession) {
+        $('loginForm').hidden = false;
+        $('familySetup').hidden = true;
+        setTimeout(() => $('loginEmail').focus(), 60);
+        return;
+      }
+      await accessGrantedThenEnter();
+    }
+
+    async function accessGrantedThenEnter() {
+      const gate = document.createElement('div');
+      gate.className = 'accessGranted';
+      gate.innerHTML = `<div class="accessCore"><div class="kicker">SECURE SESSION</div><h1>Access Granted</h1><p class="hint">Opening your family tracker...</p></div>`;
+      document.body.appendChild(gate);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      gate.remove();
+      await enterApp();
+    }
+
+    async function createFamilyWorkspace(event) {
+      event.preventDefault();
+      try {
+        const familyName = $('familyName').value.trim();
+        const displayName = $('creatorName').value.trim();
+        if (!familyName || !displayName) throw new Error('Enter a family name and display name.');
+        const joinCode = makeJoinCode(familyName);
+        const { data: userData, error: userError } = await db.auth.getUser();
+        if (userError) throw userError;
+        const email = userData.user.email;
+        const familyId = crypto.randomUUID();
+        let result = await db.from('families').insert({ id: familyId, family_name: familyName, join_code: joinCode, created_by: email }).select().single();
+        if (result.error) throw result.error;
+        result = await db.from('app_members').insert({ family_id: familyId, email, display_name: displayName, role: 'admin' }).select().single();
+        if (result.error) throw result.error;
+        flash(`Family created. Join code: ${joinCode}`);
+        state.pendingSession = (await db.auth.getSession()).data.session;
+        await accessGrantedThenEnter();
+      } catch (error) {
+        showError(new Error(`${messageOf(error)} Run the multi-family Supabase migration if this is your first time using Create/Join.`));
+      }
+    }
+
+    async function joinFamilyWorkspace(event) {
+      event.preventDefault();
+      try {
+        const joinCode = $('joinCode').value.trim().toUpperCase();
+        const displayName = $('joinName').value.trim();
+        if (!joinCode || !displayName) throw new Error('Enter a join code and display name.');
+        const { data: userData, error: userError } = await db.auth.getUser();
+        if (userError) throw userError;
+        const email = userData.user.email;
+        const { data: family, error: familyError } = await db.from('families').select('id, family_name').eq('join_code', joinCode).single();
+        if (familyError) throw new Error('Join code not found.');
+        const { error } = await db.from('app_members').upsert({ family_id: family.id, email, display_name: displayName, role: 'member' }, { onConflict: 'email' });
+        if (error) throw error;
+        flash(`Joined ${family.family_name}`);
+        await accessGrantedThenEnter();
+      } catch (error) {
+        showError(new Error(`${messageOf(error)} Run the multi-family Supabase migration if this is your first time using Create/Join.`));
+      }
+    }
+
+    function makeJoinCode(name) {
+      const prefix = String(name || 'FAMILY').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8) || 'FAMILY';
+      return `${prefix}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+    }
+
     async function enterApp() {
       try {
         setSaving('saving');
@@ -362,7 +616,14 @@
           .select('family_id, display_name, email')
           .ilike('email', email)
           .single();
-        if (memberError) throw new Error('This email is signed in, but it is not on the tracker allowlist.');
+        if (memberError) {
+          $('authGate').hidden = false;
+          $('loginForm').hidden = true;
+          $('familySetup').hidden = false;
+          $('authCopy').textContent = 'You are signed in. Create a family tracker or enter a family join code.';
+          setSaving('saved');
+          return;
+        }
         state.profile = member;
         state.familyId = member.family_id;
         await loadData();
@@ -391,6 +652,10 @@
       if (settingsResult.error) throw settingsResult.error;
       state.schools = schoolsResult.data.map(fromSchoolRow);
       state.tasks = tasksResult.data.map(fromTaskRow);
+      try {
+        const { data: historyData, error: historyError } = await db.from('activity_log').select('*').eq('family_id', state.familyId).order('created_at', { ascending:false }).limit(300);
+        if (!historyError) state.history = historyData || [];
+      } catch {}
       settingsResult.data.forEach(row => { state.settings[row.key] = row.value; });
       $('cycleLabel').textContent = `${state.settings.StudentName || 'Asher'} | ${state.settings.ApplicationCycle || 'College applications'}`;
       refreshTaskSchoolSelect();
@@ -405,36 +670,19 @@
           const parsed = JSON.parse(saved);
           state.schools = (parsed.schools || []).map(fromSchoolRow);
           state.tasks = parsed.tasks || [];
+          state.history = JSON.parse(localStorage.getItem('act:demo-history') || '[]');
           return;
         } catch {}
       }
       const uscId = demoId();
-      const northwesternId = demoId();
+      const uclaId = demoId();
+      const pennId = demoId();
       state.schools = [
-        {
-          id: northwesternId,
-          family_id: state.familyId,
-          school: 'Northwestern',
-          status: 'In Progress',
-          plan: 'ED',
-          deadline: nextDate(18),
-          deadline_time: '',
-          deadline_timezone: 'America/Los_Angeles',
-          theater: true,
-          prescreen: 'Required',
-          application_done: true,
-          essay_done: false,
-          recommendations_done: true,
-          submitted: false,
-          next_action: 'Finish supplement',
-          owner: 'Asher',
-          notes: 'Demo school. Replace once Supabase is connected.'
-        },
         {
           id: uscId,
           family_id: state.familyId,
           school: 'USC',
-          status: 'Applying',
+          status: 'In Progress',
           plan: 'RD',
           deadline: nextDate(42),
           deadline_time: '',
@@ -446,14 +694,52 @@
           recommendations_done: false,
           submitted: false,
           next_action: 'Record monologue',
+          owner: 'Asher',
+          notes: 'Demo: theater program with prescreen requirements.'
+        },
+        {
+          id: uclaId,
+          family_id: state.familyId,
+          school: 'UCLA',
+          status: 'Applying',
+          plan: 'RD',
+          deadline: nextDate(36),
+          deadline_time: '',
+          deadline_timezone: 'America/Los_Angeles',
+          theater: false,
+          prescreen: 'Not Required',
+          application_done: true,
+          essay_done: false,
+          recommendations_done: true,
+          submitted: false,
+          next_action: 'Finish UC responses',
           owner: 'Shared',
           notes: ''
+        },
+        {
+          id: pennId,
+          family_id: state.familyId,
+          school: 'University of Pennsylvania',
+          status: 'Ready',
+          plan: 'ED',
+          deadline: nextDate(16),
+          deadline_time: '',
+          deadline_timezone: 'America/Los_Angeles',
+          theater: false,
+          prescreen: 'Not Required',
+          application_done: true,
+          essay_done: true,
+          recommendations_done: true,
+          submitted: false,
+          next_action: 'Review before submitting',
+          owner: 'Shared',
+          notes: 'Demo: nearly ready, but not submitted yet.'
         }
       ];
       state.tasks = [
-        { id: demoId(), family_id: state.familyId, done: false, task: 'Ask teacher for recommendation', school_id: northwesternId, owner: 'Asher', due_date: nextDate(3), category: 'Recommendation', notes: '' },
+        { id: demoId(), family_id: state.familyId, done: false, task: 'Finish UC personal insight question', school_id: uclaId, owner: 'Asher', due_date: nextDate(3), category: 'Essay', notes: '' },
         { id: demoId(), family_id: state.familyId, done: false, task: 'Record contemporary monologue', school_id: uscId, owner: 'Asher', due_date: nextDate(7), category: 'Theater', notes: '' },
-        { id: demoId(), family_id: state.familyId, done: false, task: 'Submit FAFSA', school_id: null, owner: 'Ari', due_date: nextDate(21), category: 'Financial Aid', notes: '' }
+        { id: demoId(), family_id: state.familyId, done: false, task: 'Final review for Penn', school_id: pennId, owner: 'Ari', due_date: nextDate(10), category: 'Application', notes: '' }
       ];
       state.schools = state.schools.map(fromSchoolRow);
       saveDemoData();
@@ -675,13 +961,14 @@
             <button class="btn primary" onclick="openSchool('${escapeAttr(school.id)}')">Edit School</button>
             <button class="btn ghost" onclick="toggleSchoolDetails('${escapeAttr(school.id)}')">${expanded ? 'Hide List' : 'Show List'}</button>
             <button class="btn ghost" onclick="openTaskForSchool('${escapeAttr(school.id)}')">Add Task</button>
-            <button class="btn ghost" onclick="markSchoolSubmitted('${escapeAttr(school.id)}')">Mark Submitted</button>
+            <button class="btn ghost submitTiny" onclick="markSchoolSubmitted('${escapeAttr(school.id)}')">Mark Submitted</button>
           </div>
           <div class="pillRow"><span class="pill calm">${escapeHtml(school.status)}</span>${school.theater ? `<span class="pill good">Theater</span>` : ''}<span class="pill">${escapeHtml(school.prescreen || 'Not Required')}</span>${needsAction ? `<span class="pill hot">Needs next action</span>` : ''}</div>
           <p class="hint">${school.submitted || school.status === 'Submitted' ? 'Submitted. Follow-up items can live as tasks.' : school.next_action ? `Next: ${escapeHtml(school.next_action)}` : 'Needs next action.'}</p>
           <div class="schoolDetails ${expanded ? '' : 'hidden'}">
             ${visibleChecklist.length ? visibleChecklist.map(item => renderChecklistItem(school.id, item)).join('') : `<p class="hint">Completed checklist hidden.</p>`}
             ${linkedTasks.length ? `<div class="hint">Open tasks</div>${linkedTasks.map(renderTaskItem).join('')}` : ''}
+            ${renderSchoolHistory(school.id)}
           </div>
           ${state.showSchoolNotes && school.notes ? `<div class="noteBlock">${escapeHtml(school.notes)}</div>` : ''}
         </article>
@@ -706,6 +993,17 @@
     }
     function renderChecklistItem(schoolId, item) {
       return `<label class="checkItem ${item.done ? 'done' : ''}"><input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleChecklistItem('${escapeAttr(schoolId)}','${escapeAttr(item.id)}',this.checked)"><span>${escapeHtml(item.label)}</span><button type="button" class="miniBtn" onclick="event.preventDefault(); makeTaskFromChecklist('${escapeAttr(schoolId)}','${escapeAttr(item.id)}')">Task</button></label>`;
+    }
+    function renderSchoolHistory(schoolId) {
+      const rows = state.history.filter(row => row.school_id === schoolId).slice(0, 5);
+      if (!rows.length) return '';
+      return `<div class="hint">Recent updates</div>${rows.map(row => `<div class="historyLine">${escapeHtml(historySentence(row))}</div>`).join('')}`;
+    }
+    function historySentence(row) {
+      const who = row.actor_name || 'Someone';
+      const when = formatDateTime(row.created_at);
+      if (row.action === 'completed') return `Completed by ${who} at ${when}: ${row.detail || 'item'}`;
+      return `${row.detail || 'Updated'} by ${who} at ${when}`;
     }
     function checkLine(label, done) { return `<div class="checkLine ${done ? 'done' : ''}"><span>${escapeHtml(label)}</span><span>${done ? 'Done' : 'Open'}</span></div>`; }
     function emptyState(text, button, action) { return `<section class="empty"><div><div class="kicker">STANDBY</div><h1>${escapeHtml(text)}</h1><button class="btn primary" onclick="${action}">${escapeHtml(button)}</button></div></section>`; }
@@ -774,6 +1072,7 @@
         if (state.demoMode) {
           const saved = fromSchoolRow({ id: id || demoId(), ...row });
           upsertById(state.schools, saved);
+          await logActivity({ schoolId: saved.id, action:'updated', detail: id ? 'Edited school details' : 'Added school' });
           saveDemoData();
           refreshTaskSchoolSelect(); closeOverlay('schoolOverlay'); setSaving('saved'); flash('Demo school saved'); render();
           return;
@@ -783,6 +1082,7 @@
         const { data, error } = await query;
         if (error) throw error;
         upsertById(state.schools, fromSchoolRow(data));
+        await logActivity({ schoolId: data.id, action:'updated', detail: id ? 'Edited school details' : 'Added school' });
         refreshTaskSchoolSelect(); closeOverlay('schoolOverlay'); setSaving('saved'); flash('School saved'); render();
       } catch (error) { setSaving('error'); showError(error); }
     }
@@ -804,6 +1104,7 @@
         if (state.demoMode) {
           const saved = fromTaskRow({ id: id || demoId(), ...row });
           upsertById(state.tasks, saved);
+          await logActivity({ schoolId: saved.school_id, taskId: saved.id, action:'updated', detail: id ? `Edited task: ${saved.task}` : `Added task: ${saved.task}` });
           saveDemoData();
           closeOverlay('taskOverlay'); setSaving('saved'); flash('Demo task saved'); render();
           return;
@@ -813,6 +1114,7 @@
         const { data, error } = await query;
         if (error) throw error;
         upsertById(state.tasks, fromTaskRow(data));
+        await logActivity({ schoolId: data.school_id, taskId: data.id, action:'updated', detail: id ? `Edited task: ${data.task}` : `Added task: ${data.task}` });
         closeOverlay('taskOverlay'); setSaving('saved'); flash('Task saved'); render();
       } catch (error) { setSaving('error'); showError(error); }
     }
@@ -864,6 +1166,7 @@
       if (row && done) sparkRect(row.getBoundingClientRect());
       try {
         if (state.demoMode) {
+          if (done) await logActivity({ schoolId: task.school_id, taskId: task.id, action:'completed', detail: task.task });
           saveDemoData();
           setSaving('saved');
           render();
@@ -873,6 +1176,7 @@
         const { data, error } = await db.from('tasks').update({ done }).eq('id', id).eq('family_id', state.familyId).select().single();
         if (error) throw error;
         upsertById(state.tasks, fromTaskRow(data));
+        if (done) await logActivity({ schoolId: data.school_id, taskId: data.id, action:'completed', detail: data.task });
         setSaving('saved'); render();
       } catch (error) { task.done = previous; setSaving('error'); render(); showError(error); }
     }
@@ -910,6 +1214,28 @@
       if (!quiet) flash('School updated');
     }
 
+    async function logActivity({ schoolId = null, taskId = null, action = 'updated', detail = '' }) {
+      const row = {
+        id: demoId(),
+        family_id: state.familyId,
+        school_id: schoolId,
+        task_id: taskId,
+        action,
+        detail,
+        actor_email: state.profile?.email || 'explore@example.com',
+        actor_name: state.profile?.display_name || 'Explore User',
+        created_at: new Date().toISOString()
+      };
+      state.history.unshift(row);
+      if (state.demoMode) {
+        localStorage.setItem('act:demo-history', JSON.stringify(state.history.slice(0, 300)));
+        return;
+      }
+      try {
+        await db.from('activity_log').insert(row);
+      } catch {}
+    }
+
     async function toggleChecklistItem(schoolId, itemId, done) {
       const school = state.schools.find(item => item.id === schoolId);
       if (!school) return;
@@ -917,6 +1243,8 @@
       school.checklist = checklist;
       syncSchoolFlagsFromChecklist(school);
       try {
+        const item = checklist.find(entry => entry.id === itemId);
+        if (done) await logActivity({ schoolId, action:'completed', detail: item?.label || 'Checklist item' });
         await saveSchoolObject(school, true);
         if (done) sparkRect(document.querySelector(`[data-task-id="${cssEscape(itemId)}"]`)?.getBoundingClientRect?.());
       } catch (error) {
@@ -965,6 +1293,7 @@
       school.next_action = '';
       school.checklist = normalizedChecklist(school).map(item => item.label.toLowerCase().includes('submit application') ? { ...item, done: true } : item);
       try {
+        await logActivity({ schoolId, action:'completed', detail:'Marked application submitted' });
         await saveSchoolObject(school);
       } catch (error) {
         showError(error);
@@ -1047,6 +1376,12 @@
     function parseLocalDate(dateText) { const parts = String(dateText).split('-').map(Number); return new Date(parts[0], parts[1] - 1, parts[2]); }
     function startOfToday() { const now = new Date(); return new Date(now.getFullYear(), now.getMonth(), now.getDate()); }
     function formatDate(dateText) { return dateText ? parseLocalDate(dateText).toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' }) : ''; }
+    function formatDateTime(value) {
+      const date = value ? new Date(value) : new Date();
+      const time = date.toLocaleTimeString(undefined, { hour:'numeric', minute:'2-digit' });
+      const day = date.toLocaleDateString(undefined, { month:'long', day:'numeric' });
+      return `${time} on ${day}`;
+    }
     function upsertById(list, item) { const index = list.findIndex(existing => existing.id === item.id); if (index === -1) list.push(item); else list.splice(index, 1, item); }
     function setSaving(mode) {
       const light = $('saveLight');
