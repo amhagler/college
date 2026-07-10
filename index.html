@@ -895,7 +895,7 @@
       }
       if (!state.familyMeta && state.familyId) await loadFamilyMeta();
       if (!state.familyMeta || !state.familyMeta.join_code) {
-        flash('Family Code not loaded. Run Step 4 SQL if Create/Join is not enabled.');
+        flash('Family Code not loaded. Run Step 4 SQL, or Step 7 if this tracker was created before Family Codes.');
         return;
       }
       renderFamilyTools();
