@@ -95,7 +95,7 @@
     .landingActions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0;position:relative;z-index:2}.landingActions .btn{min-height:58px;font-size:13px}
     .loginBox,.familySetup{display:grid;gap:10px;margin-top:14px;position:relative;z-index:2}.familyGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .accessGranted{position:fixed;inset:0;z-index:260;display:grid;place-items:center;background:radial-gradient(520px 280px at 50% 44%,rgba(123,231,255,.22),transparent 70%),rgba(7,11,26,.86);backdrop-filter:blur(12px)}.accessCore{width:min(520px,92vw);padding:28px;border-radius:24px;border:1px solid rgba(123,231,255,.28);background:linear-gradient(180deg,rgba(12,22,56,.88),rgba(10,18,48,.72));box-shadow:0 0 40px rgba(45,125,255,.24),var(--shadow);text-align:center;animation:accessPop 2s ease both}.accessCore h1{font-size:clamp(34px,7vw,68px)}@keyframes accessPop{0%{opacity:0;transform:scale(.92);filter:brightness(.8)}28%{opacity:1;transform:scale(1.02);filter:brightness(1.4)}72%{opacity:1;transform:scale(1);filter:brightness(1.15)}100%{opacity:0;transform:scale(.98);filter:brightness(.85)}}
-    .tourOverlay{position:fixed;inset:0;z-index:250;display:none;align-items:end;justify-content:center;padding:18px;background:linear-gradient(180deg,rgba(7,11,26,.10),rgba(7,11,26,.56));pointer-events:none}.tourOverlay.on{display:flex}.tourCard{pointer-events:auto;width:min(680px,calc(100vw - 24px));border-radius:22px;border:1px solid rgba(123,231,255,.26);background:linear-gradient(180deg,rgba(12,22,56,.96),rgba(10,18,48,.92));box-shadow:var(--shadow),0 0 34px rgba(45,125,255,.20);padding:16px;display:grid;gap:10px;animation:tourRise .35s ease both}.tourCard b{font:900 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(123,231,255,.90)}.tourCard p{margin:0;font:13px var(--mono);line-height:1.5;color:rgba(234,240,255,.78)}.tourActions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}.tourGlow{outline:2px solid rgba(123,231,255,.68)!important;box-shadow:0 0 0 6px rgba(45,125,255,.16),0 0 30px rgba(123,231,255,.26)!important}@keyframes tourRise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    .tourOverlay{position:fixed;inset:0;z-index:250;display:none;align-items:end;justify-content:center;padding:18px;background:linear-gradient(180deg,rgba(7,11,26,.10),rgba(7,11,26,.56));pointer-events:none}.tourOverlay.on{display:flex}.tourCard{pointer-events:auto;width:min(680px,calc(100vw - 24px));border-radius:22px;border:1px solid rgba(123,231,255,.26);background:linear-gradient(180deg,rgba(12,22,56,.96),rgba(10,18,48,.92));box-shadow:var(--shadow),0 0 34px rgba(45,125,255,.20);padding:16px;display:grid;gap:10px;animation:tourRise .35s ease both}.tourCard b{font:900 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(123,231,255,.90)}.tourCard p{margin:0;font:13px var(--mono);line-height:1.5;color:rgba(234,240,255,.78)}.tourActions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}.tourActions .btn:disabled{opacity:.42;cursor:not-allowed;filter:saturate(.55)}.tourGlow{outline:2px solid rgba(123,231,255,.68)!important;box-shadow:0 0 0 6px rgba(45,125,255,.16),0 0 30px rgba(123,231,255,.26)!important}@keyframes tourRise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
     .cardActions .submitTiny{font-size:8px;padding:5px 6px;opacity:.82}
     .grid .card:nth-child(6n+1){background:linear-gradient(180deg,rgba(16,38,78,.92),rgba(9,21,52,.78))}
     .grid .card:nth-child(6n+2){background:linear-gradient(180deg,rgba(20,52,66,.90),rgba(9,28,48,.78))}
@@ -380,32 +380,34 @@
 
     const tourSteps = [
       {
-        title: 'Welcome To College Tracker',
-        body: 'This tour uses fake local data only. You can click around without changing your real family tracker. We will look at the dashboard, add Brandeis University, inspect school checklists, and complete a task.',
-        action: () => setView('dashboard')
+        title: 'Counselor Preview',
+        body: 'This tour uses fake sample data only. It shows how a family could keep applications, deadlines, majors, prescreens, and follow-up tasks in one shared place.',
+        action: () => { closeOverlay('schoolOverlay'); closeOverlay('taskOverlay'); setView('dashboard'); }
       },
       {
-        title: 'Dashboard: What Matters Right Now',
-        body: 'The dashboard shows the next deadline, what to do next, open tasks, and overall application progress. It is meant to answer one family question: what needs attention today?',
+        title: 'Dashboard: Triage View',
+        body: 'The dashboard is the quick family check: next deadline, recommended next actions, open tasks, and overall submission progress. The goal is to reduce confusion before anything becomes urgent.',
         target: 'dashboardView',
         action: () => setView('dashboard')
       },
       {
-        title: 'Adding Brandeis University',
-        body: 'Now we open Add School and type Brandeis University. The application-plan menu explains abbreviations like ED, EA, and RD in plain language.',
+        title: 'Adding A School',
+        body: 'A school record captures application plan, deadline, intended major, prescreen status, and next action. Prescreen controls prescreen checklist work; there is no separate theatre toggle.',
         target: 'schoolOverlay',
         action: async () => {
           setView('schools');
           openSchool();
           await typeInto('schoolName', 'Brandeis University');
+          $('schoolMajor').value = 'Theatre';
           $('schoolPlan').value = 'RD';
+          $('schoolPrescreen').value = 'Required';
           $('schoolDeadline').value = nextDate(55);
           $('schoolNext').value = 'Draft supplement';
         }
       },
       {
-        title: 'Schools Is The Overview Board',
-        body: 'School cards are compact on purpose. They show progress, deadline, status, and the next action. Use Edit School for details and Show List only when you want the checklist.',
+        title: 'Schools: Compact Overview',
+        body: 'The Schools page is designed as an overview board. Each card shows deadline, plan, major, status, progress, and next action without forcing a long form every time.',
         target: 'schoolsView',
         action: () => {
           closeOverlay('schoolOverlay');
@@ -419,8 +421,8 @@
             deadline: nextDate(55),
             deadline_time: '',
             deadline_timezone: 'America/Los_Angeles',
-            theater: false,
-            prescreen: 'Not Required',
+            theater: true,
+            prescreen: 'Required',
             application_done: false,
             essay_done: false,
             recommendations_done: false,
@@ -428,36 +430,49 @@
             next_action: 'Draft supplement',
             owner: 'Shared',
             notes: 'Tour example.',
-            checklist: defaultChecklist(false)
+            checklist: defaultChecklist(true)
           }));
-          render();
+          setView('schools');
         }
       },
       {
-        title: 'Checklist And Progress',
-        body: 'Click Show List on a school to reveal checklist items. Checking items updates that school’s progress bar. You can hide completed items to keep the page calm.',
+        title: 'Checklist And Prescreens',
+        body: 'Show List reveals the school checklist. If Prescreen is required, prescreen work appears there. Checking items grays them as done and updates progress without deleting them.',
         target: 'schoolsView',
         action: () => {
           state.expandedSchools['tour-brandeis'] = true;
+          setView('schools');
           renderSchools();
         }
       },
       {
-        title: 'Tasks Are Follow-Up',
-        body: 'If something needs a person and a due date, make it a task. Tasks can be tied to a school, assigned to someone, and marked done.',
+        title: 'Tasks: Assigned Follow-Up',
+        body: 'Tasks are for anything with an owner or due date: essays, recommendations, forms, visits, or reminders. Completed tasks stay visible in the Completed filter and can be unchecked if needed.',
         target: 'tasksView',
         action: () => setView('tasks')
       },
       {
-        title: 'Save And Load',
-        body: 'The tracker autosaves every ten seconds. You can also press Save to make a purposeful save. Load asks whether to use the latest autosave or last manual save.',
+        title: 'Spreadsheet: Counselor-Friendly Scan',
+        body: 'The Spreadsheet page gives a readable sortable overview. It can reorganize by school, major, deadline, or decision category, and clicking a cell jumps back to the relevant school or task list.',
+        target: 'spreadsheetView',
+        action: () => setView('spreadsheet')
+      },
+      {
+        title: 'Shared Family State',
+        body: 'With Supabase connected, the same family tracker can be used across devices. Save creates a purposeful snapshot, Load can recover a saved state, and autosave protects everyday edits.',
         target: 'manualSaveBtn',
         action: () => setView('dashboard')
       },
       {
-        title: 'Ready',
-        body: 'That is the rhythm: add schools, set next actions, use school checklists for progress, and use tasks for things someone needs to do.',
-        action: () => {}
+        title: 'Accessibility And Readability',
+        body: 'The View button toggles larger text for users who need a more readable interface. The design stays compact, but the app can become easier to scan on laptops, tablets, or phones.',
+        target: 'visibilityBtn',
+        action: () => setView('dashboard')
+      },
+      {
+        title: 'What We Are Asking You To Evaluate',
+        body: 'The core question is whether this matches how families and students actually manage applications: deadlines, majors, prescreens, tasks, and shared accountability without becoming another overwhelming portal.',
+        action: () => setView('dashboard')
       }
     ];
 
@@ -474,6 +489,7 @@
           <p>${escapeHtml(step.body)}</p>
           <div class="tourActions">
             <button class="btn ghost" onclick="endTour()">End Tour</button>
+            <button class="btn ghost" onclick="previousTourStep()" ${state.tourIndex === 0 ? 'disabled' : ''}>Previous</button>
             <button class="btn primary" onclick="nextTourStep()">${state.tourIndex === tourSteps.length - 1 ? 'Finish' : 'Next'}</button>
           </div>
         </div>
@@ -482,6 +498,11 @@
 
     function nextTourStep() {
       state.tourIndex += 1;
+      showTourStep();
+    }
+
+    function previousTourStep() {
+      state.tourIndex = Math.max(0, state.tourIndex - 1);
       showTourStep();
     }
 
