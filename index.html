@@ -135,14 +135,14 @@
             <label for="familyName">Create Family Tracker</label>
             <input id="familyName" placeholder="Hagler Family">
             <label for="creatorName">Your Display Name</label>
-            <input id="creatorName" placeholder="Ari">
+            <input id="creatorName" placeholder="Dad">
             <button class="btn primary" type="submit">Create Family</button>
           </form>
           <form id="joinFamilyForm">
             <label for="joinCode">Join Code</label>
             <input id="joinCode" placeholder="HAGLER-8K42">
             <label for="joinName">Your Display Name</label>
-            <input id="joinName" placeholder="Asher">
+            <input id="joinName" placeholder="Student">
             <button class="btn primary" type="submit">Join Family</button>
           </form>
         </div>
@@ -226,7 +226,7 @@
       <input type="hidden" id="schoolId">
       <div class="formGrid">
         <div class="wide"><label for="schoolName">School Name</label><input id="schoolName" required placeholder="Northwestern"></div>
-        <div><label for="schoolMajor">Major</label><input id="schoolMajor" placeholder="Theatre"></div>
+        <div><label for="schoolMajor">Major</label><input id="schoolMajor" placeholder="Intended major"></div>
         <div><label for="schoolStatus">Status</label><select id="schoolStatus"></select></div>
         <div><label for="schoolPlan">Plan</label><select id="schoolPlan"></select><div class="helpText">ED means binding Early Decision. EA means non-binding Early Action. RD means Regular Decision.</div></div>
         <div><label for="schoolDeadline">Deadline</label><input type="date" id="schoolDeadline"></div>
@@ -299,7 +299,7 @@
         Priority:'Priority — earlier priority deadline',
         Other:'Other — custom or unusual plan'
       },
-      owners: ['Ari','Elana','Asher','Shared','Unassigned'],
+      owners: ['Dad','Mom','Student','Shared','Unassigned'],
       prescreens: ['Not Required','Required','Submitted','Passed','Not Advanced'],
       categories: ['Application','Essay','Recommendation','Theater','Financial Aid','Visit','Research','Other']
     };
@@ -327,7 +327,7 @@
       demoMode: false,
       schools: [],
       tasks: [],
-      settings: { StudentName:'Asher', ApplicationCycle:'College applications', Timezone:'America/Los_Angeles' }
+      settings: { StudentName:'Student', ApplicationCycle:'College applications', Timezone:'America/Los_Angeles' }
     };
 
     async function boot() {
@@ -392,15 +392,15 @@
       },
       {
         title: 'Adding A School',
-        body: 'A school record captures application plan, deadline, intended major, prescreen status, and next action. Prescreen controls prescreen checklist work; there is no separate theatre toggle.',
+        body: 'A school record captures application plan, deadline, intended major, prescreen status, and next action. Prescreen controls any extra checklist work without adding another separate setup toggle.',
         target: 'schoolOverlay',
         action: async () => {
           setView('schools');
           openSchool();
           await typeInto('schoolName', 'Brandeis University');
-          $('schoolMajor').value = 'Theatre';
+          $('schoolMajor').value = 'Biology';
           $('schoolPlan').value = 'RD';
-          $('schoolPrescreen').value = 'Required';
+          $('schoolPrescreen').value = 'Not Required';
           $('schoolDeadline').value = nextDate(55);
           $('schoolNext').value = 'Draft supplement';
         }
@@ -415,14 +415,13 @@
             id: 'tour-brandeis',
             family_id: state.familyId,
             school: 'Brandeis University',
-            major: 'Theatre',
+            major: 'Biology',
             status: 'Considering',
             plan: 'RD',
             deadline: nextDate(55),
             deadline_time: '',
             deadline_timezone: 'America/Los_Angeles',
-            theater: true,
-            prescreen: 'Required',
+            prescreen: 'Not Required',
             application_done: false,
             essay_done: false,
             recommendations_done: false,
@@ -430,7 +429,7 @@
             next_action: 'Draft supplement',
             owner: 'Shared',
             notes: 'Tour example.',
-            checklist: defaultChecklist(true)
+            checklist: defaultChecklist(false)
           }));
           setView('schools');
         }
@@ -695,7 +694,7 @@
         if (!historyError) state.history = historyData || [];
       } catch {}
       settingsResult.data.forEach(row => { state.settings[row.key] = row.value; });
-      $('cycleLabel').textContent = `${state.settings.StudentName || 'Asher'} | ${state.settings.ApplicationCycle || 'College applications'}`;
+      $('cycleLabel').textContent = `${state.settings.StudentName || 'Student'} | ${state.settings.ApplicationCycle || 'College applications'}`;
       refreshTaskSchoolSelect();
       render();
       startAutosave();
@@ -707,7 +706,7 @@
         try {
           const parsed = JSON.parse(saved);
           state.schools = (parsed.schools || []).map(fromSchoolRow);
-          state.tasks = parsed.tasks || [];
+          state.tasks = (parsed.tasks || []).map(fromTaskRow);
           state.history = JSON.parse(localStorage.getItem('act:demo-history') || '[]');
           return;
         } catch {}
@@ -720,27 +719,27 @@
           id: uscId,
           family_id: state.familyId,
           school: 'USC',
-          major: 'Theatre',
+          major: 'Film',
           status: 'In Progress',
           plan: 'RD',
           deadline: nextDate(42),
           deadline_time: '',
           deadline_timezone: 'America/Los_Angeles',
-          theater: true,
-          prescreen: 'Required',
+          theater: false,
+          prescreen: 'Not Required',
           application_done: false,
           essay_done: false,
           recommendations_done: false,
           submitted: false,
-          next_action: 'Record monologue',
-          owner: 'Asher',
-          notes: 'Demo: theater program with prescreen requirements.'
+          next_action: 'Draft supplement',
+          owner: 'Student',
+          notes: 'Demo: program with several application pieces.'
         },
         {
           id: uclaId,
           family_id: state.familyId,
           school: 'UCLA',
-          major: 'Theater',
+          major: 'Biology',
           status: 'Applying',
           plan: 'RD',
           deadline: nextDate(36),
@@ -778,9 +777,9 @@
         }
       ];
       state.tasks = [
-        { id: demoId(), family_id: state.familyId, done: false, task: 'Finish UC personal insight question', school_id: uclaId, owner: 'Asher', due_date: nextDate(3), category: 'Essay', notes: '' },
-        { id: demoId(), family_id: state.familyId, done: false, task: 'Record contemporary monologue', school_id: uscId, owner: 'Asher', due_date: nextDate(7), category: 'Theater', notes: '' },
-        { id: demoId(), family_id: state.familyId, done: false, task: 'Final review for Penn', school_id: pennId, owner: 'Ari', due_date: nextDate(10), category: 'Application', notes: '' }
+        { id: demoId(), family_id: state.familyId, done: false, task: 'Finish UC personal insight question', school_id: uclaId, owner: 'Student', due_date: nextDate(3), category: 'Essay', notes: '' },
+        { id: demoId(), family_id: state.familyId, done: false, task: 'Draft USC supplement', school_id: uscId, owner: 'Student', due_date: nextDate(7), category: 'Essay', notes: '' },
+        { id: demoId(), family_id: state.familyId, done: false, task: 'Final review for Penn', school_id: pennId, owner: 'Dad', due_date: nextDate(10), category: 'Application', notes: '' }
       ];
       state.schools = state.schools.map(fromSchoolRow);
       saveDemoData();
@@ -971,13 +970,13 @@
     }
 
     function renderTasks() {
-      const filters = ['All Open','Ari','Elana','Asher','Overdue','Completed'];
+      const filters = ['All Open','Dad','Mom','Student','Overdue','Completed'];
       const focusedSchool = state.taskSchoolFocus ? state.schools.find(school => school.id === state.taskSchoolFocus) : null;
       const tasks = sortedTasks().filter(matchesSearchTask).filter(task => {
         if (focusedSchool) return task.school_id === focusedSchool.id;
         if (state.taskFilter === 'completed') return task.done;
         if (state.taskFilter === 'overdue') return !task.done && urgency(task.due_date) === 'overdue';
-        if (['ari','elana','asher'].includes(state.taskFilter)) return !task.done && task.owner.toLowerCase() === state.taskFilter;
+        if (['dad','mom','student'].includes(state.taskFilter)) return !task.done && normalizeOwner(task.owner).toLowerCase() === state.taskFilter;
         return !task.done;
       });
       $('tasksView').innerHTML = `
@@ -1470,6 +1469,21 @@
       return items;
     }
 
+    function normalizeOwner(value) {
+      const text = String(value || '').trim();
+      const key = text.toLowerCase();
+      const map = {
+        ari: 'Dad',
+        dad: 'Dad',
+        elana: 'Mom',
+        mom: 'Mom',
+        asher: 'Student',
+        student: 'Student',
+        shared: 'Shared',
+        unassigned: 'Unassigned'
+      };
+      return map[key] || text || 'Unassigned';
+    }
     function cleanSchoolRow(row) {
       row.school = row.school.trim();
       if (!row.school) throw new Error('School name is required.');
@@ -1477,24 +1491,29 @@
       row.status = allow(row.status, OPTIONS.statuses, 'Researching');
       row.plan = allow(row.plan, OPTIONS.plans, 'RD');
       row.prescreen = allow(row.prescreen, OPTIONS.prescreens, 'Not Required');
-      row.owner = allow(row.owner, OPTIONS.owners, 'Unassigned');
+      row.owner = allow(normalizeOwner(row.owner), OPTIONS.owners, 'Unassigned');
       return row;
     }
     function cleanTaskRow(row) {
       row.task = row.task.trim();
       if (!row.task) throw new Error('Task title is required.');
-      row.owner = allow(row.owner, OPTIONS.owners, 'Unassigned');
+      row.owner = allow(normalizeOwner(row.owner), OPTIONS.owners, 'Unassigned');
       row.category = allow(row.category, OPTIONS.categories, 'Other');
       return row;
     }
     function allow(value, allowed, fallback) { return allowed.includes(value) ? value : fallback; }
     function fromSchoolRow(row) {
       row = row || {};
+      row.owner = normalizeOwner(row.owner);
       row.major = String(row.major || '');
       row.checklist = normalizedChecklist(row);
       return row;
     }
-    function fromTaskRow(row) { return row; }
+    function fromTaskRow(row) {
+      row = row || {};
+      row.owner = normalizeOwner(row.owner);
+      return row;
+    }
     function setTaskFilter(filter) { state.taskSchoolFocus = ''; state.taskFilter = filter; renderTasks(); }
     function clearSchoolTaskFocus() { state.taskSchoolFocus = ''; renderTasks(); }
     function focusSchool(schoolId) {
