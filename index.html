@@ -62,6 +62,13 @@
     .pill.hot{border-color:rgba(255,154,61,.34);color:rgba(255,210,160,.96);background:rgba(255,154,61,.08)}.pill.good{border-color:rgba(75,255,211,.24);color:rgba(191,246,239,.94);background:rgba(75,255,211,.07)}.pill.calm{border-color:rgba(123,231,255,.18);color:rgba(123,231,255,.90);background:rgba(45,125,255,.08)}
     .progress{height:9px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);overflow:hidden}.progress span{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,rgba(75,255,211,.80),rgba(123,231,255,.90),rgba(45,125,255,.74));transition:width .5s ease}
     .checks{display:grid;gap:6px}.checkLine{display:flex;justify-content:space-between;gap:10px;font:11px var(--mono);color:rgba(234,240,255,.78)}.checkLine.done{color:rgba(123,231,255,.94)}
+    .sheetTools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}.sheetModes{display:flex;gap:7px;flex-wrap:wrap}.sheetMode.on{color:#07101f;background:linear-gradient(180deg,rgba(123,231,255,.96),rgba(45,125,255,.92))}
+    .sheetWrap{position:relative;z-index:2;overflow:auto;border-radius:20px;border:1px solid rgba(255,255,255,.10);background:rgba(7,11,26,.18)}
+    .sheetTable{width:100%;min-width:980px;border-collapse:separate;border-spacing:0 8px;padding:8px;font:11px var(--mono)}
+    .sheetTable th{position:sticky;top:0;z-index:3;text-align:left;padding:8px 10px;color:rgba(123,231,255,.88);letter-spacing:.10em;text-transform:uppercase;background:rgba(7,11,26,.88);border-bottom:1px solid rgba(123,231,255,.16)}
+    .sheetTable td{vertical-align:top;padding:10px;border-top:1px solid rgba(255,255,255,.09);border-bottom:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035)}
+    .sheetTable td:first-child{border-left:1px solid rgba(255,255,255,.09);border-radius:14px 0 0 14px}.sheetTable td:last-child{border-right:1px solid rgba(255,255,255,.09);border-radius:0 14px 14px 0}
+    .sheetPrimary{font:900 15px var(--mono);letter-spacing:.04em;color:rgba(234,240,255,.96);overflow-wrap:anywhere}.sheetSecondary{font:900 12px var(--mono);color:rgba(234,240,255,.88);overflow-wrap:anywhere}.sheetEmpty{color:rgba(234,240,255,.46);font-style:italic}.sheetList{display:grid;gap:5px}.sheetDone{color:rgba(183,194,230,.70);text-decoration:line-through}.sheetDone:before{content:"DONE ";font-weight:900;color:rgba(123,231,255,.80);text-decoration:none}.sheetOpen{color:rgba(234,240,255,.84)}
     .item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:7px 10px;align-items:start;min-width:0;padding:10px 10px 10px 13px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font:12px var(--mono);color:rgba(234,240,255,.86);position:relative;overflow:hidden}.item input[type=checkbox]{width:18px;height:18px;margin-top:2px;accent-color:var(--cyan)}.item.done{opacity:.68}.item.done .txt{text-decoration:line-through;color:rgba(183,194,230,.76)}.txt{line-height:1.32;overflow-wrap:anywhere}.itemMeta{grid-column:2/4;display:flex;gap:6px;flex-wrap:wrap}.miniBtn{border:0;cursor:pointer;min-width:0;padding:5px 8px;border-radius:999px;color:rgba(234,240,255,.78);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);font:900 10px var(--mono)}
     .completionBurst{--burstColor:var(--cyan);position:fixed;z-index:140;pointer-events:none;border-radius:18px;border:1px solid color-mix(in srgb,var(--burstColor) 44%,transparent);background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--burstColor) 16%,transparent),transparent 62%);box-shadow:0 0 22px color-mix(in srgb,var(--burstColor) 22%,transparent);animation:holoSoftPulse .9s ease-out both;mix-blend-mode:screen}
     @keyframes holoSoftPulse{0%{opacity:0;transform:scale(.98)}24%{opacity:.90;transform:scale(1.01)}100%{opacity:0;transform:scale(1.035)}}
@@ -152,6 +159,7 @@
         <button class="tab on" data-view="dashboard">Dashboard</button>
         <button class="tab" data-view="schools">Schools</button>
         <button class="tab" data-view="tasks">Tasks</button>
+        <button class="tab" data-view="spreadsheet">Spreadsheet</button>
       </nav>
       <div class="topActions">
         <div class="cloudStatus" id="saveLight" title="Save status" aria-label="Save status"></div>
@@ -181,6 +189,7 @@
         <select id="sortSelect" aria-label="Sort">
           <option value="deadline">Deadline</option>
           <option value="school">School Name</option>
+          <option value="major">Major</option>
           <option value="status">Status</option>
           <option value="progress">Progress</option>
           <option value="theater">Theater</option>
@@ -193,6 +202,7 @@
     <section class="view on" id="dashboardView"></section>
     <section class="view" id="schoolsView"></section>
     <section class="view" id="tasksView"></section>
+    <section class="view" id="spreadsheetView"></section>
   </main>
 
   <div class="privacyScreen" id="privacyScreen" hidden>
@@ -215,6 +225,7 @@
       <input type="hidden" id="schoolId">
       <div class="formGrid">
         <div class="wide"><label for="schoolName">School Name</label><input id="schoolName" required placeholder="Northwestern"></div>
+        <div><label for="schoolMajor">Major</label><input id="schoolMajor" placeholder="Theatre"></div>
         <div><label for="schoolStatus">Status</label><select id="schoolStatus"></select></div>
         <div><label for="schoolPlan">Plan</label><select id="schoolPlan"></select><div class="helpText">ED means binding Early Decision. EA means non-binding Early Action. RD means Regular Decision.</div></div>
         <div><label for="schoolDeadline">Deadline</label><input type="date" id="schoolDeadline"></div>
@@ -299,6 +310,7 @@
       view: localStorage.getItem('act:view') || 'dashboard',
       search: '',
       schoolSort: 'deadline',
+      spreadsheetMode: 'school',
       taskFilter: 'open',
       expandedSchools: {},
       showSchoolNotes: true,
@@ -399,6 +411,7 @@
             id: 'tour-brandeis',
             family_id: state.familyId,
             school: 'Brandeis University',
+            major: 'Theatre',
             status: 'Considering',
             plan: 'RD',
             deadline: nextDate(55),
@@ -682,6 +695,7 @@
           id: uscId,
           family_id: state.familyId,
           school: 'USC',
+          major: 'Theatre',
           status: 'In Progress',
           plan: 'RD',
           deadline: nextDate(42),
@@ -701,6 +715,7 @@
           id: uclaId,
           family_id: state.familyId,
           school: 'UCLA',
+          major: 'Theater',
           status: 'Applying',
           plan: 'RD',
           deadline: nextDate(36),
@@ -720,6 +735,7 @@
           id: pennId,
           family_id: state.familyId,
           school: 'University of Pennsylvania',
+          major: 'Liberal Arts',
           status: 'Ready',
           plan: 'ED',
           deadline: nextDate(16),
@@ -865,18 +881,18 @@
     function refreshTaskSchoolSelect() { $('taskSchool').innerHTML = `<option value="">No school</option>` + sortedSchools().map(school => `<option value="${escapeAttr(school.id)}">${escapeHtml(school.school)}</option>`).join(''); }
 
     function setView(view) {
-      state.view = ['dashboard','schools','tasks'].includes(view) ? view : 'dashboard';
+      state.view = ['dashboard','schools','tasks','spreadsheet'].includes(view) ? view : 'dashboard';
       localStorage.setItem('act:view', state.view);
       document.querySelectorAll('[data-view]').forEach(button => button.classList.toggle('on', button.dataset.view === state.view));
       document.querySelectorAll('.view').forEach(section => section.classList.toggle('on', section.id === `${state.view}View`));
-      $('viewTitle').textContent = state.view === 'dashboard' ? 'Dashboard' : state.view === 'schools' ? 'Schools' : 'Tasks';
-      $('viewSub').textContent = state.view === 'dashboard' ? 'What matters right now' : state.view === 'schools' ? 'Status, next action, owner' : 'Small tasks, clear owners';
+      $('viewTitle').textContent = state.view === 'dashboard' ? 'Dashboard' : state.view === 'schools' ? 'Schools' : state.view === 'spreadsheet' ? 'Spreadsheet' : 'Tasks';
+      $('viewSub').textContent = state.view === 'dashboard' ? 'What matters right now' : state.view === 'schools' ? 'Status, next action, owner' : state.view === 'spreadsheet' ? 'Sortable application overview' : 'Small tasks, clear owners';
       $('addTopBtn').textContent = state.view === 'tasks' ? 'Add Task' : 'Add School';
       $('sortSelect').style.display = state.view === 'schools' ? '' : 'none';
       render();
     }
 
-    function render() { renderDashboard(); renderSchools(); renderTasks(); }
+    function render() { renderDashboard(); renderSchools(); renderTasks(); renderSpreadsheet(); }
 
     function renderDashboard() {
       const schools = sortedSchools().filter(matchesSearchSchool);
@@ -946,6 +962,87 @@
       `;
     }
 
+    function renderSpreadsheet() {
+      const schools = spreadsheetSchools().filter(matchesSearchSchool);
+      const mode = state.spreadsheetMode || 'school';
+      const headers = spreadsheetHeaders(mode);
+      $('spreadsheetView').innerHTML = `
+        <section class="panel">
+          <div class="sheetTools">
+            <div>
+              <div class="panelTitle" style="margin-bottom:4px"><b>Application Spreadsheet</b><span>${schools.length} schools</span></div>
+              <p class="hint" style="margin:0">Click an organizing principle to rebuild the left column.</p>
+            </div>
+            <div class="sheetModes" aria-label="Spreadsheet organization">
+              ${[
+                ['school','School Name'],
+                ['major','Major'],
+                ['deadline','Deadline'],
+                ['plan','Decision Category']
+              ].map(([key,label]) => `<button class="btn ghost sheetMode ${mode === key ? 'on' : ''}" onclick="setSpreadsheetMode('${key}')">${escapeHtml(label)}</button>`).join('')}
+            </div>
+          </div>
+        </section>
+        ${schools.length ? `
+          <section class="sheetWrap" aria-label="College spreadsheet">
+            <table class="sheetTable">
+              <thead><tr>${headers.map(header => `<th>${escapeHtml(header)}</th>`).join('')}</tr></thead>
+              <tbody>${schools.map(school => renderSpreadsheetRow(school, mode)).join('')}</tbody>
+            </table>
+          </section>
+        ` : emptyState('No matching schools.', 'Add School', 'openSchool()')}
+      `;
+    }
+
+    function setSpreadsheetMode(mode) {
+      state.spreadsheetMode = ['school','major','deadline','plan'].includes(mode) ? mode : 'school';
+      renderSpreadsheet();
+    }
+
+    function spreadsheetHeaders(mode) {
+      if (mode === 'major') return ['Major','School Name','Deadline','Completed','Not Yet Completed','Decision Category'];
+      if (mode === 'deadline') return ['Deadline','School Name','Major','Completed','Not Yet Completed','Decision Category'];
+      if (mode === 'plan') return ['Decision Category','School Name','Deadline','Major','Completed','Not Yet Completed'];
+      return ['School Name','Deadline','Major','Completed','Not Yet Completed','Decision Category'];
+    }
+
+    function spreadsheetSchools() {
+      const schools = [...state.schools];
+      const byDeadline = (a,b) => dateRank(a.deadline) - dateRank(b.deadline) || safeText(a.school).localeCompare(safeText(b.school));
+      if (state.spreadsheetMode === 'major') return schools.sort((a,b) => spreadsheetMajor(a).localeCompare(spreadsheetMajor(b)) || byDeadline(a,b));
+      if (state.spreadsheetMode === 'deadline') return schools.sort(byDeadline);
+      if (state.spreadsheetMode === 'plan') return schools.sort((a,b) => safeText(a.plan).localeCompare(safeText(b.plan)) || byDeadline(a,b));
+      return schools.sort(byDeadline);
+    }
+
+    function renderSpreadsheetRow(school, mode) {
+      const summary = schoolWorkSummary(school);
+      const cells = mode === 'major'
+        ? [escapeHtml(spreadsheetMajor(school)), escapeHtml(school.school), escapeHtml(school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), escapeHtml(planLabel(school.plan))]
+        : mode === 'deadline'
+          ? [escapeHtml(school.deadline ? formatDate(school.deadline) : 'No deadline'), escapeHtml(school.school), escapeHtml(spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), escapeHtml(planLabel(school.plan))]
+          : mode === 'plan'
+            ? [escapeHtml(planLabel(school.plan)), escapeHtml(school.school), escapeHtml(school.deadline ? formatDate(school.deadline) : 'No deadline'), escapeHtml(spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false)]
+            : [escapeHtml(school.school), escapeHtml(school.deadline ? formatDate(school.deadline) : 'No deadline'), escapeHtml(spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), escapeHtml(planLabel(school.plan))];
+      return `<tr>${cells.map((cell, index) => `<td class="${index === 0 ? 'sheetPrimary' : index === 1 && mode !== 'school' ? 'sheetSecondary' : ''}">${cell}</td>`).join('')}</tr>`;
+    }
+
+    function schoolWorkSummary(school) {
+      const completed = [];
+      const open = [];
+      normalizedChecklist(school).forEach(item => (item.done ? completed : open).push(item.label));
+      state.tasks.filter(task => task.school_id === school.id).forEach(task => (task.done ? completed : open).push(task.task));
+      return { completed, open };
+    }
+
+    function renderSheetList(items, done) {
+      if (!items.length) return `<span class="sheetEmpty">${done ? 'No completed items' : 'Nothing open'}</span>`;
+      return `<div class="sheetList">${items.map(item => `<span class="${done ? 'sheetDone' : 'sheetOpen'}">${escapeHtml(item)}</span>`).join('')}</div>`;
+    }
+
+    function spreadsheetMajor(school) { return safeText(school.major) || 'No major entered'; }
+    function planLabel(plan) { return OPTIONS.planLabels[plan] || plan || 'No category'; }
+
     function renderSchoolCard(school) {
       const progress = schoolProgress(school);
       const checklist = normalizedChecklist(school);
@@ -955,7 +1052,7 @@
       const expanded = !!state.expandedSchools[school.id];
       return `
         <article class="card">
-          <div class="cardTop"><div><div class="schoolName">${escapeHtml(school.school)}</div><div class="cardMeta">${escapeHtml(school.plan || 'Plan TBD')} | ${school.deadline ? escapeHtml(formatDate(school.deadline)) : 'No deadline'}</div></div><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span></div>
+          <div class="cardTop"><div><div class="schoolName">${escapeHtml(school.school)}</div><div class="cardMeta">${escapeHtml(school.plan || 'Plan TBD')} | ${school.deadline ? escapeHtml(formatDate(school.deadline)) : 'No deadline'}${school.major ? ` | ${escapeHtml(school.major)}` : ''}</div></div><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span></div>
           <div class="progress" aria-label="Completion ${progress}%"><span style="width:${progress}%"></span></div>
           <div class="cardActions">
             <button class="btn primary" onclick="openSchool('${escapeAttr(school.id)}')">Edit School</button>
@@ -1014,6 +1111,7 @@
       $('schoolModalTitle').textContent = id ? 'Edit School' : 'Add School';
       $('schoolId').value = school.id || '';
       $('schoolName').value = school.school || '';
+      $('schoolMajor').value = school.major || '';
       $('schoolStatus').value = school.status || 'Researching';
       $('schoolPlan').value = school.plan || 'RD';
       $('schoolDeadline').value = school.deadline || '';
@@ -1052,6 +1150,7 @@
       const row = cleanSchoolRow({
         family_id: state.familyId,
         school: $('schoolName').value,
+        major: $('schoolMajor').value,
         status: $('schoolStatus').value,
         plan: $('schoolPlan').value,
         deadline: $('schoolDeadline').value || null,
@@ -1324,6 +1423,7 @@
     function cleanSchoolRow(row) {
       row.school = row.school.trim();
       if (!row.school) throw new Error('School name is required.');
+      row.major = String(row.major || '').trim();
       row.status = allow(row.status, OPTIONS.statuses, 'Researching');
       row.plan = allow(row.plan, OPTIONS.plans, 'RD');
       row.prescreen = allow(row.prescreen, OPTIONS.prescreens, 'Not Required');
@@ -1340,6 +1440,7 @@
     function allow(value, allowed, fallback) { return allowed.includes(value) ? value : fallback; }
     function fromSchoolRow(row) {
       row = row || {};
+      row.major = String(row.major || '');
       row.checklist = normalizedChecklist(row);
       return row;
     }
@@ -1351,6 +1452,7 @@
     function sortedSchools() {
       const schools = [...state.schools];
       if (state.schoolSort === 'school') return schools.sort((a,b) => a.school.localeCompare(b.school));
+      if (state.schoolSort === 'major') return schools.sort((a,b) => safeText(a.major).localeCompare(safeText(b.major)) || dateRank(a.deadline) - dateRank(b.deadline) || a.school.localeCompare(b.school));
       if (state.schoolSort === 'status') return schools.sort((a,b) => a.status.localeCompare(b.status) || dateRank(a.deadline) - dateRank(b.deadline));
       if (state.schoolSort === 'progress') return schools.sort((a,b) => schoolProgress(a) - schoolProgress(b) || dateRank(a.deadline) - dateRank(b.deadline));
       if (state.schoolSort === 'theater') return schools.sort((a,b) => Number(!!b.theater) - Number(!!a.theater) || dateRank(a.deadline) - dateRank(b.deadline));
@@ -1361,8 +1463,8 @@
     function sortedTasks() { return [...state.tasks].sort((a,b) => taskRank(a) - taskRank(b) || dateRank(a.due_date) - dateRank(b.due_date) || a.task.localeCompare(b.task)); }
     function taskRank(task) { if (task.done) return 10; const u = urgency(task.due_date); if (u === 'overdue') return 0; if (u === 'today') return 1; if (u === 'soon' || u === 'tomorrow') return 2; if (task.due_date) return 3; return 4; }
     function nextDeadlineSchool(schools) { const today = startOfToday(); return schools.filter(school => school.deadline && parseLocalDate(school.deadline) >= today)[0] || null; }
-    function matchesSearchSchool(school) { if (!state.search) return true; return `${school.school} ${school.next_action} ${school.owner} ${school.status}`.toLowerCase().includes(state.search); }
-    function matchesSearchTask(task) { if (!state.search) return true; const school = state.schools.find(item => item.id === task.school_id); return `${task.task} ${task.owner} ${task.category} ${school ? school.school : ''}`.toLowerCase().includes(state.search); }
+    function matchesSearchSchool(school) { if (!state.search) return true; return `${school.school} ${school.major} ${school.next_action} ${school.owner} ${school.status} ${school.plan}`.toLowerCase().includes(state.search); }
+    function matchesSearchTask(task) { if (!state.search) return true; const school = state.schools.find(item => item.id === task.school_id); return `${task.task} ${task.owner} ${task.category} ${school ? `${school.school} ${school.major}` : ''}`.toLowerCase().includes(state.search); }
     function schoolProgress(school) {
       const checklist = normalizedChecklist(school);
       if (checklist.length) return Math.round(checklist.filter(item => item.done).length / checklist.length * 100);
@@ -1393,6 +1495,7 @@
     function flash(message) { const toast = $('toast'); toast.textContent = message; toast.classList.add('on'); clearTimeout(flash.timer); flash.timer = setTimeout(() => toast.classList.remove('on'), 2300); }
     function showError(error) { flash(messageOf(error)); }
     function messageOf(error) { return String(error && error.message ? error.message : error || 'Something went wrong.'); }
+    function safeText(value) { return String(value || '').trim(); }
     function isMissingSnapshotError(error) {
       const text = messageOf(error).toLowerCase();
       return text.includes('snapshots') && (text.includes('not exist') || text.includes('could not find') || text.includes('schema cache'));
