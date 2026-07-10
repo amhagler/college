@@ -80,6 +80,7 @@
     .toast{position:fixed;z-index:160;right:16px;bottom:16px;max-width:min(420px,calc(100vw - 32px));padding:12px 14px;border-radius:16px;border:1px solid rgba(123,231,255,.22);background:linear-gradient(180deg,rgba(12,22,56,.96),rgba(10,18,48,.92));box-shadow:var(--shadow);font:12px var(--mono);color:var(--ink);opacity:0;transform:translateY(10px);pointer-events:none;transition:.22s ease}.toast.on{opacity:1;transform:translateY(0)}
     .privacyScreen,.loadingGate,.accessWrap{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;background:radial-gradient(620px 320px at 50% 35%,rgba(45,125,255,.20),transparent 68%),rgba(7,11,26,.94);backdrop-filter:blur(14px)}.accessWrap{position:relative;min-height:100vh}.accessPanel{width:min(680px,94vw);padding:28px;z-index:2}.accessPanel p{font:14px var(--mono);color:rgba(234,240,255,.72);line-height:1.5}.accessPanel form{display:grid;gap:10px;margin-top:18px;position:relative;z-index:2}
     .statusPill{font:10px var(--mono);padding:7px 9px;border-radius:999px;border:1px solid rgba(123,231,255,.18);background:rgba(45,125,255,.08);color:rgba(123,231,255,.90)}
+    .familyTools{position:relative;z-index:2;margin:0 14px 14px;padding:10px 12px;border-radius:18px;border:1px solid rgba(123,231,255,.16);background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.familyTools[hidden]{display:none}.familyToolsText{display:grid;gap:2px;min-width:190px}.familyToolsText b{font:900 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(123,231,255,.88)}.familyToolsText span{font:11px var(--mono);color:rgba(234,240,255,.62)}.familyCode{font:900 13px var(--mono);letter-spacing:.08em;color:rgba(234,240,255,.96);padding:7px 10px;border-radius:999px;border:1px solid rgba(123,231,255,.22);background:rgba(45,125,255,.10);box-shadow:0 0 16px rgba(45,125,255,.08)}.familyToolsBtns,.codeRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.inviteRows{min-height:180px;resize:vertical}.invitePreview{position:relative;z-index:2;margin:0 14px 14px;display:grid;gap:7px}.inviteLine{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:8px 9px;border-radius:12px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.035);font:11px var(--mono)}.inviteLine span{color:rgba(234,240,255,.72)}
     @media(max-width:820px){.topInner{display:grid;grid-template-columns:1fr auto;align-items:start}.navTabs{grid-column:1/-1;justify-content:stretch}.tab{flex:1}.topActions{justify-self:end}.toolbar,.dashboardGrid{display:grid;grid-template-columns:1fr}.summary{grid-template-columns:1fr}.grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));justify-content:stretch}.card{max-width:none}.formGrid,.checkGroup{grid-template-columns:1fr}.modalActions{grid-template-columns:1fr}.brand{min-width:0}.title{font-size:17px}}
     @media(max-width:430px){.topbar{padding:11px 10px}.shell{padding:0 10px;margin-top:12px}.topActions .cloudStatus{display:none}.btn,.tab{padding:9px 8px}.schoolName{font-size:13px}.item{grid-template-columns:auto minmax(0,1fr)}.item .miniBtn{grid-column:2}.itemMeta{grid-column:2}}
     @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}.fog,#matrix{display:none}}
@@ -125,8 +126,12 @@
       <form id="loginForm" class="loginBox" hidden>
         <label for="loginEmail">Email</label>
         <input id="loginEmail" type="email" required placeholder="name@example.com" autocomplete="email">
+        <label for="loginJoinCode">Family Code <span class="hint">(optional)</span></label>
+        <input id="loginJoinCode" placeholder="HAGLER-8K42" autocomplete="off">
+        <label for="loginDisplayName">Display Name <span class="hint">(if joining)</span></label>
+        <input id="loginDisplayName" placeholder="Student" autocomplete="name">
         <button class="btn primary" type="submit">Send Magic Link</button>
-        <p class="hint">No password is stored in this page. Supabase sends the sign-in link.</p>
+        <p class="hint">No password is stored in this page. Supabase sends the sign-in link. A Family Code links you to an existing tracker after sign-in.</p>
       </form>
       <div class="familySetup" id="familySetup" hidden>
         <p class="hint">This email is signed in but is not attached to a family workspace yet.</p>
@@ -197,6 +202,19 @@
           <option value="submitted">Submitted</option>
           <option value="needsAction">Needs Action</option>
         </select>
+      </div>
+      <div class="familyTools" id="familyTools" hidden>
+        <div class="familyToolsText">
+          <b>Family Access</b>
+          <span id="familyNameLabel">Shared workspace</span>
+        </div>
+        <div class="codeRow">
+          <span class="familyCode" id="familyCodeLabel">------</span>
+          <button class="btn ghost" type="button" id="copyFamilyCodeBtn">Copy Code</button>
+        </div>
+        <div class="familyToolsBtns">
+          <button class="btn primary" type="button" id="openInviteBtn">Invite Members</button>
+        </div>
       </div>
     </section>
 
@@ -281,6 +299,36 @@
     </form>
   </div>
 
+  <div class="overlay" id="inviteOverlay" aria-hidden="true">
+    <form class="modal compact" id="inviteForm">
+      <div class="modalHd">
+        <div><b>Invite Family Members</b><span>Send sign-in links that attach people to this tracker.</span></div>
+        <button type="button" class="btn ghost iconOnly" data-close="inviteOverlay">X</button>
+      </div>
+      <div class="formGrid">
+        <div class="wide">
+          <label>Family Code</label>
+          <div class="codeRow">
+            <span class="familyCode" id="inviteFamilyCode">------</span>
+            <button class="btn ghost" type="button" id="copyInviteFamilyCodeBtn">Copy Code</button>
+          </div>
+          <div class="helpText">This is the safe code to share. The private database family id stays hidden.</div>
+        </div>
+        <div class="wide">
+          <label for="inviteRows">Batch Invites</label>
+          <textarea id="inviteRows" class="inviteRows" placeholder="Asher | Student | asher@example.com&#10;Elana | Parent | elana@example.com"></textarea>
+          <div class="helpText">One person per line: First name | Parent or Student | email.</div>
+        </div>
+      </div>
+      <div class="invitePreview" id="invitePreview"></div>
+      <div class="modalActions">
+        <span></span><span></span>
+        <button type="button" class="btn ghost" data-close="inviteOverlay">Cancel</button>
+        <button type="submit" class="btn primary">Send Invites</button>
+      </div>
+    </form>
+  </div>
+
   <script>
     const SUPABASE_URL = "https://plqlivioeyuosevigqgu.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_Fb0HTGI04IytCmxt_NiIwA_a3e2BZwP";
@@ -323,6 +371,7 @@
       tourIndex: 0,
       history: [],
       familyId: DEFAULT_FAMILY_ID,
+      familyMeta: null,
       profile: null,
       demoMode: false,
       schools: [],
@@ -532,6 +581,7 @@
         event.preventDefault();
         try {
           const email = $('loginEmail').value.trim();
+          rememberPendingJoin();
           const { error } = await db.auth.signInWithOtp({ email, options: { emailRedirectTo: location.href } });
           if (error) throw error;
           flash('Magic link sent. Check that email account.');
@@ -547,11 +597,16 @@
       $('loadBtn').addEventListener('click', loadSnapshotChoice);
       $('privacyBtn').addEventListener('click', togglePrivacy);
       $('visibilityBtn').addEventListener('click', toggleLargeText);
+      $('copyFamilyCodeBtn').addEventListener('click', copyFamilyCode);
+      $('copyInviteFamilyCodeBtn').addEventListener('click', copyFamilyCode);
+      $('openInviteBtn').addEventListener('click', openInviteMembers);
+      $('inviteRows').addEventListener('input', renderInvitePreview);
+      $('inviteForm').addEventListener('submit', sendFamilyInvites);
       applyLargeTextMode();
       document.addEventListener('keydown', event => {
         if (event.key === 'Escape') {
           if (!$('privacyScreen').hidden) togglePrivacy(false);
-          closeOverlay('schoolOverlay'); closeOverlay('taskOverlay');
+          closeOverlay('schoolOverlay'); closeOverlay('taskOverlay'); closeOverlay('inviteOverlay');
         }
         if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'h') {
           event.preventDefault(); togglePrivacy();
@@ -560,6 +615,7 @@
       document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => closeOverlay(button.dataset.close)));
       $('schoolOverlay').addEventListener('click', event => { if (event.target.id === 'schoolOverlay') closeOverlay('schoolOverlay'); });
       $('taskOverlay').addEventListener('click', event => { if (event.target.id === 'taskOverlay') closeOverlay('taskOverlay'); });
+      $('inviteOverlay').addEventListener('click', event => { if (event.target.id === 'inviteOverlay') closeOverlay('inviteOverlay'); });
       $('schoolForm').addEventListener('submit', saveSchoolFromForm);
       $('taskForm').addEventListener('submit', saveTaskFromForm);
       $('deleteSchoolBtn').addEventListener('click', deleteCurrentSchool);
@@ -630,6 +686,7 @@
         if (familyError) throw new Error('Join code not found.');
         const { error } = await db.from('app_members').upsert({ family_id: family.id, email, display_name: displayName, role: 'member' }, { onConflict: 'email' });
         if (error) throw error;
+        clearPendingJoin();
         flash(`Joined ${family.family_name}`);
         await accessGrantedThenEnter();
       } catch (error) {
@@ -642,22 +699,109 @@
       return `${prefix}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
     }
 
+    function currentInviteToken() {
+      return new URLSearchParams(location.search).get('invite') || '';
+    }
+
+    function cleanInviteTokenFromUrl() {
+      const url = new URL(location.href);
+      if (!url.searchParams.has('invite')) return;
+      url.searchParams.delete('invite');
+      history.replaceState({}, document.title, `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function rememberPendingJoin() {
+      const code = ($('loginJoinCode').value || '').trim().toUpperCase();
+      const name = ($('loginDisplayName').value || '').trim();
+      if (code) localStorage.setItem('act:pending-join-code', code);
+      else localStorage.removeItem('act:pending-join-code');
+      if (name) localStorage.setItem('act:pending-display-name', name);
+      else localStorage.removeItem('act:pending-display-name');
+    }
+
+    function clearPendingJoin() {
+      localStorage.removeItem('act:pending-join-code');
+      localStorage.removeItem('act:pending-display-name');
+    }
+
+    async function claimInviteFromUrl(email) {
+      const token = currentInviteToken();
+      if (!token || state.demoMode) return false;
+      try {
+        const { data: invite, error } = await db
+          .from('family_invites')
+          .select('id,family_id,email,display_name,role,status,expires_at')
+          .eq('invite_token', token)
+          .maybeSingle();
+        if (error) throw error;
+        if (!invite) {
+          flash('Invite link not found for this signed-in email.');
+          return false;
+        }
+        if (invite.expires_at && new Date(invite.expires_at) < new Date()) throw new Error('This invite has expired.');
+        const displayName = invite.display_name || email.split('@')[0] || 'Family Member';
+        const role = invite.role === 'admin' ? 'admin' : 'member';
+        const { error: memberError } = await db
+          .from('app_members')
+          .upsert({ family_id: invite.family_id, email, display_name: displayName, role }, { onConflict: 'email' });
+        if (memberError) throw memberError;
+        await db.from('family_invites').update({ status:'accepted', accepted_at:new Date().toISOString() }).eq('id', invite.id);
+        clearPendingJoin();
+        cleanInviteTokenFromUrl();
+        flash('Invite accepted. Opening family tracker.');
+        return true;
+      } catch (error) {
+        if (isMissingInviteError(error)) flash('Run Step 6 SQL to enable invite links.');
+        else showError(error);
+        return false;
+      }
+    }
+
+    async function joinPendingFamilyCode(email) {
+      const joinCode = localStorage.getItem('act:pending-join-code');
+      if (!joinCode || state.demoMode) return false;
+      const displayName = localStorage.getItem('act:pending-display-name') || email.split('@')[0] || 'Family Member';
+      try {
+        const { data: existing } = await db.from('app_members').select('family_id').ilike('email', email).maybeSingle();
+        if (existing) {
+          clearPendingJoin();
+          return false;
+        }
+        const { data: family, error: familyError } = await db.from('families').select('id, family_name').eq('join_code', joinCode).single();
+        if (familyError) throw new Error('Family Code not found.');
+        const { error } = await db.from('app_members').upsert({ family_id: family.id, email, display_name: displayName, role: 'member' }, { onConflict: 'email' });
+        if (error) throw error;
+        clearPendingJoin();
+        flash(`Joined ${family.family_name}`);
+        return true;
+      } catch (error) {
+        showError(error);
+        return false;
+      }
+    }
+
     async function enterApp() {
       try {
         setSaving('saving');
         const { data: userData, error: userError } = await db.auth.getUser();
         if (userError) throw userError;
         const email = userData.user.email;
+        await claimInviteFromUrl(email);
+        await joinPendingFamilyCode(email);
         const { data: member, error: memberError } = await db
           .from('app_members')
           .select('family_id, display_name, email')
           .ilike('email', email)
-          .single();
-        if (memberError) {
+          .maybeSingle();
+        if (memberError || !member) {
           $('authGate').hidden = false;
           $('loginForm').hidden = true;
           $('familySetup').hidden = false;
           $('authCopy').textContent = 'You are signed in. Create a family tracker or enter a family join code.';
+          const pendingCode = localStorage.getItem('act:pending-join-code') || '';
+          const pendingName = localStorage.getItem('act:pending-display-name') || '';
+          if (pendingCode) $('joinCode').value = pendingCode;
+          if (pendingName) $('joinName').value = pendingName;
           setSaving('saved');
           return;
         }
@@ -695,9 +839,126 @@
       } catch {}
       settingsResult.data.forEach(row => { state.settings[row.key] = row.value; });
       $('cycleLabel').textContent = `${state.settings.StudentName || 'Student'} | ${state.settings.ApplicationCycle || 'College applications'}`;
+      await loadFamilyMeta();
       refreshTaskSchoolSelect();
       render();
       startAutosave();
+    }
+
+    async function loadFamilyMeta() {
+      state.familyMeta = null;
+      if (state.demoMode || !state.familyId) {
+        renderFamilyTools();
+        return;
+      }
+      try {
+        const { data, error } = await db
+          .from('families')
+          .select('id,family_name,join_code')
+          .eq('id', state.familyId)
+          .maybeSingle();
+        if (!error && data) state.familyMeta = data;
+      } catch {}
+      renderFamilyTools();
+    }
+
+    function renderFamilyTools() {
+      const box = $('familyTools');
+      if (!box) return;
+      const meta = state.familyMeta;
+      if (!meta || !meta.join_code || state.demoMode) {
+        box.hidden = true;
+        return;
+      }
+      box.hidden = false;
+      $('familyNameLabel').textContent = meta.family_name || 'Shared workspace';
+      $('familyCodeLabel').textContent = meta.join_code;
+      if ($('inviteFamilyCode')) $('inviteFamilyCode').textContent = meta.join_code;
+    }
+
+    async function copyFamilyCode() {
+      const code = state.familyMeta && state.familyMeta.join_code;
+      if (!code) {
+        flash('No Family Code is available yet.');
+        return;
+      }
+      await copyText(code);
+      flash('Family Code copied');
+    }
+
+    function openInviteMembers() {
+      if (state.demoMode) {
+        flash('Invite members is available after Supabase sign-in.');
+        return;
+      }
+      if (!state.familyMeta || !state.familyMeta.join_code) {
+        flash('Family Code not loaded. Run Step 4 SQL if Create/Join is not enabled.');
+        return;
+      }
+      renderFamilyTools();
+      renderInvitePreview();
+      openOverlay('inviteOverlay');
+      setTimeout(() => $('inviteRows').focus(), 80);
+    }
+
+    function parseInviteRows(raw) {
+      const rows = String(raw || '').split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+      return rows.map((line, index) => {
+        const parts = line.split(/\s*[|\t,]\s*/).map(part => part.trim()).filter(Boolean);
+        let displayName = parts[0] || '';
+        let roleText = parts[1] || 'Student';
+        let email = parts[2] || '';
+        if (parts.length === 2 && /@/.test(parts[1])) {
+          roleText = 'Student';
+          email = parts[1];
+        }
+        if (!displayName || !email || !/@/.test(email)) throw new Error(`Invite line ${index + 1} needs: First name | Parent or Student | email.`);
+        const normalized = roleText.toLowerCase().includes('parent') || roleText.toLowerCase().includes('admin') ? 'admin' : 'member';
+        const roleLabel = normalized === 'admin' ? 'Parent' : 'Student';
+        return { displayName, email: email.toLowerCase(), role: normalized, roleLabel };
+      });
+    }
+
+    function renderInvitePreview() {
+      const panel = $('invitePreview');
+      if (!panel) return;
+      try {
+        const invites = parseInviteRows($('inviteRows').value);
+        panel.innerHTML = invites.length ? invites.map(invite => `
+          <div class="inviteLine">
+            <b>${escapeHtml(invite.displayName)}</b>
+            <span>${escapeHtml(invite.roleLabel)}</span>
+            <span>${escapeHtml(invite.email)}</span>
+          </div>
+        `).join('') : '<p class="hint">No invite rows yet.</p>';
+      } catch (error) {
+        panel.innerHTML = `<p class="hint">${escapeHtml(messageOf(error))}</p>`;
+      }
+    }
+
+    async function sendFamilyInvites(event) {
+      event.preventDefault();
+      try {
+        if (state.demoMode) throw new Error('Invite members is available after Supabase sign-in.');
+        if (!state.familyId) throw new Error('Open your family tracker before sending invites.');
+        const invites = parseInviteRows($('inviteRows').value);
+        if (!invites.length) throw new Error('Enter at least one invite row.');
+        setSaving('saving');
+        const redirectTo = `${location.origin}${location.pathname}`;
+        const { data, error } = await db.functions.invoke('send-family-invites', {
+          body: { familyId: state.familyId, invites, redirectTo }
+        });
+        if (error) throw error;
+        setSaving('saved');
+        closeOverlay('inviteOverlay');
+        flash(data && data.message ? data.message : `Sent ${invites.length} invite${invites.length === 1 ? '' : 's'}`);
+      } catch (error) {
+        setSaving('error');
+        const msg = messageOf(error);
+        showError(new Error(msg.includes('FunctionsHttpError') || msg.includes('not found')
+          ? 'Invite function is not deployed yet. Add Step 6 SQL and deploy the send-family-invites Edge Function.'
+          : msg));
+      }
     }
 
     function loadDemoData() {
@@ -1587,9 +1848,27 @@
     function showError(error) { flash(messageOf(error)); }
     function messageOf(error) { return String(error && error.message ? error.message : error || 'Something went wrong.'); }
     function safeText(value) { return String(value || '').trim(); }
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const field = document.createElement('textarea');
+        field.value = text;
+        field.style.position = 'fixed';
+        field.style.opacity = '0';
+        document.body.appendChild(field);
+        field.select();
+        document.execCommand('copy');
+        field.remove();
+      }
+    }
     function isMissingSnapshotError(error) {
       const text = messageOf(error).toLowerCase();
       return text.includes('snapshots') && (text.includes('not exist') || text.includes('could not find') || text.includes('schema cache'));
+    }
+    function isMissingInviteError(error) {
+      const text = messageOf(error).toLowerCase();
+      return text.includes('family_invites') && (text.includes('not exist') || text.includes('could not find') || text.includes('schema cache'));
     }
     function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
     function escapeAttr(value) { return escapeHtml(value).replace(/`/g, '&#96;'); }
