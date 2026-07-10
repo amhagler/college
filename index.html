@@ -172,6 +172,7 @@
         <div class="saveText" id="saveText">Saved</div>
         <button class="btn ghost" id="manualSaveBtn">Save</button>
         <button class="btn ghost" id="loadBtn">Load</button>
+        <button class="btn ghost" id="inviteTopBtn">Invite Family</button>
         <button class="btn ghost iconOnly" id="privacyBtn" title="Privacy screen">Hide</button>
         <button class="btn ghost iconOnly" id="visibilityBtn" title="Large text mode">View</button>
         <button class="btn primary" id="addTopBtn">Add School</button>
@@ -595,6 +596,7 @@
       $('addTopBtn').addEventListener('click', () => state.view === 'tasks' ? openTask() : openSchool());
       $('manualSaveBtn').addEventListener('click', () => saveSnapshot('manual'));
       $('loadBtn').addEventListener('click', loadSnapshotChoice);
+      $('inviteTopBtn').addEventListener('click', openInviteMembers);
       $('privacyBtn').addEventListener('click', togglePrivacy);
       $('visibilityBtn').addEventListener('click', toggleLargeText);
       $('copyFamilyCodeBtn').addEventListener('click', copyFamilyCode);
@@ -886,11 +888,12 @@
       flash('Family Code copied');
     }
 
-    function openInviteMembers() {
+    async function openInviteMembers() {
       if (state.demoMode) {
         flash('Invite members is available after Supabase sign-in.');
         return;
       }
+      if (!state.familyMeta && state.familyId) await loadFamilyMeta();
       if (!state.familyMeta || !state.familyMeta.join_code) {
         flash('Family Code not loaded. Run Step 4 SQL if Create/Join is not enabled.');
         return;
