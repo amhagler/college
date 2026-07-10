@@ -38,7 +38,7 @@
     .navTabs{display:flex;gap:7px;justify-content:center;flex:1}.tab,.btn{border:0;cursor:pointer;border-radius:14px;padding:9px 10px;font:900 12px var(--mono);white-space:nowrap}
     .tab{color:rgba(234,240,255,.84);background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.12)}
     .tab.on{color:#07101f;background:linear-gradient(180deg,rgba(123,231,255,.96),rgba(45,125,255,.92));box-shadow:0 0 0 1px rgba(255,255,255,.16) inset,0 12px 22px rgba(0,0,0,.34)}
-    .topActions{display:flex;gap:7px;align-items:center}.primary{color:#07101f;background:linear-gradient(180deg,rgba(123,231,255,.96),rgba(45,125,255,.92));box-shadow:0 0 0 1px rgba(255,255,255,.16) inset,0 12px 22px rgba(0,0,0,.34)}
+    .topActions{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.primary{color:#07101f;background:linear-gradient(180deg,rgba(123,231,255,.96),rgba(45,125,255,.92));box-shadow:0 0 0 1px rgba(255,255,255,.16) inset,0 12px 22px rgba(0,0,0,.34)}
     .ghost{color:rgba(234,240,255,.90);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14)}.danger{color:rgba(255,90,90,.95);background:rgba(255,90,90,.08);border-color:rgba(255,90,90,.22)}.iconOnly{min-width:38px}
     .cloudStatus{width:34px;height:30px;border-radius:999px;border:1px solid rgba(123,231,255,.16);background:rgba(255,255,255,.045);position:relative;display:inline-flex;align-items:center;justify-content:center}
     .cloudStatus:before{content:"";width:17px;height:9px;border-radius:999px;background:rgba(183,194,230,.46);box-shadow:-5px 1px 0 -1px rgba(183,194,230,.46),4px -4px 0 -1px rgba(183,194,230,.46),1px -2px 0 1px rgba(183,194,230,.32)}
@@ -51,7 +51,7 @@
     .toolbar{position:relative;z-index:2;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px}.search{flex:1;min-width:180px;display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:999px;background:linear-gradient(180deg,rgba(12,22,56,.86),rgba(10,18,48,.72));border:1px solid rgba(255,255,255,.14);box-shadow:0 10px 28px rgba(0,0,0,.35)}
     .search input{flex:1;min-width:80px;border:0;outline:0;background:transparent;color:var(--ink);font:13px var(--mono)}.lens{width:18px;height:18px;border:2px solid rgba(123,231,255,.75);border-radius:50%;position:relative;flex:0 0 auto}.lens:after{content:"";position:absolute;width:10px;height:2px;right:-8px;bottom:-3px;background:rgba(123,231,255,.75);transform:rotate(45deg);border-radius:3px}
     input,select,textarea{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(7,11,26,.35);color:var(--ink);padding:10px;outline:none;font:13px var(--mono);color-scheme:dark;box-shadow:0 0 0 1px rgba(45,125,255,.05) inset}
-    input:focus,select:focus,textarea:focus{border-color:rgba(123,231,255,.30);box-shadow:0 0 0 4px rgba(45,125,255,.16)}input::placeholder,textarea::placeholder{color:rgba(234,240,255,.42)}input::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.75)}
+    input:focus,select:focus,textarea:focus{border-color:rgba(123,231,255,.30);box-shadow:0 0 0 4px rgba(45,125,255,.16)}input::placeholder,textarea::placeholder{color:rgba(234,240,255,.42)}input[type="date"]{color-scheme:light;border-color:rgba(123,231,255,.24);background:linear-gradient(180deg,rgba(11,27,58,.78),rgba(8,18,42,.70));box-shadow:0 0 0 1px rgba(123,231,255,.10) inset,0 0 18px rgba(45,125,255,.08)}input::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.92;filter:brightness(0) saturate(100%) invert(83%) sepia(37%) saturate(958%) hue-rotate(160deg) brightness(105%) contrast(101%) drop-shadow(0 0 4px rgba(123,231,255,.55))}
     label{display:block;margin:0 0 6px;font:11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:rgba(234,240,255,.70)}
     .view{display:none}.view.on{display:grid;gap:16px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,300px));gap:12px;align-items:start;justify-content:start}.dashboardGrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(300px,.95fr);gap:16px}.stack{display:grid;gap:10px}
     .panel{padding:14px}.panelTitle{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:12px}.panelTitle b{font:900 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(123,231,255,.86)}.panelTitle span{font:11px var(--mono);color:rgba(234,240,255,.58)}
@@ -68,7 +68,7 @@
     .sheetTable th{position:sticky;top:0;z-index:3;text-align:left;padding:8px 10px;color:rgba(123,231,255,.88);letter-spacing:.10em;text-transform:uppercase;background:rgba(7,11,26,.88);border-bottom:1px solid rgba(123,231,255,.16)}
     .sheetTable td{vertical-align:top;padding:10px;border-top:1px solid rgba(255,255,255,.09);border-bottom:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035)}
     .sheetTable td:first-child{border-left:1px solid rgba(255,255,255,.09);border-radius:14px 0 0 14px}.sheetTable td:last-child{border-right:1px solid rgba(255,255,255,.09);border-radius:0 14px 14px 0}
-    .sheetPrimary{font:900 15px var(--mono);letter-spacing:.04em;color:rgba(234,240,255,.96);overflow-wrap:anywhere}.sheetSecondary{font:900 12px var(--mono);color:rgba(234,240,255,.88);overflow-wrap:anywhere}.sheetEmpty{color:rgba(234,240,255,.46);font-style:italic}.sheetList{display:grid;gap:5px}.sheetDone{color:rgba(183,194,230,.70);text-decoration:line-through}.sheetDone:before{content:"DONE ";font-weight:900;color:rgba(123,231,255,.80);text-decoration:none}.sheetOpen{color:rgba(234,240,255,.84)}
+    .sheetPrimary{font:900 15px var(--mono);letter-spacing:.04em;color:rgba(234,240,255,.96);overflow-wrap:anywhere}.sheetSecondary{font:900 12px var(--mono);color:rgba(234,240,255,.88);overflow-wrap:anywhere}.sheetEmpty{color:rgba(234,240,255,.46);font-style:italic}.sheetList{display:grid;gap:5px}.sheetLink,.sheetItem{border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:0;cursor:pointer}.sheetLink:hover,.sheetItem:hover{text-decoration:underline;text-decoration-color:rgba(123,231,255,.58);text-underline-offset:3px}.sheetDone{color:rgba(183,194,230,.70);text-decoration:line-through}.sheetDone:before{content:"DONE ";font-weight:900;color:rgba(123,231,255,.80);text-decoration:none}.sheetOpen{color:rgba(234,240,255,.84)}
     .item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:7px 10px;align-items:start;min-width:0;padding:10px 10px 10px 13px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font:12px var(--mono);color:rgba(234,240,255,.86);position:relative;overflow:hidden}.item input[type=checkbox]{width:18px;height:18px;margin-top:2px;accent-color:var(--cyan)}.item.done{opacity:.68}.item.done .txt{text-decoration:line-through;color:rgba(183,194,230,.76)}.txt{line-height:1.32;overflow-wrap:anywhere}.itemMeta{grid-column:2/4;display:flex;gap:6px;flex-wrap:wrap}.miniBtn{border:0;cursor:pointer;min-width:0;padding:5px 8px;border-radius:999px;color:rgba(234,240,255,.78);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);font:900 10px var(--mono)}
     .completionBurst{--burstColor:var(--cyan);position:fixed;z-index:140;pointer-events:none;border-radius:18px;border:1px solid color-mix(in srgb,var(--burstColor) 44%,transparent);background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--burstColor) 16%,transparent),transparent 62%);box-shadow:0 0 22px color-mix(in srgb,var(--burstColor) 22%,transparent);animation:holoSoftPulse .9s ease-out both;mix-blend-mode:screen}
     @keyframes holoSoftPulse{0%{opacity:0;transform:scale(.98)}24%{opacity:.90;transform:scale(1.01)}100%{opacity:0;transform:scale(1.035)}}
@@ -104,6 +104,7 @@
     .grid .card:nth-child(6n+5){background:linear-gradient(180deg,rgba(24,58,48,.88),rgba(10,30,42,.78))}
     .grid .card:nth-child(6n+6){background:linear-gradient(180deg,rgba(54,28,46,.88),rgba(24,18,42,.78))}
     .historyLine{font:10px var(--mono);line-height:1.35;color:rgba(234,240,255,.58);padding:7px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(7,11,26,.18)}
+    body.largeText .btn,body.largeText .tab{font-size:15px}body.largeText input,body.largeText select,body.largeText textarea{font-size:16px}body.largeText label,body.largeText .subtle,body.largeText .hint,body.largeText .cardMeta,body.largeText .panelTitle span,body.largeText .modalHd span{font-size:14px}body.largeText .panelTitle b,body.largeText .hd b,body.largeText .modalHd b{font-size:15px}body.largeText .schoolName{font-size:19px}body.largeText .pill,body.largeText .miniBtn{font-size:13px}body.largeText .item,body.largeText .checkItem,body.largeText .noteBlock,body.largeText .sheetTable{font-size:16px}body.largeText .sheetPrimary{font-size:21px}body.largeText .sheetSecondary{font-size:18px}body.largeText .metric span{font-size:13px}
     @media(max-width:640px){.landingActions,.familyGrid{grid-template-columns:1fr}}
   </style>
 </head>
@@ -167,6 +168,7 @@
         <button class="btn ghost" id="manualSaveBtn">Save</button>
         <button class="btn ghost" id="loadBtn">Load</button>
         <button class="btn ghost iconOnly" id="privacyBtn" title="Privacy screen">Hide</button>
+        <button class="btn ghost iconOnly" id="visibilityBtn" title="Large text mode">View</button>
         <button class="btn primary" id="addTopBtn">Add School</button>
       </div>
     </div>
@@ -192,7 +194,6 @@
           <option value="major">Major</option>
           <option value="status">Status</option>
           <option value="progress">Progress</option>
-          <option value="theater">Theater</option>
           <option value="submitted">Submitted</option>
           <option value="needsAction">Needs Action</option>
         </select>
@@ -229,7 +230,6 @@
         <div><label for="schoolStatus">Status</label><select id="schoolStatus"></select></div>
         <div><label for="schoolPlan">Plan</label><select id="schoolPlan"></select><div class="helpText">ED means binding Early Decision. EA means non-binding Early Action. RD means Regular Decision.</div></div>
         <div><label for="schoolDeadline">Deadline</label><input type="date" id="schoolDeadline"></div>
-        <div><label for="schoolTheater">Theater</label><select id="schoolTheater"><option value="false">No</option><option value="true">Yes</option></select></div>
         <div><label for="schoolPrescreen">Prescreen</label><select id="schoolPrescreen"></select></div>
         <div class="wide"><label for="schoolNext">Next Action</label><input id="schoolNext" placeholder="Finish supplement"></div>
       </div>
@@ -312,6 +312,8 @@
       schoolSort: 'deadline',
       spreadsheetMode: 'school',
       taskFilter: 'open',
+      taskSchoolFocus: '',
+      largeText: localStorage.getItem('act:large-text') === 'true',
       expandedSchools: {},
       showSchoolNotes: true,
       showCompletedChecklist: true,
@@ -524,6 +526,8 @@
       $('manualSaveBtn').addEventListener('click', () => saveSnapshot('manual'));
       $('loadBtn').addEventListener('click', loadSnapshotChoice);
       $('privacyBtn').addEventListener('click', togglePrivacy);
+      $('visibilityBtn').addEventListener('click', toggleLargeText);
+      applyLargeTextMode();
       document.addEventListener('keydown', event => {
         if (event.key === 'Escape') {
           if (!$('privacyScreen').hidden) togglePrivacy(false);
@@ -947,14 +951,16 @@
 
     function renderTasks() {
       const filters = ['All Open','Ari','Elana','Asher','Overdue','Completed'];
+      const focusedSchool = state.taskSchoolFocus ? state.schools.find(school => school.id === state.taskSchoolFocus) : null;
       const tasks = sortedTasks().filter(matchesSearchTask).filter(task => {
+        if (focusedSchool) return task.school_id === focusedSchool.id;
         if (state.taskFilter === 'completed') return task.done;
         if (state.taskFilter === 'overdue') return !task.done && urgency(task.due_date) === 'overdue';
         if (['ari','elana','asher'].includes(state.taskFilter)) return !task.done && task.owner.toLowerCase() === state.taskFilter;
         return !task.done;
       });
       $('tasksView').innerHTML = `
-        <section class="panel"><div class="taskTools"><button class="btn primary" onclick="openTask()">Add Task</button>${filters.map(label => {
+        <section class="panel"><div class="taskTools"><button class="btn primary" onclick="openTask()">Add Task</button>${focusedSchool ? `<span class="statusPill">School: ${escapeHtml(focusedSchool.school)}</span><button class="btn ghost" onclick="clearSchoolTaskFocus()">All Tasks</button>` : filters.map(label => {
           const key = label.toLowerCase().replace('all open','open');
           return `<button class="btn ghost filterBtn ${state.taskFilter === key ? 'on' : ''}" onclick="setTaskFilter('${key}')">${escapeHtml(label)}</button>`;
         }).join('')}</div></section>
@@ -1018,26 +1024,38 @@
     function renderSpreadsheetRow(school, mode) {
       const summary = schoolWorkSummary(school);
       const cells = mode === 'major'
-        ? [escapeHtml(spreadsheetMajor(school)), escapeHtml(school.school), escapeHtml(school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), escapeHtml(planLabel(school.plan))]
+        ? [renderSheetFocus(school, spreadsheetMajor(school)), renderSheetSchool(school), renderSheetFocus(school, school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), renderSheetFocus(school, planLabel(school.plan))]
         : mode === 'deadline'
-          ? [escapeHtml(school.deadline ? formatDate(school.deadline) : 'No deadline'), escapeHtml(school.school), escapeHtml(spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), escapeHtml(planLabel(school.plan))]
+          ? [renderSheetFocus(school, school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetSchool(school), renderSheetFocus(school, spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), renderSheetFocus(school, planLabel(school.plan))]
           : mode === 'plan'
-            ? [escapeHtml(planLabel(school.plan)), escapeHtml(school.school), escapeHtml(school.deadline ? formatDate(school.deadline) : 'No deadline'), escapeHtml(spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false)]
-            : [escapeHtml(school.school), escapeHtml(school.deadline ? formatDate(school.deadline) : 'No deadline'), escapeHtml(spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), escapeHtml(planLabel(school.plan))];
+            ? [renderSheetFocus(school, planLabel(school.plan)), renderSheetSchool(school), renderSheetFocus(school, school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetFocus(school, spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false)]
+            : [renderSheetSchool(school), renderSheetFocus(school, school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetFocus(school, spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), renderSheetFocus(school, planLabel(school.plan))];
       return `<tr>${cells.map((cell, index) => `<td class="${index === 0 ? 'sheetPrimary' : index === 1 && mode !== 'school' ? 'sheetSecondary' : ''}">${cell}</td>`).join('')}</tr>`;
     }
 
     function schoolWorkSummary(school) {
       const completed = [];
       const open = [];
-      normalizedChecklist(school).forEach(item => (item.done ? completed : open).push(item.label));
-      state.tasks.filter(task => task.school_id === school.id).forEach(task => (task.done ? completed : open).push(task.task));
+      normalizedChecklist(school).forEach(item => (item.done ? completed : open).push({ label:item.label, kind:'checklist', schoolId:school.id, itemId:item.id }));
+      state.tasks.filter(task => task.school_id === school.id).forEach(task => (task.done ? completed : open).push({ label:task.task, kind:'task', schoolId:school.id, taskId:task.id }));
       return { completed, open };
     }
 
     function renderSheetList(items, done) {
       if (!items.length) return `<span class="sheetEmpty">${done ? 'No completed items' : 'Nothing open'}</span>`;
-      return `<div class="sheetList">${items.map(item => `<span class="${done ? 'sheetDone' : 'sheetOpen'}">${escapeHtml(item)}</span>`).join('')}</div>`;
+      return `<div class="sheetList">${items.map(item => {
+        const label = typeof item === 'string' ? item : item.label;
+        const action = typeof item === 'string' || item.kind === 'checklist' ? `focusSchool('${escapeAttr(item.schoolId || '')}')` : `focusSchoolTasks('${escapeAttr(item.schoolId)}','${escapeAttr(item.taskId)}')`;
+        return `<button type="button" class="sheetItem ${done ? 'sheetDone' : 'sheetOpen'}" onclick="${action}">${escapeHtml(label)}</button>`;
+      }).join('')}</div>`;
+    }
+
+    function renderSheetSchool(school) {
+      return `<button type="button" class="sheetLink" onclick="focusSchool('${escapeAttr(school.id)}')">${escapeHtml(school.school)}</button>`;
+    }
+
+    function renderSheetFocus(school, value) {
+      return `<button type="button" class="sheetLink" onclick="focusSchool('${escapeAttr(school.id)}')">${escapeHtml(value)}</button>`;
     }
 
     function spreadsheetMajor(school) { return safeText(school.major) || 'No major entered'; }
@@ -1051,7 +1069,7 @@
       const needsAction = !school.submitted && school.status !== 'Submitted' && !String(school.next_action || '').trim();
       const expanded = !!state.expandedSchools[school.id];
       return `
-        <article class="card">
+        <article class="card" data-school-card="${escapeAttr(school.id)}">
           <div class="cardTop"><div><div class="schoolName">${escapeHtml(school.school)}</div><div class="cardMeta">${escapeHtml(school.plan || 'Plan TBD')} | ${school.deadline ? escapeHtml(formatDate(school.deadline)) : 'No deadline'}${school.major ? ` | ${escapeHtml(school.major)}` : ''}</div></div><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span></div>
           <div class="progress" aria-label="Completion ${progress}%"><span style="width:${progress}%"></span></div>
           <div class="cardActions">
@@ -1060,7 +1078,7 @@
             <button class="btn ghost" onclick="openTaskForSchool('${escapeAttr(school.id)}')">Add Task</button>
             <button class="btn ghost submitTiny" onclick="markSchoolSubmitted('${escapeAttr(school.id)}')">Mark Submitted</button>
           </div>
-          <div class="pillRow"><span class="pill calm">${escapeHtml(school.status)}</span>${school.theater ? `<span class="pill good">Theater</span>` : ''}<span class="pill">${escapeHtml(school.prescreen || 'Not Required')}</span>${needsAction ? `<span class="pill hot">Needs next action</span>` : ''}</div>
+          <div class="pillRow"><span class="pill calm">${escapeHtml(school.status)}</span><span class="pill">${escapeHtml(school.prescreen || 'Not Required')}</span>${needsAction ? `<span class="pill hot">Needs next action</span>` : ''}</div>
           <p class="hint">${school.submitted || school.status === 'Submitted' ? 'Submitted. Follow-up items can live as tasks.' : school.next_action ? `Next: ${escapeHtml(school.next_action)}` : 'Needs next action.'}</p>
           <div class="schoolDetails ${expanded ? '' : 'hidden'}">
             ${visibleChecklist.length ? visibleChecklist.map(item => renderChecklistItem(school.id, item)).join('') : `<p class="hint">Completed checklist hidden.</p>`}
@@ -1117,7 +1135,6 @@
       $('schoolDeadline').value = school.deadline || '';
       $('schoolDeadlineTime').value = school.deadline_time || '';
       $('schoolTimezone').value = school.deadline_timezone || state.settings.Timezone || '';
-      $('schoolTheater').value = String(!!school.theater);
       $('schoolPrescreen').value = school.prescreen || 'Not Required';
       $('schoolApplicationDone').checked = !!school.application_done;
       $('schoolEssayDone').checked = !!school.essay_done;
@@ -1156,7 +1173,6 @@
         deadline: $('schoolDeadline').value || null,
         deadline_time: $('schoolDeadlineTime').value || null,
         deadline_timezone: $('schoolTimezone').value,
-        theater: $('schoolTheater').value === 'true',
         prescreen: $('schoolPrescreen').value,
         application_done: $('schoolApplicationDone').checked,
         essay_done: $('schoolEssayDone').checked,
@@ -1165,7 +1181,8 @@
         next_action: $('schoolNext').value,
         owner: id ? (state.schools.find(item => item.id === id)?.owner || 'Unassigned') : 'Unassigned',
         notes: $('schoolNotes').value,
-        checklist: id ? normalizedChecklist(state.schools.find(item => item.id === id) || {}) : defaultChecklist($('schoolTheater').value === 'true')
+        theater: prescreenRequiresItem($('schoolPrescreen').value),
+        checklist: id ? checklistForPrescreen(state.schools.find(item => item.id === id) || {}, $('schoolPrescreen').value) : defaultChecklist(prescreenRequiresItem($('schoolPrescreen').value))
       });
       try {
         if (state.demoMode) {
@@ -1280,20 +1297,32 @@
       } catch (error) { task.done = previous; setSaving('error'); render(); showError(error); }
     }
 
-    function defaultChecklist(theater) {
+    function defaultChecklist(includePrescreen) {
       const items = ['Application', 'Supplement', 'Essay', 'Recommendations', 'Transcript', 'Submit Application', 'Check Portal'];
-      if (theater) items.splice(5, 0, 'Prescreen');
+      if (includePrescreen) items.splice(5, 0, 'Prescreen');
       return items.map(label => ({ id: demoId(), label, done: false }));
     }
 
     function normalizedChecklist(school) {
       let list = Array.isArray(school && school.checklist) ? school.checklist : [];
-      if (!list.length) list = defaultChecklist(!!(school && school.theater));
+      if (!list.length) list = defaultChecklist(prescreenRequiresItem(school && school.prescreen));
       return list.map(item => ({
         id: item.id || demoId(),
         label: String(item.label || 'Checklist item'),
         done: !!item.done
       }));
+    }
+
+    function prescreenRequiresItem(value) { return safeText(value) && safeText(value) !== 'Not Required'; }
+    function checklistForPrescreen(school, prescreen) {
+      const includePrescreen = prescreenRequiresItem(prescreen);
+      let checklist = normalizedChecklist(school).filter(item => includePrescreen || !item.label.toLowerCase().includes('prescreen'));
+      const hasPrescreen = checklist.some(item => item.label.toLowerCase().includes('prescreen'));
+      if (includePrescreen && !hasPrescreen) {
+        const submitIndex = checklist.findIndex(item => item.label.toLowerCase().includes('submit application'));
+        checklist.splice(submitIndex === -1 ? checklist.length : submitIndex, 0, { id: demoId(), label:'Prescreen', done:false });
+      }
+      return checklist;
     }
 
     async function saveSchoolObject(school, quiet = false) {
@@ -1445,10 +1474,32 @@
       return row;
     }
     function fromTaskRow(row) { return row; }
-    function setTaskFilter(filter) { state.taskFilter = filter; renderTasks(); }
+    function setTaskFilter(filter) { state.taskSchoolFocus = ''; state.taskFilter = filter; renderTasks(); }
+    function clearSchoolTaskFocus() { state.taskSchoolFocus = ''; renderTasks(); }
+    function focusSchool(schoolId) {
+      if (!schoolId) return;
+      state.expandedSchools[schoolId] = true;
+      setView('schools');
+      setTimeout(() => pulseTarget(`[data-school-card="${cssEscape(schoolId)}"]`), 80);
+    }
+    function focusSchoolTasks(schoolId, taskId = '') {
+      if (!schoolId) return;
+      state.taskSchoolFocus = schoolId;
+      setView('tasks');
+      setTimeout(() => pulseTarget(taskId ? `[data-task-id="${cssEscape(taskId)}"]` : '#tasksView'), 80);
+    }
+    function pulseTarget(selector) {
+      const target = document.querySelector(selector);
+      if (!target) return;
+      target.scrollIntoView({ behavior:'smooth', block:'center' });
+      target.classList.add('tourGlow');
+      setTimeout(() => target.classList.remove('tourGlow'), 1400);
+    }
     function openOverlay(id) { $(id).classList.add('on'); $(id).setAttribute('aria-hidden','false'); }
     function closeOverlay(id) { $(id).classList.remove('on'); $(id).setAttribute('aria-hidden','true'); }
     function togglePrivacy(force) { const show = typeof force === 'boolean' ? force : $('privacyScreen').hidden; $('privacyScreen').hidden = !show; }
+    function toggleLargeText() { state.largeText = !state.largeText; localStorage.setItem('act:large-text', String(state.largeText)); applyLargeTextMode(); }
+    function applyLargeTextMode() { document.body.classList.toggle('largeText', !!state.largeText); if ($('visibilityBtn')) $('visibilityBtn').classList.toggle('primary', !!state.largeText); }
     function sortedSchools() {
       const schools = [...state.schools];
       if (state.schoolSort === 'school') return schools.sort((a,b) => a.school.localeCompare(b.school));
