@@ -77,6 +77,7 @@
     .taskTools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.filterBtn{border-radius:999px}.filterBtn.on{color:#07101f;background:linear-gradient(180deg,rgba(123,231,255,.96),rgba(45,125,255,.92))}
     .overlay{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:16px;background:rgba(0,0,0,.52);backdrop-filter:blur(8px);overflow:hidden}.overlay.on{display:grid}.modal{width:min(920px,calc(100vw - 32px));max-height:92vh;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}.modal.compact{width:min(760px,calc(100vw - 32px))}.modal *{min-width:0}.formGrid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px}.wide{grid-column:1/-1}.moreDetails{position:relative;z-index:2;margin:0 14px 14px;padding:10px;border-radius:18px;border:1px solid rgba(123,231,255,.13);background:rgba(255,255,255,.035);overflow-x:hidden}.moreDetails summary{cursor:pointer;font:900 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:rgba(123,231,255,.86)}
     .checkGroup{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.checkGroup label{display:flex;gap:8px;align-items:center;margin:0;text-transform:none;letter-spacing:0}.checkGroup input{width:18px;height:18px;accent-color:var(--cyan)}
+    .batchSchoolPanel{position:relative;z-index:2;margin-top:2px;padding:10px;border-radius:18px;border:1px solid rgba(123,231,255,.16);background:linear-gradient(180deg,rgba(45,125,255,.08),rgba(255,255,255,.025));box-shadow:0 0 0 1px rgba(45,125,255,.05) inset}.batchSchoolPanel[hidden]{display:none}.batchSchoolHead{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:8px}.batchSchoolHead b{font:900 10px var(--mono);letter-spacing:.13em;text-transform:uppercase;color:rgba(123,231,255,.90)}.batchSchoolTools{display:flex;gap:7px;flex-wrap:wrap}.batchSchoolList{display:grid;gap:7px;margin-top:8px}.batchSchoolRow{display:grid;grid-template-columns:minmax(0,1fr) minmax(145px,.45fr);gap:8px;align-items:center;padding:8px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.035)}.batchSchoolCheck{display:flex;gap:8px;align-items:center;margin:0;text-transform:none;letter-spacing:0;color:rgba(234,240,255,.84)}.batchSchoolCheck input{width:18px;height:18px;accent-color:var(--cyan);flex:0 0 auto}.batchDue label{font-size:9px;margin:0 0 4px;color:rgba(234,240,255,.54)}.batchDue input{padding:8px;font-size:12px}@media(max-width:720px){.batchSchoolRow{grid-template-columns:1fr}.batchSchoolTools .btn{flex:1}}
     .modalActions{position:relative;z-index:2;display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;padding:14px;border-top:1px solid rgba(255,255,255,.10)}
     .choiceActions{display:flex;justify-content:flex-end;flex-wrap:wrap}.choiceModal .helpText{margin:0;font-size:13px;line-height:1.5;color:rgba(234,240,255,.78);white-space:pre-line}
     .toast{position:fixed;z-index:160;right:16px;bottom:16px;max-width:min(420px,calc(100vw - 32px));padding:12px 14px;border-radius:16px;border:1px solid rgba(123,231,255,.22);background:linear-gradient(180deg,rgba(12,22,56,.96),rgba(10,18,48,.92));box-shadow:var(--shadow);font:12px var(--mono);color:var(--ink);opacity:0;transform:translateY(10px);pointer-events:none;transition:.22s ease}.toast.on{opacity:1;transform:translateY(0)}
@@ -308,6 +309,11 @@
         <div><label for="taskOwner">Owner</label><select id="taskOwner"></select></div>
         <div><label for="taskDue">Due Date</label><input type="date" id="taskDue"></div>
         <div><label for="taskSchool">School</label><select id="taskSchool"></select></div>
+        <div class="wide batchSchoolPanel" id="taskBatchPanel" hidden>
+          <div class="batchSchoolHead"><b>Apply To Multiple Schools</b><div class="batchSchoolTools"><button class="btn ghost" type="button" id="batchSelectAll">Select All</button><button class="btn ghost" type="button" id="batchClearAll">Clear</button></div></div>
+          <div class="helpText">Choose each school that should receive this task. Each checked school can have its own due date.</div>
+          <div id="taskBatchSchools" class="batchSchoolList"></div>
+        </div>
         <div><label for="taskCategory">Category</label><select id="taskCategory"></select></div>
         <div><label for="taskDone">Done</label><select id="taskDone"><option value="false">Open</option><option value="true">Done</option></select></div>
         <div class="wide"><label for="taskNotes">Notes</label><textarea id="taskNotes" rows="3"></textarea></div>
@@ -588,10 +594,27 @@
         action: () => setView('tasks')
       },
       {
+        title: 'Batch Tasks Across Schools',
+        body: 'Add Task can create the same follow-up for several existing schools at once. Choose Apply to Multiple in the School field, check the schools that need the task, and assign different due dates when the same task has different school-specific deadlines.',
+        target: 'taskOverlay',
+        action: async () => {
+          setView('tasks');
+          await openTask();
+          await typeInto('taskTitle', 'Confirm portal login');
+          $('taskDue').value = nextDate(14);
+          $('taskSchool').value = TASK_MULTI_VALUE;
+          handleTaskSchoolMode();
+          [...document.querySelectorAll('[data-batch-school-row]')].slice(0, 3).forEach((row, index) => {
+            row.querySelector('[data-batch-school]').checked = true;
+            row.querySelector('[data-batch-due]').value = nextDate(14 + index * 3);
+          });
+        }
+      },
+      {
         title: 'Spreadsheet: Counselor And Family Scan',
         body: 'The Spreadsheet page reorganizes the same data into a readable table. It can group or filter by school, major, deadline, or decision category, and clicking a school or task jumps back to the exact record behind that cell.',
         target: 'spreadsheetView',
-        action: () => setView('spreadsheet')
+        action: () => { closeOverlay('taskOverlay'); setView('spreadsheet'); }
       },
       {
         title: 'Shared Workspace Across Devices',
@@ -607,7 +630,7 @@
       },
       {
         title: 'Readability Mode',
-        body: 'The View button increases text size for families who need a more readable interface. This matters because application planning often happens on different screens, under time pressure, and with people who scan information differently.',
+        body: 'The View button increases text size for users who need a more readable interface. This matters because application planning often happens on different screens, under time pressure, and with people who scan information differently.',
         target: 'visibilityBtn',
         action: () => setView('dashboard')
       },
@@ -722,6 +745,10 @@
       $('choiceOverlay').addEventListener('click', event => { if (event.target.id === 'choiceOverlay') cancelChoice(); });
       $('schoolForm').addEventListener('submit', saveSchoolFromForm);
       $('taskForm').addEventListener('submit', saveTaskFromForm);
+      $('taskSchool').addEventListener('change', handleTaskSchoolMode);
+      $('taskDue').addEventListener('input', syncTaskBatchDatesFromMain);
+      $('batchSelectAll').addEventListener('click', () => setTaskBatchChecked(true));
+      $('batchClearAll').addEventListener('click', () => setTaskBatchChecked(false));
       $('deleteSchoolBtn').addEventListener('click', deleteCurrentSchool);
       $('deleteTaskBtn').addEventListener('click', deleteCurrentTask);
     }
@@ -1403,8 +1430,58 @@
       fillSelect('taskCategory', OPTIONS.categories);
       refreshTaskSchoolSelect();
     }
+    const TASK_MULTI_VALUE = '__multiple__';
     function fillSelect(id, values) { $(id).innerHTML = values.map(value => `<option value="${escapeAttr(value)}">${escapeHtml(value)}</option>`).join(''); }
-    function refreshTaskSchoolSelect() { $('taskSchool').innerHTML = `<option value="">No school</option>` + sortedSchools().map(school => `<option value="${escapeAttr(school.id)}">${escapeHtml(school.school)}</option>`).join(''); }
+    function refreshTaskSchoolSelect(allowBatch = true) {
+      const batchOption = allowBatch && state.schools.length ? `<option value="${TASK_MULTI_VALUE}">Apply to Multiple...</option>` : '';
+      $('taskSchool').innerHTML = `<option value="">No school</option>${batchOption}` + sortedSchools().map(school => `<option value="${escapeAttr(school.id)}">${escapeHtml(school.school)}</option>`).join('');
+    }
+    function taskBatchModeActive() { return $('taskSchool') && $('taskSchool').value === TASK_MULTI_VALUE; }
+    function renderTaskBatchSchools() {
+      const box = $('taskBatchSchools');
+      if (!box) return;
+      const prior = new Map([...box.querySelectorAll('[data-batch-school-row]')].map(row => [row.dataset.schoolId, {
+        checked: !!row.querySelector('[data-batch-school]')?.checked,
+        due: row.querySelector('[data-batch-due]')?.value || ''
+      }]));
+      const dueDefault = $('taskDue')?.value || '';
+      const schools = sortedSchools();
+      if (!schools.length) {
+        box.innerHTML = '<div class="helpText">Add schools first, then this panel can create one copy of the task for each selected school.</div>';
+        return;
+      }
+      box.innerHTML = schools.map(school => {
+        const saved = prior.get(school.id) || {};
+        const dueValue = saved.due || dueDefault;
+        return `<div class="batchSchoolRow" data-batch-school-row data-school-id="${escapeAttr(school.id)}"><label class="batchSchoolCheck"><input type="checkbox" data-batch-school value="${escapeAttr(school.id)}" ${saved.checked ? 'checked' : ''}><span>${escapeHtml(school.school)}</span></label><div class="batchDue"><label>Due Date</label><input type="date" data-batch-due value="${escapeAttr(dueValue)}"></div></div>`;
+      }).join('');
+    }
+    function handleTaskSchoolMode() {
+      const panel = $('taskBatchPanel');
+      if (!panel) return;
+      const active = taskBatchModeActive();
+      panel.hidden = !active;
+      if (active) renderTaskBatchSchools();
+    }
+    function setTaskBatchChecked(checked) {
+      document.querySelectorAll('[data-batch-school]').forEach(input => { input.checked = checked; });
+      if (checked) syncTaskBatchDatesFromMain();
+    }
+    function syncTaskBatchDatesFromMain() {
+      if (!$('taskBatchPanel') || $('taskBatchPanel').hidden) return;
+      const due = $('taskDue')?.value || '';
+      if (!due) return;
+      document.querySelectorAll('[data-batch-due]').forEach(input => { if (!input.value) input.value = due; });
+    }
+    function collectTaskBatchTargets() {
+      const rows = [...document.querySelectorAll('[data-batch-school-row]')];
+      const targets = rows.filter(row => row.querySelector('[data-batch-school]')?.checked).map(row => ({
+        schoolId: row.dataset.schoolId,
+        dueDate: row.querySelector('[data-batch-due]')?.value || $('taskDue')?.value || null
+      }));
+      if (!targets.length) throw new Error('Choose at least one school for Apply to Multiple.');
+      return targets;
+    }
 
     function setView(view) {
       state.view = ['dashboard','schools','tasks','spreadsheet'].includes(view) ? view : 'dashboard';
@@ -1712,7 +1789,7 @@
     async function openTask(id) {
       if (!(await ensureLoadedBeforeEditing())) return;
       const task = state.tasks.find(item => item.id === id) || {};
-      refreshTaskSchoolSelect();
+      refreshTaskSchoolSelect(!id);
       $('taskModalTitle').textContent = id ? 'Edit Task' : 'Add Task';
       $('taskId').value = task.id || '';
       $('taskTitle').value = task.task || '';
@@ -1724,6 +1801,9 @@
       $('taskDone').value = String(!!task.done);
       $('taskNotes').value = task.notes || '';
       $('deleteTaskBtn').style.visibility = id ? 'visible' : 'hidden';
+      $('taskBatchPanel').hidden = true;
+      renderTaskBatchSchools();
+      handleTaskSchoolMode();
       openOverlay('taskOverlay'); setTimeout(() => $('taskTitle').focus(), 80);
     }
 
@@ -1774,17 +1854,42 @@
       event.preventDefault();
       if (!(await ensureLoadedBeforeEditing())) return;
       const id = $('taskId').value || null;
-      const row = cleanTaskRow({
+      const schoolMode = $('taskSchool').value || '';
+      const batchMode = !id && schoolMode === TASK_MULTI_VALUE;
+      const base = {
         family_id: state.familyId,
         done: $('taskDone').value === 'true',
         task: $('taskTitle').value,
-        school_id: $('taskSchool').value || null,
         owner: $('taskOwner').value,
-        due_date: $('taskDue').value || null,
         category: $('taskCategory').value,
         notes: $('taskNotes').value
-      });
+      };
       try {
+        if (batchMode) {
+          const targets = collectTaskBatchTargets();
+          const rows = targets.map(target => cleanTaskRow({ ...base, school_id: target.schoolId, due_date: target.dueDate || null }));
+          if (state.demoMode) {
+            const savedRows = rows.map(row => fromTaskRow({ id: demoId(), ...row }));
+            savedRows.forEach(saved => upsertById(state.tasks, saved));
+            for (const saved of savedRows) await logActivity({ schoolId: saved.school_id, taskId: saved.id, action:'updated', detail: `Added task: ${saved.task}` });
+            saveDemoData();
+            closeOverlay('taskOverlay'); setSaving('saved'); flash(`${savedRows.length} demo tasks saved`); render();
+            return;
+          }
+          setSaving('saving');
+          const { data, error } = await db.from('tasks').insert(rows).select();
+          if (error) throw error;
+          const savedRows = (data || []).map(fromTaskRow);
+          savedRows.forEach(saved => upsertById(state.tasks, saved));
+          for (const saved of savedRows) await logActivity({ schoolId: saved.school_id, taskId: saved.id, action:'updated', detail: `Added task: ${saved.task}` });
+          closeOverlay('taskOverlay'); setSaving('saved'); flash(`${savedRows.length} tasks saved`); render();
+          return;
+        }
+        const row = cleanTaskRow({
+          ...base,
+          school_id: schoolMode || null,
+          due_date: $('taskDue').value || null
+        });
         if (state.demoMode) {
           const saved = fromTaskRow({ id: id || demoId(), ...row });
           upsertById(state.tasks, saved);
@@ -1984,6 +2089,7 @@
       if (!(await ensureLoadedBeforeEditing())) return;
       await openTask();
       $('taskSchool').value = schoolId;
+      handleTaskSchoolMode();
     }
 
     async function markSchoolSubmitted(schoolId) {
