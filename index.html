@@ -511,19 +511,25 @@
 
     const tourSteps = [
       {
-        title: 'Counselor Preview',
-        body: 'This tour uses fake sample data only. It shows how a family could keep applications, deadlines, majors, prescreens, and follow-up tasks in one shared place.',
+        title: 'Shared Application Map',
+        body: 'This tour uses sample data only. It is written for counselors, parents, and students: the goal is to show how one shared tracker can turn applications, deadlines, majors, tasks, and follow-up into one readable family workspace.',
         action: () => { closeOverlay('schoolOverlay'); closeOverlay('taskOverlay'); setView('dashboard'); }
       },
       {
-        title: 'Dashboard: Triage View',
-        body: 'The dashboard is the quick family check: next deadline, recommended next actions, open tasks, and overall submission progress. The goal is to reduce confusion before anything becomes urgent.',
+        title: 'Dashboard: What Needs Attention',
+        body: 'The Dashboard exists for quick triage. Counselors can see the overall shape of the process, parents can see what needs support, and students can see the next concrete actions without opening every school card.',
         target: 'dashboardView',
         action: () => setView('dashboard')
       },
       {
-        title: 'Adding A School',
-        body: 'A school record captures application plan, deadline, intended major, prescreen status, and next action. Prescreen controls any extra checklist work without adding another separate setup toggle.',
+        title: 'Next Deadline And Progress',
+        body: 'The deadline and progress areas answer the first practical question: what is coming up soon, and how much is already complete? This is meant to reduce last-minute surprise and make check-ins shorter.',
+        target: 'dashboardView',
+        action: () => setView('dashboard')
+      },
+      {
+        title: 'Adding A School Record',
+        body: 'Each school record stores the application plan, deadline, intended major, prescreen status, next action, owner, and notes. The point is to keep the school-specific details in one place instead of scattering them across emails, portals, and memory.',
         target: 'schoolOverlay',
         action: async () => {
           setView('schools');
@@ -537,8 +543,8 @@
         }
       },
       {
-        title: 'Schools: Compact Overview',
-        body: 'The Schools page is designed as an overview board. Each card shows deadline, plan, major, status, progress, and next action without forcing a long form every time.',
+        title: 'Schools: Compact Overview Board',
+        body: 'The Schools page is the scan view. Cards stay compact so a counselor or family member can compare schools quickly: deadline, plan, major, status, progress, and the next action are all visible without opening a long form.',
         target: 'schoolsView',
         action: () => {
           closeOverlay('schoolOverlay');
@@ -566,8 +572,8 @@
         }
       },
       {
-        title: 'Checklist And Prescreens',
-        body: 'Show List reveals the school checklist. If Prescreen is required, prescreen work appears there. Checking items grays them as done and updates progress without deleting them.',
+        title: 'Checklist And Prescreen Details',
+        body: 'Show List opens the school checklist. Completed items gray out as DONE rather than disappearing, so the history remains visible and a mistaken check can be undone. If a prescreen is required, those extra steps live in the same school checklist.',
         target: 'schoolsView',
         action: () => {
           state.expandedSchools['tour-brandeis'] = true;
@@ -576,32 +582,38 @@
         }
       },
       {
-        title: 'Tasks: Assigned Follow-Up',
-        body: 'Tasks are for anything with an owner or due date: essays, recommendations, forms, visits, or reminders. Completed tasks stay visible in the Completed filter and can be unchecked if needed.',
+        title: 'Tasks: Follow-Up With Owners',
+        body: 'The Tasks page is for the moving pieces that cut across schools: essays, recommendations, forms, visits, portals, reminders, and parent/student follow-up. Owners are there for clarity and accountability; roles are labels, not locked permission levels.',
         target: 'tasksView',
         action: () => setView('tasks')
       },
       {
-        title: 'Spreadsheet: Counselor-Friendly Scan',
-        body: 'The Spreadsheet page gives a readable sortable overview. It can reorganize by school, major, deadline, or decision category, and clicking a cell jumps back to the relevant school or task list.',
+        title: 'Spreadsheet: Counselor And Family Scan',
+        body: 'The Spreadsheet page reorganizes the same data into a readable table. It can group or filter by school, major, deadline, or decision category, and clicking a school or task jumps back to the exact record behind that cell.',
         target: 'spreadsheetView',
         action: () => setView('spreadsheet')
       },
       {
-        title: 'Shared Family State',
-        body: 'With Supabase connected, the same family tracker can be used across devices. Save creates a purposeful snapshot, Load can recover a saved state, and autosave protects everyday edits.',
+        title: 'Shared Workspace Across Devices',
+        body: 'With Supabase connected, the tracker can be used by the family across devices. Save and Load are intentionally visible because application planning is high-stakes; users should know when they are preserving or retrieving the shared state.',
         target: 'manualSaveBtn',
         action: () => setView('dashboard')
       },
       {
-        title: 'Accessibility And Readability',
-        body: 'The View button toggles larger text for users who need a more readable interface. The design stays compact, but the app can become easier to scan on laptops, tablets, or phones.',
+        title: 'Invites And Family Roles',
+        body: 'Invite links help additional family members join the same workspace. Parent/Guardian, Applicant, Sibling, and Other are meant to make the human roles understandable; the tool is still collaborative, so everyone in the family workspace can use the tracker.',
+        target: 'inviteTopBtn',
+        action: () => setView('dashboard')
+      },
+      {
+        title: 'Readability Mode',
+        body: 'The View button increases text size for families who need a more readable interface. This matters because application planning often happens on different screens, under time pressure, and with people who scan information differently.',
         target: 'visibilityBtn',
         action: () => setView('dashboard')
       },
       {
-        title: 'What We Are Asking You To Evaluate',
-        body: 'The core question is whether this matches how families and students actually manage applications: deadlines, majors, prescreens, tasks, and shared accountability without becoming another overwhelming portal.',
+        title: 'What To Evaluate',
+        body: 'The central question is whether this lowers friction for real families and counselors: fewer scattered details, clearer next actions, easier check-ins, and a shared picture of progress without becoming another overwhelming portal.',
         action: () => setView('dashboard')
       }
     ];
