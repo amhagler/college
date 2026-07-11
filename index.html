@@ -303,7 +303,7 @@
   <div class="overlay" id="inviteOverlay" aria-hidden="true">
     <form class="modal compact" id="inviteForm">
       <div class="modalHd">
-        <div><b>Invite Family Members</b><span>Send sign-in links that attach people to this tracker.</span></div>
+        <div><b>Invite Family Members</b><span>Create links you can copy into your own message.</span></div>
         <button type="button" class="btn ghost iconOnly" data-close="inviteOverlay">X</button>
       </div>
       <div class="formGrid">
@@ -326,7 +326,7 @@
       <div class="modalActions">
         <span></span><span></span>
         <button type="button" class="btn ghost" data-close="inviteOverlay">Cancel</button>
-        <button type="submit" class="btn primary">Send Invites</button>
+        <button type="submit" class="btn primary">Create Invite Links</button>
       </div>
     </form>
   </div>
@@ -994,37 +994,57 @@
       }));
       const { error } = await db.from('family_invites').insert(rows);
       if (error) throw error;
-      return rows.map(row => ({
+      return rows.map((row, index) => ({
         displayName: row.display_name,
         email: row.email,
         role: row.role,
+        roleLabel: invites[index]?.roleLabel || (row.role === 'admin' ? 'Parent/Guardian' : 'Family Member'),
         link: inviteLinkForToken(row.invite_token)
       }));
     }
 
-    function showManualInviteLinks(links, reason = '') {
+    function inviteCopyMessage(link) {
+      return [
+        `Hi ${link.displayName},`,
+        '',
+        'Here is your family college tracker invite link:',
+        link.link,
+        '',
+        `Open it and sign in with ${link.email}. It should connect you directly to the family tracker.`
+      ].join('\n');
+    }
+
+    function showManualInviteLinks(links) {
       const status = $('inviteStatus');
       if (!status) return;
-      const lines = links.map(link => `${link.displayName} <${link.email}>: ${link.link}`);
       status.innerHTML = `
         <div class="manualInviteBox">
-          <b>Email sender unavailable; manual links created</b>
-          <div>Copy these links into your own email or text message. They still connect each person to this family tracker.</div>
-          ${reason ? `<div class="hint">${escapeHtml(reason)}</div>` : ''}
-          ${links.map(link => `
+          <b>Invite links created</b>
+          <div>Copy a ready-to-send message, or copy just the link.</div>
+          ${links.map((link, index) => `
             <div class="manualInviteLink">
               <span>${escapeHtml(link.displayName)} &lt;${escapeHtml(link.email)}&gt;</span>
-              <a href="${escapeAttr(link.link)}" target="_blank" rel="noopener">${escapeHtml(link.link)}</a>
+              <span>${escapeHtml(link.roleLabel)}</span>
+              <div class="familyToolsBtns">
+                <button class="btn ghost" type="button" data-copy-invite-message="${index}">Copy Message</button>
+                <button class="btn ghost" type="button" data-copy-invite-link="${index}">Copy Link</button>
+              </div>
             </div>
           `).join('')}
-          <button class="btn ghost" type="button" id="copyManualInviteLinksBtn">Copy All Links</button>
         </div>
       `;
-      const copyBtn = $('copyManualInviteLinksBtn');
-      if (copyBtn) copyBtn.onclick = async () => {
-        await copyText(lines.join('\n'));
-        flash('Invite links copied');
-      };
+      links.forEach((link, index) => {
+        const msgBtn = status.querySelector(`[data-copy-invite-message="${index}"]`);
+        const linkBtn = status.querySelector(`[data-copy-invite-link="${index}"]`);
+        if (msgBtn) msgBtn.onclick = async () => {
+          await copyText(inviteCopyMessage(link));
+          flash('Invite message copied');
+        };
+        if (linkBtn) linkBtn.onclick = async () => {
+          await copyText(link.link);
+          flash('Invite link copied');
+        };
+      });
     }
 
     async function sendFamilyInvites(event) {
@@ -1035,31 +1055,15 @@
         const invites = collectInviteRows();
         if (!invites.length) throw new Error('Enter at least one invite row.');
         setSaving('saving');
-        const redirectTo = `${location.origin}${location.pathname}`;
-        let functionResult;
-        try {
-          functionResult = await db.functions.invoke('send-family-invites', {
-            body: { familyId: state.familyId, invites, redirectTo }
-          });
-        } catch (functionError) {
-          functionResult = { data: null, error: functionError };
-        }
-        const { data, error } = functionResult;
-        if (error) {
-          const fallbackLinks = await createManualInviteLinks(invites);
-          setSaving('saved');
-          showManualInviteLinks(fallbackLinks, 'The Supabase Edge Function could not send email from this page, so the tracker made direct invite links instead.');
-          flash('Manual invite links created');
-          return;
-        }
+        const inviteLinks = await createManualInviteLinks(invites);
         setSaving('saved');
-        closeOverlay('inviteOverlay');
-        flash(data && data.message ? data.message : `Sent ${invites.length} invite${invites.length === 1 ? '' : 's'}`);
+        showManualInviteLinks(inviteLinks);
+        flash(`Created ${inviteLinks.length} invite link${inviteLinks.length === 1 ? '' : 's'}`);
       } catch (error) {
         setSaving('error');
         const msg = messageOf(error);
-        showError(new Error(msg.includes('FunctionsHttpError') || msg.includes('not found')
-          ? 'Invite function is not deployed yet. Add Step 6 SQL and deploy the send-family-invites Edge Function.'
+        showError(new Error(isMissingInviteError(error)
+          ? 'Run Step 6 SQL to enable invite links.'
           : msg));
       }
     }
