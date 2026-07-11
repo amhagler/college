@@ -68,6 +68,7 @@
     .sheetTable th{position:sticky;top:0;z-index:3;text-align:left;padding:8px 10px;color:rgba(123,231,255,.88);letter-spacing:.10em;text-transform:uppercase;background:rgba(7,11,26,.88);border-bottom:1px solid rgba(123,231,255,.16)}
     .sheetTable td{vertical-align:top;padding:10px;border-top:1px solid rgba(255,255,255,.09);border-bottom:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035)}
     .sheetTable td:first-child{border-left:1px solid rgba(255,255,255,.09);border-radius:14px 0 0 14px}.sheetTable td:last-child{border-right:1px solid rgba(255,255,255,.09);border-radius:0 14px 14px 0}
+    .sheetTable th+th{border-left:1px solid rgba(123,231,255,.20)}.sheetTable td+td{border-left:1px solid rgba(123,231,255,.14)}
     .sheetPrimary{font:900 15px var(--mono);letter-spacing:.04em;color:rgba(234,240,255,.96);overflow-wrap:anywhere}.sheetSecondary{font:900 12px var(--mono);color:rgba(234,240,255,.88);overflow-wrap:anywhere}.sheetEmpty{color:rgba(234,240,255,.46);font-style:italic}.sheetList{display:grid;gap:5px}.sheetLink,.sheetItem{border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:0;cursor:pointer}.sheetLink:hover,.sheetItem:hover{text-decoration:underline;text-decoration-color:rgba(123,231,255,.58);text-underline-offset:3px}.sheetDone{color:rgba(183,194,230,.70);text-decoration:line-through}.sheetDone:before{content:"DONE ";font-weight:900;color:rgba(123,231,255,.80);text-decoration:none}.sheetOpen{color:rgba(234,240,255,.84)}
     .item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:7px 10px;align-items:start;min-width:0;padding:10px 10px 10px 13px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font:12px var(--mono);color:rgba(234,240,255,.86);position:relative;overflow:hidden}.item input[type=checkbox]{width:18px;height:18px;margin-top:2px;accent-color:var(--cyan)}.item.done{opacity:.68}.item.done .txt{text-decoration:line-through;color:rgba(183,194,230,.76)}.txt{line-height:1.32;overflow-wrap:anywhere}.itemMeta{grid-column:2/4;display:flex;gap:6px;flex-wrap:wrap}.miniBtn{border:0;cursor:pointer;min-width:0;padding:5px 8px;border-radius:999px;color:rgba(234,240,255,.78);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);font:900 10px var(--mono)}
     .completionBurst{--burstColor:var(--cyan);position:fixed;z-index:140;pointer-events:none;border-radius:18px;border:1px solid color-mix(in srgb,var(--burstColor) 44%,transparent);background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--burstColor) 16%,transparent),transparent 62%);box-shadow:0 0 22px color-mix(in srgb,var(--burstColor) 22%,transparent);animation:holoSoftPulse .9s ease-out both;mix-blend-mode:screen}
@@ -77,6 +78,7 @@
     .overlay{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:16px;background:rgba(0,0,0,.52);backdrop-filter:blur(8px);overflow:hidden}.overlay.on{display:grid}.modal{width:min(920px,calc(100vw - 32px));max-height:92vh;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}.modal.compact{width:min(760px,calc(100vw - 32px))}.modal *{min-width:0}.formGrid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px}.wide{grid-column:1/-1}.moreDetails{position:relative;z-index:2;margin:0 14px 14px;padding:10px;border-radius:18px;border:1px solid rgba(123,231,255,.13);background:rgba(255,255,255,.035);overflow-x:hidden}.moreDetails summary{cursor:pointer;font:900 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:rgba(123,231,255,.86)}
     .checkGroup{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.checkGroup label{display:flex;gap:8px;align-items:center;margin:0;text-transform:none;letter-spacing:0}.checkGroup input{width:18px;height:18px;accent-color:var(--cyan)}
     .modalActions{position:relative;z-index:2;display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;padding:14px;border-top:1px solid rgba(255,255,255,.10)}
+    .choiceActions{display:flex;justify-content:flex-end;flex-wrap:wrap}.choiceModal .helpText{margin:0;font-size:13px;line-height:1.5;color:rgba(234,240,255,.78);white-space:pre-line}
     .toast{position:fixed;z-index:160;right:16px;bottom:16px;max-width:min(420px,calc(100vw - 32px));padding:12px 14px;border-radius:16px;border:1px solid rgba(123,231,255,.22);background:linear-gradient(180deg,rgba(12,22,56,.96),rgba(10,18,48,.92));box-shadow:var(--shadow);font:12px var(--mono);color:var(--ink);opacity:0;transform:translateY(10px);pointer-events:none;transition:.22s ease}.toast.on{opacity:1;transform:translateY(0)}
     .privacyScreen,.loadingGate,.accessWrap{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;background:radial-gradient(620px 320px at 50% 35%,rgba(45,125,255,.20),transparent 68%),rgba(7,11,26,.94);backdrop-filter:blur(14px)}.accessWrap{position:relative;min-height:100vh}.accessPanel{width:min(680px,94vw);padding:28px;z-index:2}.accessPanel p{font:14px var(--mono);color:rgba(234,240,255,.72);line-height:1.5}.accessPanel form{display:grid;gap:10px;margin-top:18px;position:relative;z-index:2}
     .statusPill{font:10px var(--mono);padding:7px 9px;border-radius:999px;border:1px solid rgba(123,231,255,.18);background:rgba(45,125,255,.08);color:rgba(123,231,255,.90)}
@@ -87,6 +89,7 @@
     .saveText{font:10px var(--mono);color:rgba(234,240,255,.62);min-width:100px;text-align:right}
     .quickStrip{display:grid;grid-template-columns:1fr;gap:8px}.quickStrip .item{cursor:pointer}
     .overallProgress{display:grid;gap:8px}.overallProgress .progress{height:16px}.sortGrid{display:flex;gap:8px;flex-wrap:wrap}
+    .sheetFilterBar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}.sheetFilterPill{font:900 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:rgba(123,231,255,.90);border:1px solid rgba(123,231,255,.22);background:rgba(45,125,255,.10);border-radius:999px;padding:7px 10px}
     .sortBtn.on,.toggleBtn.on{color:#07101f;background:linear-gradient(180deg,rgba(123,231,255,.96),rgba(45,125,255,.92))}
     .cardActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.cardActions .btn{padding:7px 7px;font-size:9px}
     .checkItem{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 9px;border-radius:12px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.035);font:11px var(--mono)}
@@ -141,6 +144,12 @@
             <input id="familyName" placeholder="Hagler Family">
             <label for="creatorName">Your Display Name</label>
             <input id="creatorName" placeholder="Dad">
+            <label for="setupStudentName">Student Name</label>
+            <input id="setupStudentName" placeholder="Student">
+            <label for="setupDadName">Dad Name <span class="hint">(optional)</span></label>
+            <input id="setupDadName" placeholder="Dad">
+            <label for="setupMomName">Mom Name <span class="hint">(optional)</span></label>
+            <input id="setupMomName" placeholder="Mom">
             <button class="btn primary" type="submit">Create Family</button>
           </form>
           <form id="joinFamilyForm">
@@ -234,6 +243,18 @@
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="overlay" id="choiceOverlay" aria-hidden="true">
+    <div class="modal compact choiceModal">
+      <div class="modalHd">
+        <div><b id="choiceTitle">Confirm</b><span id="choiceSub">Choose an option.</span></div>
+      </div>
+      <div class="formGrid">
+        <div class="wide"><p class="helpText" id="choiceMessage"></p></div>
+      </div>
+      <div class="modalActions choiceActions" id="choiceActions"></div>
+    </div>
+  </div>
   <div class="tourOverlay" id="tourOverlay" aria-hidden="true"></div>
 
   <div class="overlay" id="schoolOverlay" aria-hidden="true">
@@ -355,12 +376,15 @@
     };
 
     const $ = id => document.getElementById(id);
+    const DEFAULT_OWNER_LABELS = { Dad:'Dad', Mom:'Mom', Student:'Student', Shared:'Shared', Unassigned:'Unassigned' };
     let db = null;
+    let choiceResolve = null;
     const state = {
       view: localStorage.getItem('act:view') || 'dashboard',
       search: '',
       schoolSort: 'deadline',
       spreadsheetMode: 'school',
+      spreadsheetFilter: null,
       taskFilter: 'open',
       taskSchoolFocus: '',
       largeText: localStorage.getItem('act:large-text') === 'true',
@@ -378,7 +402,10 @@
       demoMode: false,
       schools: [],
       tasks: [],
-      settings: { StudentName:'Student', ApplicationCycle:'College applications', Timezone:'America/Los_Angeles' }
+      autosaveArmed: false,
+      loadGuardBypassed: false,
+      latestCloudSnapshot: null,
+      settings: { StudentName:'Student', ApplicationCycle:'College applications', Timezone:'America/Los_Angeles', OwnerLabels: { ...DEFAULT_OWNER_LABELS } }
     };
 
     async function boot() {
@@ -409,6 +436,58 @@
       return SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length > 40;
     }
 
+    function parseMaybeJson(value) {
+      if (typeof value !== 'string') return value;
+      try { return JSON.parse(value); }
+      catch { return value; }
+    }
+
+    function normalizeSettings(settings = {}) {
+      const base = {
+        StudentName:'Student',
+        ApplicationCycle:'College applications',
+        Timezone:'America/Los_Angeles',
+        OwnerLabels: { ...DEFAULT_OWNER_LABELS },
+        ...(settings || {})
+      };
+      const parsedLabels = parseMaybeJson(base.OwnerLabels);
+      base.OwnerLabels = parsedLabels && typeof parsedLabels === 'object'
+        ? { ...DEFAULT_OWNER_LABELS, ...parsedLabels }
+        : { ...DEFAULT_OWNER_LABELS };
+      if (!base.StudentName && base.OwnerLabels.Student) base.StudentName = base.OwnerLabels.Student;
+      if (base.StudentName && (!base.OwnerLabels.Student || base.OwnerLabels.Student === 'Student')) base.OwnerLabels.Student = base.StudentName;
+      return base;
+    }
+
+    function ownerLabels() {
+      state.settings = normalizeSettings(state.settings);
+      return state.settings.OwnerLabels;
+    }
+
+    function ownerLabel(value) {
+      const role = normalizeOwner(value);
+      return ownerLabels()[role] || role || 'Unassigned';
+    }
+
+    function ownerOptionHtml(selected = 'Unassigned') {
+      const current = normalizeOwner(selected);
+      return OPTIONS.owners.map(value => `<option value="${escapeAttr(value)}" ${value === current ? 'selected' : ''}>${escapeHtml(ownerLabel(value))}</option>`).join('');
+    }
+
+    function refreshOwnerSelect(selected = 'Unassigned') {
+      if (!$('taskOwner')) return;
+      $('taskOwner').innerHTML = ownerOptionHtml(selected);
+    }
+
+    function studentDisplayName() {
+      state.settings = normalizeSettings(state.settings);
+      return state.settings.StudentName || ownerLabels().Student || 'Student';
+    }
+
+    function refreshCycleLabel() {
+      $('cycleLabel').textContent = `${studentDisplayName()} | ${state.settings.ApplicationCycle || 'College applications'}`;
+    }
+
     function enterDemoApp() {
       state.demoMode = true;
       loadDemoData();
@@ -419,6 +498,7 @@
       $('cycleLabel').textContent = 'College Tracker | Explore mode';
       setSaving('saved');
       setView(state.view);
+      state.autosaveArmed = true;
       startAutosave();
       flash('Explore mode uses local sample data. Connect Supabase for shared family data.');
     }
@@ -569,11 +649,9 @@
     async function typeInto(id, text) {
       const el = $(id);
       if (!el) return;
-      el.value = '';
-      for (const char of text) {
-        el.value += char;
-        await new Promise(resolve => setTimeout(resolve, 35));
-      }
+      el.value = text;
+      el.dispatchEvent(new Event('input', { bubbles:true }));
+      await new Promise(resolve => setTimeout(resolve, 90));
     }
 
     function bindEvents() {
@@ -618,6 +696,7 @@
       document.addEventListener('keydown', event => {
         if (event.key === 'Escape') {
           if (!$('privacyScreen').hidden) togglePrivacy(false);
+          cancelChoice();
           closeOverlay('schoolOverlay'); closeOverlay('taskOverlay'); closeOverlay('inviteOverlay');
         }
         if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'h') {
@@ -628,6 +707,7 @@
       $('schoolOverlay').addEventListener('click', event => { if (event.target.id === 'schoolOverlay') closeOverlay('schoolOverlay'); });
       $('taskOverlay').addEventListener('click', event => { if (event.target.id === 'taskOverlay') closeOverlay('taskOverlay'); });
       $('inviteOverlay').addEventListener('click', event => { if (event.target.id === 'inviteOverlay') closeOverlay('inviteOverlay'); });
+      $('choiceOverlay').addEventListener('click', event => { if (event.target.id === 'choiceOverlay') cancelChoice(); });
       $('schoolForm').addEventListener('submit', saveSchoolFromForm);
       $('taskForm').addEventListener('submit', saveTaskFromForm);
       $('deleteSchoolBtn').addEventListener('click', deleteCurrentSchool);
@@ -668,6 +748,10 @@
         const familyName = $('familyName').value.trim();
         const displayName = $('creatorName').value.trim();
         if (!familyName || !displayName) throw new Error('Enter a family name and display name.');
+        const studentName = $('setupStudentName').value.trim() || 'Student';
+        const dadName = $('setupDadName').value.trim() || displayName || 'Dad';
+        const momName = $('setupMomName').value.trim() || 'Mom';
+        const setupOwnerLabels = { Dad:dadName, Mom:momName, Student:studentName, Shared:'Shared', Unassigned:'Unassigned' };
         const joinCode = makeJoinCode(familyName);
         const { data: userData, error: userError } = await db.auth.getUser();
         if (userError) throw userError;
@@ -676,6 +760,11 @@
         let result = await db.from('families').insert({ id: familyId, family_name: familyName, join_code: joinCode, created_by: email }).select().single();
         if (result.error) throw result.error;
         result = await db.from('app_members').insert({ family_id: familyId, email, display_name: displayName, role: 'admin' }).select().single();
+        if (result.error) throw result.error;
+        result = await db.from('settings').upsert([
+          { family_id:familyId, key:'StudentName', value:studentName },
+          { family_id:familyId, key:'OwnerLabels', value:JSON.stringify(setupOwnerLabels) }
+        ], { onConflict:'family_id,key' });
         if (result.error) throw result.error;
         flash(`Family created. Join code: ${joinCode}`);
         state.pendingSession = (await db.auth.getSession()).data.session;
@@ -826,7 +915,7 @@
         $('signedInLabel').innerHTML = `${escapeHtml(member.display_name || email)} <button class="miniBtn" onclick="signOut()">Sign out</button>`;
         setView(state.view);
         setSaving('saved');
-        startAutosave();
+        $('saveText').textContent = 'Load before autosave';
       } catch (error) {
         $('authGate').hidden = false;
         $('authCopy').textContent = messageOf(error);
@@ -850,11 +939,12 @@
         if (!historyError) state.history = historyData || [];
       } catch {}
       settingsResult.data.forEach(row => { state.settings[row.key] = row.value; });
-      $('cycleLabel').textContent = `${state.settings.StudentName || 'Student'} | ${state.settings.ApplicationCycle || 'College applications'}`;
+      state.settings = normalizeSettings(state.settings);
+      refreshCycleLabel();
       await loadFamilyMeta();
       refreshTaskSchoolSelect();
+      refreshOwnerSelect();
       render();
-      startAutosave();
     }
 
     async function loadFamilyMeta() {
@@ -1163,17 +1253,34 @@
         savedAt: new Date().toISOString(),
         schools: state.schools,
         tasks: state.tasks,
-        settings: state.settings
+        settings: normalizeSettings(state.settings)
       };
     }
 
     function startAutosave() {
       if (state.autosaveTimer) clearInterval(state.autosaveTimer);
+      if (!state.autosaveArmed) {
+        $('saveText').textContent = 'Load before autosave';
+        return;
+      }
       state.autosaveTimer = setInterval(() => saveSnapshot('autosave', true), 10000);
     }
 
     async function saveSnapshot(kind = 'manual', quiet = false) {
       try {
+        if (kind === 'manual' && !quiet && !state.demoMode && !state.autosaveArmed) {
+          const ok = await themedConfirm('This browser has not loaded the latest saved family snapshot yet. Saving now can overwrite newer work from another device.\n\nChoose Save Anyway only if you are sure this page is the current version.', {
+            title:'Save before load?',
+            sub:'Protecting shared family data',
+            confirmText:'Save Anyway',
+            cancelText:'Cancel'
+          });
+          if (!ok) {
+            setSaving('saved');
+            $('saveText').textContent = 'Load before autosave';
+            return;
+          }
+        }
         const payload = snapshotPayload();
         setSaving('saving');
         if (state.demoMode) {
@@ -1196,7 +1303,8 @@
         }
         state.lastSaveKind = kind;
         setSaving('saved');
-        $('saveText').textContent = kind === 'autosave' ? 'Autosaved just now' : 'Manual save created';
+        $('saveText').textContent = kind === 'autosave' ? 'Autosaved just now' : state.autosaveArmed ? 'Manual save created' : 'Manual save created; Load enables autosave';
+        if (kind === 'manual' && !quiet && state.autosaveArmed) startAutosave();
         if (!quiet) flash(kind === 'autosave' ? 'Autosaved' : 'Manual save created');
       } catch (error) {
         setSaving('error');
@@ -1205,8 +1313,18 @@
     }
 
     async function loadSnapshotChoice() {
-      const useAutosave = confirm('Load latest autosave?\n\nOK = latest autosave\nCancel = last manual save');
-      await loadSnapshot(useAutosave ? 'autosave' : 'manual');
+      const choice = await themedChoice({
+        title:'Load Saved State',
+        sub:'Choose which snapshot to restore',
+        message:'Latest autosave is usually the most recent protected version. Manual save restores the last deliberate Save button snapshot.',
+        actions:[
+          { label:'Latest Autosave', value:'autosave', className:'primary' },
+          { label:'Manual Save', value:'manual', className:'ghost' },
+          { label:'Cancel', value:'', className:'ghost' }
+        ]
+      });
+      if (!choice) return;
+      await loadSnapshot(choice);
     }
 
     async function loadSnapshot(kind) {
@@ -1236,10 +1354,14 @@
         }
         state.schools = (payload.schools || []).map(fromSchoolRow);
         state.tasks = (payload.tasks || []).map(fromTaskRow);
-        state.settings = payload.settings || state.settings;
+        state.settings = normalizeSettings(payload.settings || state.settings);
         if (state.demoMode) saveDemoData();
         refreshTaskSchoolSelect();
+        refreshOwnerSelect();
+        refreshCycleLabel();
         render();
+        state.autosaveArmed = true;
+        startAutosave();
         flash(`Loaded ${kind === 'autosave' ? 'latest autosave' : 'last manual save'}`);
       } catch (error) {
         showError(error);
@@ -1265,7 +1387,7 @@
       fillSelect('schoolStatus', OPTIONS.statuses);
       $('schoolPlan').innerHTML = OPTIONS.plans.map(value => `<option value="${escapeAttr(value)}">${escapeHtml(OPTIONS.planLabels[value] || value)}</option>`).join('');
       fillSelect('schoolPrescreen', OPTIONS.prescreens);
-      fillSelect('taskOwner', OPTIONS.owners);
+      refreshOwnerSelect();
       fillSelect('taskCategory', OPTIONS.categories);
       refreshTaskSchoolSelect();
     }
@@ -1310,7 +1432,7 @@
             ${next ? `
               <div class="kicker">NEXT DEADLINE</div><h1>${escapeHtml(next.school)}</h1>
               <div class="bigDate">${escapeHtml(formatDate(next.deadline))} ${next.deadline_time ? escapeHtml(next.deadline_time) : ''}</div>
-              <div class="pillRow"><span class="pill ${urgencyClass(next.deadline)}">${escapeHtml(deadlineLabel(next.deadline))}</span><span class="pill calm">${escapeHtml(next.status)}</span><span class="pill">${escapeHtml(next.owner)}</span></div>
+              <div class="pillRow"><span class="pill ${urgencyClass(next.deadline)}">${escapeHtml(deadlineLabel(next.deadline))}</span><span class="pill calm">${escapeHtml(next.status)}</span><span class="pill">${escapeHtml(ownerLabel(next.owner))}</span></div>
               <p class="hint">${next.next_action ? `Next: ${escapeHtml(next.next_action)}` : 'No next action yet.'}</p>
             ` : `<div class="kicker">NEXT DEADLINE</div><h1>No dated schools</h1><p class="hint">Add a deadline to a school and it will appear here.</p>`}
           </section>
@@ -1338,7 +1460,14 @@
     }
 
     function renderTasks() {
-      const filters = ['All Open','Dad','Mom','Student','Overdue','Completed'];
+      const filters = [
+        ['open','All Open'],
+        ['dad', ownerLabel('Dad')],
+        ['mom', ownerLabel('Mom')],
+        ['student', ownerLabel('Student')],
+        ['overdue','Overdue'],
+        ['completed','Completed']
+      ];
       const focusedSchool = state.taskSchoolFocus ? state.schools.find(school => school.id === state.taskSchoolFocus) : null;
       const tasks = sortedTasks().filter(matchesSearchTask).filter(task => {
         if (focusedSchool) return task.school_id === focusedSchool.id;
@@ -1348,8 +1477,7 @@
         return !task.done;
       });
       $('tasksView').innerHTML = `
-        <section class="panel"><div class="taskTools"><button class="btn primary" onclick="openTask()">Add Task</button>${focusedSchool ? `<span class="statusPill">School: ${escapeHtml(focusedSchool.school)}</span><button class="btn ghost" onclick="clearSchoolTaskFocus()">All Tasks</button>` : filters.map(label => {
-          const key = label.toLowerCase().replace('all open','open');
+        <section class="panel"><div class="taskTools"><button class="btn primary" onclick="openTask()">Add Task</button>${focusedSchool ? `<span class="statusPill">School: ${escapeHtml(focusedSchool.school)}</span><button class="btn ghost" onclick="clearSchoolTaskFocus()">All Tasks</button>` : filters.map(([key, label]) => {
           return `<button class="btn ghost filterBtn ${state.taskFilter === key ? 'on' : ''}" onclick="setTaskFilter('${key}')">${escapeHtml(label)}</button>`;
         }).join('')}</div></section>
         <section class="panel"><div class="stack">${tasks.length ? tasks.map(renderTaskItem).join('') : emptyInner('Nothing open right now.', 'Add Task', 'openTask()')}</div></section>
@@ -1360,12 +1488,14 @@
       const schools = spreadsheetSchools().filter(matchesSearchSchool);
       const mode = state.spreadsheetMode || 'school';
       const headers = spreadsheetHeaders(mode);
+      const filter = state.spreadsheetFilter;
       $('spreadsheetView').innerHTML = `
         <section class="panel">
           <div class="sheetTools">
             <div>
               <div class="panelTitle" style="margin-bottom:4px"><b>Application Spreadsheet</b><span>${schools.length} schools</span></div>
               <p class="hint" style="margin:0">Click an organizing principle to rebuild the left column.</p>
+              ${filter ? `<div class="sheetFilterBar"><span class="sheetFilterPill">Filtered: ${escapeHtml(sheetFilterLabel(filter))}</span><button class="btn ghost" onclick="clearSpreadsheetFilter()">CLEAR</button></div>` : ''}
             </div>
             <div class="sheetModes" aria-label="Spreadsheet organization">
               ${[
@@ -1390,6 +1520,7 @@
 
     function setSpreadsheetMode(mode) {
       state.spreadsheetMode = ['school','major','deadline','plan'].includes(mode) ? mode : 'school';
+      state.spreadsheetFilter = null;
       renderSpreadsheet();
     }
 
@@ -1401,7 +1532,7 @@
     }
 
     function spreadsheetSchools() {
-      const schools = [...state.schools];
+      const schools = [...state.schools].filter(matchesSpreadsheetFilter);
       const byDeadline = (a,b) => dateRank(a.deadline) - dateRank(b.deadline) || safeText(a.school).localeCompare(safeText(b.school));
       if (state.spreadsheetMode === 'major') return schools.sort((a,b) => spreadsheetMajor(a).localeCompare(spreadsheetMajor(b)) || byDeadline(a,b));
       if (state.spreadsheetMode === 'deadline') return schools.sort(byDeadline);
@@ -1412,12 +1543,12 @@
     function renderSpreadsheetRow(school, mode) {
       const summary = schoolWorkSummary(school);
       const cells = mode === 'major'
-        ? [renderSheetFocus(school, spreadsheetMajor(school)), renderSheetSchool(school), renderSheetFocus(school, school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), renderSheetFocus(school, planLabel(school.plan))]
+        ? [renderSheetFilter('major', spreadsheetMajor(school), spreadsheetMajor(school)), renderSheetSchool(school), renderSheetFilter('deadline', school.deadline || '', school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), renderSheetFilter('plan', school.plan || '', planLabel(school.plan))]
         : mode === 'deadline'
-          ? [renderSheetFocus(school, school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetSchool(school), renderSheetFocus(school, spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), renderSheetFocus(school, planLabel(school.plan))]
+          ? [renderSheetFilter('deadline', school.deadline || '', school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetSchool(school), renderSheetFilter('major', spreadsheetMajor(school), spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), renderSheetFilter('plan', school.plan || '', planLabel(school.plan))]
           : mode === 'plan'
-            ? [renderSheetFocus(school, planLabel(school.plan)), renderSheetSchool(school), renderSheetFocus(school, school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetFocus(school, spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false)]
-            : [renderSheetSchool(school), renderSheetFocus(school, school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetFocus(school, spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), renderSheetFocus(school, planLabel(school.plan))];
+            ? [renderSheetFilter('plan', school.plan || '', planLabel(school.plan)), renderSheetSchool(school), renderSheetFilter('deadline', school.deadline || '', school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetFilter('major', spreadsheetMajor(school), spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false)]
+            : [renderSheetSchool(school), renderSheetFilter('deadline', school.deadline || '', school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetFilter('major', spreadsheetMajor(school), spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), renderSheetFilter('plan', school.plan || '', planLabel(school.plan))];
       return `<tr>${cells.map((cell, index) => `<td class="${index === 0 ? 'sheetPrimary' : index === 1 && mode !== 'school' ? 'sheetSecondary' : ''}">${cell}</td>`).join('')}</tr>`;
     }
 
@@ -1444,6 +1575,38 @@
 
     function renderSheetFocus(school, value) {
       return `<button type="button" class="sheetLink" onclick="focusSchool('${escapeAttr(school.id)}')">${escapeHtml(value)}</button>`;
+    }
+
+    function renderSheetFilter(field, value, label) {
+      return `<button type="button" class="sheetLink" onclick="setSpreadsheetFilter('${escapeAttr(field)}','${escapeAttr(jsString(value))}')">${escapeHtml(label)}</button>`;
+    }
+
+    function setSpreadsheetFilter(field, value) {
+      if (!['major','deadline','plan'].includes(field)) return;
+      state.spreadsheetFilter = { field, value:String(value || '') };
+      renderSpreadsheet();
+    }
+
+    function clearSpreadsheetFilter() {
+      state.spreadsheetFilter = null;
+      renderSpreadsheet();
+    }
+
+    function matchesSpreadsheetFilter(school) {
+      const filter = state.spreadsheetFilter;
+      if (!filter) return true;
+      if (filter.field === 'major') return spreadsheetMajor(school) === filter.value;
+      if (filter.field === 'deadline') return String(school.deadline || '') === filter.value;
+      if (filter.field === 'plan') return String(school.plan || '') === filter.value;
+      return true;
+    }
+
+    function sheetFilterLabel(filter) {
+      if (!filter) return '';
+      if (filter.field === 'major') return `Major = ${filter.value || 'No major entered'}`;
+      if (filter.field === 'deadline') return `Deadline = ${filter.value ? formatDate(filter.value) : 'No deadline'}`;
+      if (filter.field === 'plan') return `Decision = ${planLabel(filter.value)}`;
+      return 'Filtered';
     }
 
     function spreadsheetMajor(school) { return safeText(school.major) || 'No major entered'; }
@@ -1484,12 +1647,12 @@
           <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTaskDone('${escapeAttr(task.id)}', this.checked)">
           <div><div class="txt">${escapeHtml(task.task)}</div></div>
           <button class="miniBtn" onclick="openTask('${escapeAttr(task.id)}')">Edit</button>
-          <div class="itemMeta"><span class="pill ${urgencyClass(task.due_date)}">${escapeHtml(task.due_date ? formatDate(task.due_date) : 'No due date')}</span><span class="pill">${escapeHtml(task.owner || 'Unassigned')}</span><span class="pill calm">${escapeHtml(task.category || 'Other')}</span>${school ? `<span class="pill">${escapeHtml(school.school)}</span>` : ''}</div>
+          <div class="itemMeta"><span class="pill ${urgencyClass(task.due_date)}">${escapeHtml(task.due_date ? formatDate(task.due_date) : 'No due date')}</span><span class="pill">${escapeHtml(ownerLabel(task.owner || 'Unassigned'))}</span><span class="pill calm">${escapeHtml(task.category || 'Other')}</span>${school ? `<span class="pill">${escapeHtml(school.school)}</span>` : ''}</div>
         </div>
       `;
     }
     function renderDeadlineItem(school) {
-      return `<div class="item"><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span><div><div class="txt">${escapeHtml(school.school)}</div><div class="itemMeta"><span class="pill">${escapeHtml(formatDate(school.deadline))}</span><span class="pill">${escapeHtml(school.owner || 'Unassigned')}</span></div></div><button class="miniBtn" onclick="openSchool('${escapeAttr(school.id)}')">Edit</button></div>`;
+      return `<div class="item"><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span><div><div class="txt">${escapeHtml(school.school)}</div><div class="itemMeta"><span class="pill">${escapeHtml(formatDate(school.deadline))}</span><span class="pill">${escapeHtml(ownerLabel(school.owner || 'Unassigned'))}</span></div></div><button class="miniBtn" onclick="openSchool('${escapeAttr(school.id)}')">Edit</button></div>`;
     }
     function renderNextActionItem(item) {
       return `<div class="item" onclick="${item.kind === 'task' ? `openTask('${escapeAttr(item.id)}')` : `openSchool('${escapeAttr(item.id)}')`}"><span class="pill hot">${escapeHtml(item.label)}</span><div><div class="txt">${escapeHtml(item.text)}</div><div class="itemMeta"><span class="pill">${escapeHtml(item.context)}</span></div></div><button class="miniBtn">Open</button></div>`;
@@ -1512,7 +1675,8 @@
     function emptyState(text, button, action) { return `<section class="empty"><div><div class="kicker">STANDBY</div><h1>${escapeHtml(text)}</h1><button class="btn primary" onclick="${action}">${escapeHtml(button)}</button></div></section>`; }
     function emptyInner(text, button, action) { return `<div class="empty"><div><div class="kicker">CLEAR</div><h1>${escapeHtml(text)}</h1><button class="btn primary" onclick="${action}">${escapeHtml(button)}</button></div></div>`; }
 
-    function openSchool(id) {
+    async function openSchool(id) {
+      if (!(await ensureLoadedBeforeEditing())) return;
       const school = state.schools.find(item => item.id === id) || {};
       $('schoolModalTitle').textContent = id ? 'Edit School' : 'Add School';
       $('schoolId').value = school.id || '';
@@ -1533,13 +1697,15 @@
       $('deleteSchoolBtn').style.visibility = id ? 'visible' : 'hidden';
       openOverlay('schoolOverlay'); setTimeout(() => $('schoolName').focus(), 80);
     }
-    function openTask(id) {
+    async function openTask(id) {
+      if (!(await ensureLoadedBeforeEditing())) return;
       const task = state.tasks.find(item => item.id === id) || {};
       refreshTaskSchoolSelect();
       $('taskModalTitle').textContent = id ? 'Edit Task' : 'Add Task';
       $('taskId').value = task.id || '';
       $('taskTitle').value = task.task || '';
-      $('taskOwner').value = task.owner || 'Unassigned';
+      refreshOwnerSelect(task.owner || 'Unassigned');
+      $('taskOwner').value = normalizeOwner(task.owner || 'Unassigned');
       $('taskDue').value = task.due_date || '';
       $('taskSchool').value = task.school_id || '';
       $('taskCategory').value = task.category || 'Other';
@@ -1551,6 +1717,7 @@
 
     async function saveSchoolFromForm(event) {
       event.preventDefault();
+      if (!(await ensureLoadedBeforeEditing())) return;
       const id = $('schoolId').value || null;
       const row = cleanSchoolRow({
         family_id: state.familyId,
@@ -1593,6 +1760,7 @@
 
     async function saveTaskFromForm(event) {
       event.preventDefault();
+      if (!(await ensureLoadedBeforeEditing())) return;
       const id = $('taskId').value || null;
       const row = cleanTaskRow({
         family_id: state.familyId,
@@ -1625,7 +1793,8 @@
 
     async function deleteCurrentSchool() {
       const id = $('schoolId').value;
-      if (!id || !confirm('Delete this school? Tasks linked to it will remain, but their school link will be cleared.')) return;
+      if (!(await ensureLoadedBeforeEditing())) return;
+      if (!id || !(await themedConfirm('Delete this school? Tasks linked to it will remain, but their school link will be cleared.', { title:'Delete school?', sub:'This cannot be undone from this screen', confirmText:'Delete', confirmClass:'ghost danger' }))) return;
       try {
         if (state.demoMode) {
           state.schools = state.schools.filter(school => school.id !== id);
@@ -1646,7 +1815,8 @@
     }
     async function deleteCurrentTask() {
       const id = $('taskId').value;
-      if (!id || !confirm('Delete this task?')) return;
+      if (!(await ensureLoadedBeforeEditing())) return;
+      if (!id || !(await themedConfirm('Delete this task?', { title:'Delete task?', sub:'This cannot be undone from this screen', confirmText:'Delete', confirmClass:'ghost danger' }))) return;
       try {
         if (state.demoMode) {
           state.tasks = state.tasks.filter(task => task.id !== id);
@@ -1662,6 +1832,7 @@
       } catch (error) { setSaving('error'); showError(error); }
     }
     async function toggleTaskDone(id, done) {
+      if (!(await ensureLoadedBeforeEditing())) { render(); return; }
       const task = state.tasks.find(item => item.id === id);
       if (!task) return;
       const previous = task.done;
@@ -1753,6 +1924,7 @@
     }
 
     async function toggleChecklistItem(schoolId, itemId, done) {
+      if (!(await ensureLoadedBeforeEditing())) { renderSchools(); return; }
       const school = state.schools.find(item => item.id === schoolId);
       if (!school) return;
       const checklist = normalizedChecklist(school).map(item => item.id === itemId ? { ...item, done } : item);
@@ -1796,12 +1968,14 @@
       renderSchools();
     }
 
-    function openTaskForSchool(schoolId) {
-      openTask();
+    async function openTaskForSchool(schoolId) {
+      if (!(await ensureLoadedBeforeEditing())) return;
+      await openTask();
       $('taskSchool').value = schoolId;
     }
 
     async function markSchoolSubmitted(schoolId) {
+      if (!(await ensureLoadedBeforeEditing())) return;
       const school = state.schools.find(item => item.id === schoolId);
       if (!school) return;
       school.submitted = true;
@@ -1816,11 +1990,12 @@
       }
     }
 
-    function makeTaskFromChecklist(schoolId, itemId) {
+    async function makeTaskFromChecklist(schoolId, itemId) {
+      if (!(await ensureLoadedBeforeEditing())) return;
       const school = state.schools.find(item => item.id === schoolId);
       const item = normalizedChecklist(school).find(entry => entry.id === itemId);
       if (!school || !item) return;
-      openTaskForSchool(schoolId);
+      await openTaskForSchool(schoolId);
       $('taskTitle').value = item.label;
       $('taskCategory').value = item.label.toLowerCase().includes('prescreen') ? 'Theater' : item.label.toLowerCase().includes('recommend') ? 'Recommendation' : item.label.toLowerCase().includes('essay') || item.label.toLowerCase().includes('supplement') ? 'Essay' : 'Application';
     }
@@ -1828,7 +2003,7 @@
     function whatNextItems() {
       const items = [];
       sortedTasks().filter(task => !task.done).slice(0, 4).forEach(task => {
-        items.push({ kind:'task', id:task.id, label:deadlineLabel(task.due_date), text:task.task, context:task.owner || 'Unassigned' });
+        items.push({ kind:'task', id:task.id, label:deadlineLabel(task.due_date), text:task.task, context:ownerLabel(task.owner || 'Unassigned') });
       });
       sortedSchools().filter(school => !school.submitted && school.status !== 'Submitted').forEach(school => {
         if (!school.next_action) items.push({ kind:'school', id:school.id, label:'Needs action', text:`Add next action for ${school.school}`, context:school.deadline ? formatDate(school.deadline) : 'No deadline' });
@@ -1840,6 +2015,10 @@
     function normalizeOwner(value) {
       const text = String(value || '').trim();
       const key = text.toLowerCase();
+      const labels = normalizeSettings(state.settings).OwnerLabels || DEFAULT_OWNER_LABELS;
+      for (const [role, label] of Object.entries(labels)) {
+        if (key && key === String(label || '').trim().toLowerCase()) return role;
+      }
       const map = {
         ari: 'Dad',
         dad: 'Dad',
@@ -1903,6 +2082,105 @@
       target.classList.add('tourGlow');
       setTimeout(() => target.classList.remove('tourGlow'), 1400);
     }
+
+    function themedChoice({ title = 'Confirm', sub = 'Choose an option.', message = '', actions = [] }) {
+      return new Promise(resolve => {
+        choiceResolve = resolve;
+        $('choiceTitle').textContent = title;
+        $('choiceSub').textContent = sub;
+        $('choiceMessage').textContent = message;
+        $('choiceActions').innerHTML = actions.map(action => `<button type="button" class="btn ${escapeAttr(action.className || 'ghost')}" data-choice-value="${escapeAttr(action.value)}">${escapeHtml(action.label)}</button>`).join('');
+        const finish = value => {
+          $('choiceActions').onclick = null;
+          choiceResolve = null;
+          closeOverlay('choiceOverlay');
+          resolve(value);
+        };
+        $('choiceActions').onclick = event => {
+          const button = event.target.closest('[data-choice-value]');
+          if (!button) return;
+          finish(button.dataset.choiceValue);
+        };
+        openOverlay('choiceOverlay');
+      });
+    }
+
+    function cancelChoice() {
+      if (!choiceResolve) return;
+      const resolve = choiceResolve;
+      choiceResolve = null;
+      $('choiceActions').onclick = null;
+      closeOverlay('choiceOverlay');
+      resolve('');
+    }
+
+    async function themedConfirm(message, options = {}) {
+      const choice = await themedChoice({
+        title: options.title || 'Confirm',
+        sub: options.sub || 'Please confirm',
+        message,
+        actions:[
+          { label:options.cancelText || 'Cancel', value:'no', className:'ghost' },
+          { label:options.confirmText || 'Continue', value:'yes', className:options.confirmClass || 'primary' }
+        ]
+      });
+      return choice === 'yes';
+    }
+
+    async function latestCloudSnapshot() {
+      if (state.demoMode || !db || !state.familyId) return null;
+      if (state.latestCloudSnapshot) return state.latestCloudSnapshot;
+      try {
+        const { data, error } = await db.from('snapshots')
+          .select('kind,saved_at')
+          .eq('family_id', state.familyId)
+          .order('saved_at', { ascending:false })
+          .limit(1)
+          .maybeSingle();
+        if (error) {
+          if (!isMissingSnapshotError(error)) throw error;
+          return null;
+        }
+        state.latestCloudSnapshot = data || null;
+        return state.latestCloudSnapshot;
+      } catch (error) {
+        console.warn('Snapshot freshness check failed', error);
+        return null;
+      }
+    }
+
+    async function ensureLoadedBeforeEditing() {
+      if (state.demoMode || state.autosaveArmed || state.loadGuardBypassed) return true;
+      const snapshot = await latestCloudSnapshot();
+      if (!snapshot) {
+        state.loadGuardBypassed = true;
+        return true;
+      }
+      const kindLabel = snapshot.kind === 'autosave' ? 'latest autosave' : 'manual save';
+      const when = snapshot.saved_at ? formatDateTime(snapshot.saved_at) : 'recently';
+      const choice = await themedChoice({
+        title:'Load before editing?',
+        sub:'A saved cloud state is available',
+        message:`There is a ${kindLabel} from ${when}. Loading it before editing helps prevent working from an older page.\n\nYou can load it now, continue with this page, or cancel this action.`,
+        actions:[
+          { label:'Load Now', value:'load', className:'primary' },
+          { label:'Continue Anyway', value:'continue', className:'ghost' },
+          { label:'Cancel', value:'', className:'ghost' }
+        ]
+      });
+      if (choice === 'load') {
+        await loadSnapshot(snapshot.kind || 'autosave');
+        closeOverlay('schoolOverlay');
+        closeOverlay('taskOverlay');
+        return false;
+      }
+      if (choice === 'continue') {
+        state.loadGuardBypassed = true;
+        return true;
+      }
+      return false;
+    }
+
     function openOverlay(id) { $(id).classList.add('on'); $(id).setAttribute('aria-hidden','false'); }
     function closeOverlay(id) { $(id).classList.remove('on'); $(id).setAttribute('aria-hidden','true'); }
     function togglePrivacy(force) { const show = typeof force === 'boolean' ? force : $('privacyScreen').hidden; $('privacyScreen').hidden = !show; }
@@ -1979,6 +2257,7 @@
     }
     function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
     function escapeAttr(value) { return escapeHtml(value).replace(/`/g, '&#96;'); }
+    function jsString(value) { return String(value ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\r?\n/g, ' '); }
     function cssEscape(value) { return window.CSS && CSS.escape ? CSS.escape(value) : String(value).replace(/[^a-zA-Z0-9_-]/g, '\\$&'); }
     function sparkRect(rect) {
       if (!rect || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
