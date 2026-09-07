@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="app-version" content="college-tracker-supabase-v1">
+  <meta name="app-version" content="college-tracker-local-json-v1">
   <title>College Tracker</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root{
       --bg0:#070B1A;--bg1:#0B1230;--panel:#0C1638;--ink:#EAF0FF;--muted:#B7C2E6;
@@ -80,7 +79,7 @@
     .batchSchoolPanel{position:relative;z-index:2;margin-top:2px;padding:10px;border-radius:18px;border:1px solid rgba(123,231,255,.16);background:linear-gradient(180deg,rgba(45,125,255,.08),rgba(255,255,255,.025));box-shadow:0 0 0 1px rgba(45,125,255,.05) inset}.batchSchoolPanel[hidden]{display:none}.batchSchoolHead{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:8px}.batchSchoolHead b{font:900 10px var(--mono);letter-spacing:.13em;text-transform:uppercase;color:rgba(123,231,255,.90)}.batchSchoolTools{display:flex;gap:7px;flex-wrap:wrap}.batchSchoolList{display:grid;gap:7px;margin-top:8px}.batchSchoolRow{display:grid;grid-template-columns:minmax(0,1fr) minmax(145px,.45fr);gap:8px;align-items:center;padding:8px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.035)}.batchSchoolCheck{display:flex;gap:8px;align-items:center;margin:0;text-transform:none;letter-spacing:0;color:rgba(234,240,255,.84)}.batchSchoolCheck input{width:18px;height:18px;accent-color:var(--cyan);flex:0 0 auto}.batchDue label{font-size:9px;margin:0 0 4px;color:rgba(234,240,255,.54)}.batchDue input{padding:8px;font-size:12px}@media(max-width:720px){.batchSchoolRow{grid-template-columns:1fr}.batchSchoolTools .btn{flex:1}}
     .modalActions{position:relative;z-index:2;display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;padding:14px;border-top:1px solid rgba(255,255,255,.10)}
     .choiceActions{display:flex;justify-content:flex-end;flex-wrap:wrap}.choiceModal .helpText{margin:0;font-size:13px;line-height:1.5;color:rgba(234,240,255,.78);white-space:pre-line}
-    .toast{position:fixed;z-index:160;right:16px;bottom:16px;max-width:min(420px,calc(100vw - 32px));padding:12px 14px;border-radius:16px;border:1px solid rgba(123,231,255,.22);background:linear-gradient(180deg,rgba(12,22,56,.96),rgba(10,18,48,.92));box-shadow:var(--shadow);font:12px var(--mono);color:var(--ink);opacity:0;transform:translateY(10px);pointer-events:none;transition:.22s ease}.toast.on{opacity:1;transform:translateY(0)}
+    .toast{position:fixed;z-index:400;right:16px;bottom:16px;max-width:min(420px,calc(100vw - 32px));padding:12px 14px;border-radius:16px;border:1px solid rgba(123,231,255,.22);background:linear-gradient(180deg,rgba(12,22,56,.96),rgba(10,18,48,.92));box-shadow:var(--shadow);font:12px var(--mono);color:var(--ink);opacity:0;transform:translateY(10px);pointer-events:none;transition:.22s ease}.toast.on{opacity:1;transform:translateY(0)}
     .privacyScreen,.loadingGate,.accessWrap{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;background:radial-gradient(620px 320px at 50% 35%,rgba(45,125,255,.20),transparent 68%),rgba(7,11,26,.94);backdrop-filter:blur(14px)}.accessWrap{position:relative;min-height:100vh}.accessPanel{width:min(680px,94vw);padding:28px;z-index:2}.accessPanel p{font:14px var(--mono);color:rgba(234,240,255,.72);line-height:1.5}.accessPanel form{display:grid;gap:10px;margin-top:18px;position:relative;z-index:2}
     .statusPill{font:10px var(--mono);padding:7px 9px;border-radius:999px;border:1px solid rgba(123,231,255,.18);background:rgba(45,125,255,.08);color:rgba(123,231,255,.90)}
     .familyTools{position:relative;z-index:2;margin:0 14px 14px;padding:10px 12px;border-radius:18px;border:1px solid rgba(123,231,255,.16);background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;overflow-x:hidden}.familyTools[hidden]{display:none}.familyToolsText{display:grid;gap:2px;min-width:190px}.familyToolsText b{font:900 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(123,231,255,.88)}.familyToolsText span{font:11px var(--mono);color:rgba(234,240,255,.62)}.familyCode{font:900 13px var(--mono);letter-spacing:.08em;color:rgba(234,240,255,.96);padding:7px 10px;border-radius:999px;border:1px solid rgba(123,231,255,.22);background:rgba(45,125,255,.10);box-shadow:0 0 16px rgba(45,125,255,.08)}.familyToolsBtns,.codeRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:100%}.inviteFieldRows{position:relative;z-index:2;display:grid;gap:8px}.inviteRow{display:grid;grid-template-columns:minmax(120px,1fr) minmax(130px,.8fr) minmax(180px,1.3fr) auto;gap:8px;align-items:end;padding:9px;border-radius:16px;border:1px solid rgba(123,231,255,.13);background:rgba(255,255,255,.035);overflow-x:hidden}.inviteRow label{margin-bottom:4px}.inviteStatus{position:relative;z-index:2;margin:0 14px 14px;font:11px var(--mono);color:rgba(234,240,255,.62);overflow-x:hidden}.manualInviteBox{display:grid;gap:8px;padding:10px;border-radius:16px;border:1px solid rgba(123,231,255,.16);background:rgba(45,125,255,.07);color:rgba(234,240,255,.78);overflow-x:hidden}.manualInviteBox b{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(123,231,255,.88)}.manualInviteLink{display:grid;gap:6px;min-width:0;padding:8px;border-radius:12px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035);overflow:hidden;overflow-wrap:anywhere}.manualInviteLink span{min-width:0;overflow-wrap:anywhere}.manualInviteLink a{color:rgba(123,231,255,.92);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:720px){.inviteRow{grid-template-columns:1fr}.inviteRow .iconOnly{width:100%}}
@@ -111,6 +110,14 @@
     .historyLine{font:10px var(--mono);line-height:1.35;color:rgba(234,240,255,.58);padding:7px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(7,11,26,.18)}
     body.largeText .btn,body.largeText .tab{font-size:15px}body.largeText input,body.largeText select,body.largeText textarea{font-size:16px}body.largeText label,body.largeText .subtle,body.largeText .hint,body.largeText .cardMeta,body.largeText .panelTitle span,body.largeText .modalHd span{font-size:14px}body.largeText .panelTitle b,body.largeText .hd b,body.largeText .modalHd b{font-size:15px}body.largeText .schoolName{font-size:19px}body.largeText .pill,body.largeText .miniBtn{font-size:13px}body.largeText .item,body.largeText .checkItem,body.largeText .noteBlock,body.largeText .sheetTable{font-size:16px}body.largeText .sheetPrimary{font-size:21px}body.largeText .sheetSecondary{font-size:18px}body.largeText .metric span{font-size:13px}
     @media(max-width:640px){.landingActions,.familyGrid{grid-template-columns:1fr}}
+  
+    .saveSurge{position:fixed;inset:0;z-index:450;pointer-events:none;overflow:hidden;box-shadow:inset 0 0 65px rgba(123,231,255,.18);animation:saveEdge 1.05s ease-out both}
+    .saveSurge:after{content:"";position:absolute;inset:-35%;background:linear-gradient(110deg,transparent 36%,rgba(75,255,211,.035) 42%,rgba(123,231,255,.25) 49%,rgba(234,250,255,.52) 50%,rgba(45,125,255,.12) 54%,transparent 64%);transform:translateX(-110%);animation:saveSweep 1.05s cubic-bezier(.2,.65,.3,1) both}
+    .saveFlare{animation:saveButtonGlow 1.05s ease-out}
+    @keyframes saveSweep{to{transform:translateX(110%)}}
+    @keyframes saveEdge{0%,100%{opacity:0}25%{opacity:1}75%{opacity:.6}}
+    @keyframes saveButtonGlow{30%{box-shadow:0 0 8px #7be7ff,0 0 32px rgba(123,231,255,.65);border-color:#7be7ff}100%{box-shadow:none}}
+    @media(prefers-reduced-motion:reduce){.saveSurge{display:none}.saveFlare{animation:none}}
   </style>
 </head>
 <body>
@@ -122,46 +129,17 @@
     <div class="accessPanel">
       <div class="kicker">PRIVATE FAMILY TRACKER</div>
       <h1>College Tracker</h1>
-      <p id="authCopy">Learn the tracker with a guided tour, or enter your family workspace.</p>
+      <p id="authCopy">Open your shared family tracker, or explore with practice data.</p>
       <div class="landingActions">
         <button class="btn primary" type="button" id="exploreBtn">Explore</button>
         <button class="btn primary" type="button" id="enterBtn">Enter</button>
       </div>
-      <form id="loginForm" class="loginBox" hidden>
-        <label for="loginEmail">Email</label>
-        <input id="loginEmail" type="email" required placeholder="name@example.com" autocomplete="email">
-        <label for="loginJoinCode">Family Code <span class="hint">(optional)</span></label>
-        <input id="loginJoinCode" placeholder="HAGLER-8K42" autocomplete="off">
-        <label for="loginDisplayName">Display Name <span class="hint">(if joining)</span></label>
-        <input id="loginDisplayName" placeholder="Student" autocomplete="name">
-        <button class="btn primary" type="submit">Send Magic Link</button>
-        <p class="hint">No password is stored in this page. Supabase sends the sign-in link. A Family Code links you to an existing tracker after sign-in.</p>
-      </form>
-      <div class="familySetup" id="familySetup" hidden>
-        <p class="hint">This email is signed in but is not attached to a family workspace yet.</p>
-        <div class="familyGrid">
-          <form id="createFamilyForm">
-            <label for="familyName">Create Family Tracker</label>
-            <input id="familyName" placeholder="Hagler Family">
-            <label for="creatorName">Your Display Name</label>
-            <input id="creatorName" placeholder="Dad">
-            <label for="setupStudentName">Student Name</label>
-            <input id="setupStudentName" placeholder="Student">
-            <label for="setupDadName">Dad Name <span class="hint">(optional)</span></label>
-            <input id="setupDadName" placeholder="Dad">
-            <label for="setupMomName">Mom Name <span class="hint">(optional)</span></label>
-            <input id="setupMomName" placeholder="Mom">
-            <button class="btn primary" type="submit">Create Family</button>
-          </form>
-          <form id="joinFamilyForm">
-            <label for="joinCode">Join Code</label>
-            <input id="joinCode" placeholder="HAGLER-8K42">
-            <label for="joinName">Your Display Name</label>
-            <input id="joinName" placeholder="Student">
-            <button class="btn primary" type="submit">Join Family</button>
-          </form>
-        </div>
+      <div class="landingActions" style="margin-top:12px">
+        <button class="btn ghost" onclick="connectAnotherFile()">Choose JSON</button>
+        <button class="btn ghost" onclick="createTrackerFile()">New JSON</button>
       </div>
+      <p class="hint">Share one JSON file as Editor in Google Drive, then select it from the Drive desktop folder on each computer. One person should edit at a time; let Drive finish syncing before switching computers.</p>
+      <p id="connectionStatus" role="status" aria-live="polite">Enter opens your selected JSON file. No tracker sign-in is needed.</p>
     </div>
   </section>
 
@@ -181,8 +159,8 @@
         <div class="cloudStatus" id="saveLight" title="Save status" aria-label="Save status"></div>
         <div class="saveText" id="saveText">Saved</div>
         <button class="btn ghost" id="manualSaveBtn">Save</button>
-        <button class="btn ghost" id="loadBtn">Load</button>
-        <button class="btn ghost" id="inviteTopBtn">Invite Family</button>
+        <button class="btn ghost" id="loadBtn">Refresh</button>
+        <button class="btn ghost" id="inviteTopBtn">Linked File</button>
         <button class="btn ghost iconOnly" id="privacyBtn" title="Privacy screen">Hide</button>
         <button class="btn ghost iconOnly" id="visibilityBtn" title="Large text mode">View</button>
         <button class="btn primary" id="addTopBtn">Add School</button>
@@ -191,6 +169,17 @@
   </header>
 
   <main class="shell" id="appShell" hidden>
+    <section class="panel" aria-live="polite">
+      <strong id="syncMessage">Choose a JSON file to begin.</strong>
+      <div class="taskTools" style="margin-top:10px">
+        <button class="btn ghost" onclick="downloadBackup()">Download backup</button>
+        <button class="btn ghost" onclick="document.getElementById('importJson').click()">Import JSON</button>
+        <button class="btn ghost" id="retrySync" onclick="retrySync()" hidden>Retry save</button>
+        <button class="btn ghost" id="resolveSync" onclick="resolveConflict()" hidden>Review sync conflict</button>
+        <button class="btn ghost" onclick="signOut()">Back to entrance</button>
+        <input id="importJson" type="file" accept=".json,.txt,application/json,text/plain" hidden>
+      </div>
+    </section>
     <section class="heroPanel">
       <div class="hd">
         <div>
@@ -359,8 +348,6 @@
   </div>
 
   <script>
-    const SUPABASE_URL = "https://plqlivioeyuosevigqgu.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_Fb0HTGI04IytCmxt_NiIwA_a3e2BZwP";
     const DEFAULT_FAMILY_ID = "college-tracker";
 
     const OPTIONS = {
@@ -383,17 +370,254 @@
 
     const $ = id => document.getElementById(id);
     const DEFAULT_OWNER_LABELS = { Dad:'Dad', Mom:'Mom', Student:'Student', Shared:'Shared', Unassigned:'Unassigned' };
-    let db = null;
+
     let choiceResolve = null;
+    const storage = {
+      getItem(key) { try {return localStorage.getItem(key);} catch {return null;} },
+      setItem(key,value) {try {localStorage.setItem(key,value);} catch {
+        const el=document.getElementById('syncMessage');
+        if(el)el.textContent='Browser recovery storage is unavailable. Keep this tab open and download a backup.';
+      }},
+      removeItem(key) {try {localStorage.removeItem(key);} catch {}}
+    };
+    const drive={fileId:'',fileUrl:'',revision:0,base:null,dirty:false,conflict:false,busy:false,entering:false,generation:0,timer:null,pending:null};
+    function recoveryKey(){return 'act:drive-recovery:'+drive.fileId;}
+    function documentPayload(){return {schools:state.schools,tasks:state.tasks,settings:normalizeSettings(state.settings),history:state.history.slice(0,300)};}
+    function persistRecovery(){
+      if(drive.fileId)storage.setItem(recoveryKey(),JSON.stringify({dirty:drive.dirty,baseRevision:drive.revision,document:documentPayload(),pending:drive.pending}));
+    }
+    function syncMessage(text,error=false){
+      $('syncMessage').textContent=text;
+      $('syncMessage').style.color=error?'var(--gold)':'var(--ink)';
+      $('retrySync').hidden=!drive.dirty || drive.conflict || state.demoMode;
+      $('resolveSync').hidden=!drive.conflict || state.demoMode;
+      setSaving(error?'error':'saved');
+    }
+    let linkedHandle=null,linkedId='',fileReady=Promise.resolve();
+    const fileStore={
+      open(){return new Promise((resolve,reject)=>{const request=indexedDB.open('college-tracker-files',1);request.onupgradeneeded=()=>request.result.createObjectStore('handles');request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});},
+      async get(){const db=await this.open();return new Promise((resolve,reject)=>{const tx=db.transaction('handles');const request=tx.objectStore('handles').get('target');request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);tx.oncomplete=()=>db.close();});},
+      async set(value){const db=await this.open();return new Promise((resolve,reject)=>{const tx=db.transaction('handles','readwrite');tx.objectStore('handles').put(value,'target');tx.oncomplete=()=>{db.close();resolve();};tx.onerror=()=>reject(tx.error);});}
+    };
+    async function rememberTarget(handle){
+      linkedHandle=handle;linkedId=demoId();
+      try{await fileStore.set({handle,id:linkedId});}catch{flash('File connected for this session. Your browser could not remember it.');}
+    }
+    async function firstFileSave(){
+      const choice=await themedChoice({title:'Choose where to save',sub:'This browser is not linked to a JSON file yet.',
+        message:'Create a new JSON in your Google Drive desktop folder, or link an existing shared tracker. After linking, Save and autosave update that file. When linking, missing entries from this draft are added; existing shared entries are kept.',
+        actions:[{label:'Create new JSON',value:'new',className:'primary'},{label:'Link existing JSON',value:'link',className:'ghost'},{label:'Cancel',value:'',className:'ghost'}]});
+      if(!choice)return;
+      const draft=structuredClone(documentPayload());storage.setItem('act:unlinked-draft',JSON.stringify(draft));
+      try{
+        if(choice==='new'){
+          if(!window.showSaveFilePicker)throw new Error('Use desktop Chrome or Edge through the HTTPS GitHub Pages link.');
+          const handle=await window.showSaveFilePicker({suggestedName:'college-tracker.json',types:[{description:'College tracker JSON',accept:{'application/json':['.json']}}]});
+          if((await handle.getFile()).size)throw new Error('This file already has content. Choose Link existing JSON to preserve its entries.');
+          const stream=await handle.createWritable();
+          try{await stream.write(JSON.stringify({format:'college-tracker-json-v1',...draft},null,2));await stream.close();}catch(error){try{await stream.abort();}catch{}throw error;}
+          await rememberTarget(handle);await handleEnter();saveSurge();
+        }else{
+          await chooseExisting();
+          // Validate before switching away from the local draft.
+          const remote=await readTarget();downloadBackup();
+          await handleEnter();if(drive.conflict)return;
+          let skipped=0;
+          for(const key of ['schools','tasks'])for(const row of draft[key]){
+            const existing=state[key].find(x=>x.id===row.id);
+            if(!existing)state[key].push(row);else if(JSON.stringify(existing)!==JSON.stringify(row))skipped++;
+          }
+          saveDemoData();render();await flushDrive();
+          if(skipped)syncMessage(skipped+' matching entries kept from the shared file. Your original draft was downloaded as a backup.');
+        }
+        if(!drive.dirty)storage.removeItem('act:unlinked-draft');
+      }catch(error){
+        if(error.name!=='AbortError')syncMessage(messageOf(error),true);
+        // Keep the local draft if opening or validating a chosen file failed.
+        if(drive.fileId==='unlinked-draft'){linkedHandle=null;linkedId='';}
+      }
+    }
+    async function filePermission(prompt=false){
+      if(!linkedHandle)throw new Error('Choose your shared JSON file first.');
+      if(!linkedHandle.queryPermission)return;
+      let status=await linkedHandle.queryPermission({mode:'readwrite'});
+      if(status!=='granted' && prompt)status=await linkedHandle.requestPermission({mode:'readwrite'});
+      if(status!=='granted')throw new Error('File access is needed. Click Save or Enter and allow access to the selected JSON file.');
+    }
+    async function chooseExisting(){
+      if(!window.showOpenFilePicker)throw new Error('Open this tracker in desktop Chrome or Edge through its HTTPS GitHub Pages link.');
+      const [handle]=await window.showOpenFilePicker({multiple:false,types:[{description:'College tracker JSON',accept:{'application/json':['.json']}}]});
+      const previous=linkedHandle,previousId=linkedId;
+      try{linkedHandle=handle;await filePermission(true);await readTarget();await rememberTarget(handle);}
+      catch(error){linkedHandle=previous;linkedId=previousId;throw error;}
+    }
+    async function connectAnotherFile(){
+      if(drive.dirty || drive.busy){syncMessage('Save your current changes or resolve the conflict before changing files.',true);return;}
+      try{await chooseExisting();await handleEnter();}catch(error){if(error.name!=='AbortError')$('connectionStatus').textContent=messageOf(error);}
+    }
+    async function createTrackerFile(){
+      if(drive.entering)return;
+      try{
+        if(!window.showSaveFilePicker)throw new Error('Use desktop Chrome or Edge on the HTTPS GitHub Pages site.');
+        const handle=await window.showSaveFilePicker({suggestedName:'college-tracker.json',types:[{description:'College tracker JSON',accept:{'application/json':['.json']}}]});
+        const existing=await handle.getFile();
+        if(existing.size)throw new Error('That file already has content. Use Choose JSON to open it, or choose a new filename.');
+        const initial={format:'college-tracker-json-v1',schools:[],tasks:[],settings:{StudentName:'Student'},history:[]};
+        const stream=await handle.createWritable();
+        try{await stream.write(JSON.stringify(initial,null,2));await stream.close();}catch(error){try{await stream.abort();}catch{}throw error;}
+        await rememberTarget(handle);await handleEnter();
+      }catch(error){if(error.name!=='AbortError')$('connectionStatus').textContent=messageOf(error);}
+    }
+    async function fingerprint(text){
+      const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));
+      return Array.from(new Uint8Array(bytes),n=>n.toString(16).padStart(2,'0')).join('');
+    }
+    function validateLocal(doc){
+      if(!doc || !Array.isArray(doc.schools)||!Array.isArray(doc.tasks))throw new Error('This JSON does not contain college tracker schools and tasks.');
+      for(const key of ['schools','tasks']){
+        const ids=new Set();for(const row of doc[key]){
+          if(!row || typeof row.id!=='string' || !row.id || ids.has(row.id) || typeof row[key==='schools'?'school':'task']!=='string')throw new Error('The JSON contains an invalid or duplicate '+key+' entry.');
+          ids.add(row.id);
+        }
+      }
+      if(doc.settings && (typeof doc.settings!=='object'||Array.isArray(doc.settings)))throw new Error('Invalid settings in JSON.');
+      if(doc.history && !Array.isArray(doc.history))throw new Error('Invalid history in JSON.');
+    }
+    async function readTarget(){
+      await filePermission();const file=await linkedHandle.getFile();
+      if(file.size>2000000)throw new Error('This file is larger than the 2 MB tracker limit.');
+      const raw=await file.text();let doc;
+      try{doc=JSON.parse(raw);}catch{throw new Error('The JSON file is empty or damaged. It has not been overwritten. Choose a valid tracker file or create a new one.');}
+      doc=doc.document || doc.data || doc;validateLocal(doc);
+      return {raw,doc,version:await fingerprint(raw)};
+    }
+    async function driveCall(method,payload){
+      const current=await readTarget();
+      if(method==='loadTracker')return {document:{...current.doc,revision:current.version},fileId:linkedId,fileUrl:'',email:''};
+      if(method!=='saveTracker')throw new Error('Unknown file operation.');
+      validateLocal(payload.document);
+      if(current.doc.lastRequestId===payload.requestId)return {revision:current.version,duplicate:true};
+      if(current.version!==payload.expectedRevision)return {conflict:true,revision:current.version};
+      const next={format:'college-tracker-json-v1',updatedAt:new Date().toISOString(),lastRequestId:payload.requestId,...payload.document};
+      const text=JSON.stringify(next,null,2);if(new Blob([text]).size>2000000)throw new Error('The tracker is too large to save. Download a backup.');
+      // Keep several previous file versions locally before replacing the selected file.
+      const key='act:file-backups:'+linkedId;let backups=[];
+      try{backups=JSON.parse(storage.getItem(key)||'[]');}catch{}
+      storage.setItem(key,JSON.stringify([{at:new Date().toISOString(),raw:current.raw},...backups].slice(0,5)));
+      const stream=await linkedHandle.createWritable();
+      try{
+        const latest=await readTarget();
+        if(latest.version!==current.version){await stream.abort();return {conflict:true,revision:latest.version};}
+        await stream.write(text);await stream.close();
+      }catch(error){try{await stream.abort();}catch{}throw error;}
+      return {revision:await fingerprint(text)};
+    }
+    function saveSurge(){
+      if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+      const beam=document.createElement('div');beam.className='saveSurge';beam.setAttribute('aria-hidden','true');
+      document.body.appendChild(beam);setTimeout(()=>beam.remove(),1100);
+      $('manualSaveBtn').classList.remove('saveFlare');void $('manualSaveBtn').offsetWidth;$('manualSaveBtn').classList.add('saveFlare');
+      setTimeout(()=>$('manualSaveBtn').classList.remove('saveFlare'),1100);
+    }
+
+
+    function applyDocument(doc){
+      state.schools=(doc.schools || []).map(fromSchoolRow);state.tasks=(doc.tasks || []).map(fromTaskRow);
+      state.settings=normalizeSettings(doc.settings || {});state.history=doc.history || [];
+      refreshTaskSchoolSelect();refreshOwnerSelect();refreshCycleLabel();render();
+    }
+    function queueSave(){clearTimeout(drive.timer);drive.timer=setTimeout(flushDrive,800);}
+    async function retrySync(){await saveSnapshot();}
+
+    async function flushDrive(){
+      if(state.demoMode || !drive.fileId || !drive.dirty || drive.busy || drive.conflict)return;
+      if(!linkedHandle){storage.setItem('act:unlinked-draft',JSON.stringify(documentPayload()));syncMessage('Draft saved in this browser. Click Save to create or link your JSON file.');return;}
+      drive.busy=true;
+      const generation=drive.generation;
+      // Keep the exact request across timeouts: a retry must not duplicate a committed write.
+      const pending=drive.pending || {requestId:demoId(),expectedRevision:drive.revision,document:structuredClone(documentPayload()),generation};
+      drive.pending=pending;persistRecovery();syncMessage('Saving JSON file…');
+      try {
+        const result=await driveCall('saveTracker',pending);
+        if(result.conflict){drive.conflict=true;drive.pending=null;persistRecovery();syncMessage('The selected file changed outside this tab. Your edits are safe here. Review the conflict before continuing.',true);return;}
+        drive.revision=result.revision;drive.pending=null;saveSurge();
+        // A recovered pending write may represent only part of the current local draft.
+        drive.dirty=JSON.stringify(documentPayload())!==JSON.stringify(pending.document);
+        persistRecovery();syncMessage(drive.dirty?'Saving your next changes…':'Saved to the selected JSON file. Google Drive for desktop handles cloud sync.');
+      }catch(error){persistRecovery();syncMessage(messageOf(error),true);}
+      finally{drive.busy=false;if(drive.dirty && !drive.conflict && !drive.pending)queueSave();}
+    }
+    async function syncTick(force=false){
+      if(state.demoMode || !linkedHandle || !drive.fileId || drive.busy || drive.conflict || document.hidden)return;
+      if(drive.dirty){await flushDrive();return;}
+      if(document.querySelector('.overlay.on') || /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || '')){
+        if(force)syncMessage('Close the edit form before refreshing. Your draft will stay in place.');return;
+      }
+      drive.busy=true;const generation=drive.generation;
+      try{
+        const result=await driveCall('loadTracker',null);
+        if(drive.generation!==generation || drive.dirty || document.querySelector('.overlay.on'))return;
+        if(result.document.revision!==drive.revision){
+          applyDocument(result.document);drive.revision=result.document.revision;drive.base=structuredClone(result.document);persistRecovery();
+        }
+        syncMessage('Up to date with the selected JSON file.');
+      }catch(error){syncMessage(messageOf(error),true);}
+      finally{drive.busy=false;}
+    }
+    function downloadBackup(){
+      const data={format:'college-tracker-backup-v1',savedAt:new Date().toISOString(),...documentPayload()};
+      const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+      const link=document.createElement('a');link.href=url;link.download='college-tracker-backup-'+new Date().toISOString().replace(/[:.]/g,'-')+'.json';
+      document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+    }
+    async function resolveConflict(){
+      const answer=await themedChoice({title:'Protect both versions',sub:'Your local edits have not overwritten the shared file.',
+        message:'Download your local backup first. Then load the latest shared version. You can import the backup to recover missing entries; matching IDs are kept from the shared version.',
+        actions:[{label:'Download my backup',value:'backup',className:'primary'},{label:'Load shared version',value:'load',className:'ghost'},{label:'Cancel',value:'',className:'ghost'}]});
+      if(answer==='backup'){downloadBackup();return;}
+      if(answer!=='load')return;
+      downloadBackup();
+      try{
+        const result=await driveCall('loadTracker',null);
+        // Preserve the draft separately even if the browser blocks downloading.
+        storage.setItem(recoveryKey()+':conflict:'+Date.now(),JSON.stringify(documentPayload()));
+        applyDocument(result.document);drive.revision=result.document.revision;drive.dirty=false;drive.conflict=false;drive.pending=null;
+        persistRecovery();syncMessage('Loaded the shared version. Your previous edits were backed up; import missing entries as needed.');
+      }catch(error){syncMessage(messageOf(error),true);}
+    }
+    async function importJson(event){
+      const file=event.target.files[0];event.target.value='';if(!file)return;
+      if(!(await ensureLoadedBeforeEditing()))return;
+      try{
+        if(file.size>2000000)throw new Error('Choose a JSON backup smaller than 2 MB.');
+        let incoming=JSON.parse(await file.text());incoming=incoming.document || incoming.data || incoming;
+        if(!Array.isArray(incoming.schools)||!Array.isArray(incoming.tasks))throw new Error('This file must contain schools and tasks arrays.');
+        if(incoming.schools.some(x=>!x || typeof x.school!=='string') || incoming.tasks.some(x=>!x || typeof x.task!=='string'))throw new Error('The backup has an invalid school or task.');
+        if(!await themedConfirm('Import '+incoming.schools.length+' schools and '+incoming.tasks.length+' tasks? Entries with existing IDs stay unchanged. Sample tour entries in the backup will also be imported.',{title:'Import backup',confirmText:'Import'}))return;
+        downloadBackup();let added=0;
+        for(const [key,normalize] of [['schools',fromSchoolRow],['tasks',fromTaskRow]]){
+          for(const entry of incoming[key]){
+            const row={...entry,id:entry.id || demoId()};
+            if(!state[key].some(x=>x.id===row.id)){state[key].push(normalize(row));added++;}
+          }
+        }
+        state.tasks.forEach(row=>{if(row.school_id && !state.schools.some(s=>s.id===row.school_id))row.school_id=null;});
+        saveDemoData();refreshTaskSchoolSelect();render();flash('Imported '+added+' entries.');
+      }catch(error){showError(error);}
+    }
+    window.addEventListener('beforeunload',event=>{
+      if(drive.dirty && !state.demoMode){persistRecovery();event.preventDefault();event.returnValue='';}
+    });
+
     const state = {
-      view: localStorage.getItem('act:view') || 'dashboard',
+      view: storage.getItem('act:view') || 'dashboard',
       search: '',
       schoolSort: 'deadline',
       spreadsheetMode: 'school',
       spreadsheetFilter: null,
       taskFilter: 'open',
       taskSchoolFocus: '',
-      largeText: localStorage.getItem('act:large-text') === 'true',
+      largeText: storage.getItem('act:large-text') === 'true',
       expandedSchools: {},
       showSchoolNotes: true,
       showCompletedChecklist: true,
@@ -414,33 +638,15 @@
       settings: { StudentName:'Student', ApplicationCycle:'College applications', Timezone:'America/Los_Angeles', OwnerLabels: { ...DEFAULT_OWNER_LABELS } }
     };
 
-    async function boot() {
-      bindEvents();
-      fillSelects();
-      startAtmosphere();
-      if (!configured()) {
-        $('authCopy').textContent = 'Supabase is not connected yet. Explore still works with local sample data.';
-        $('loginForm').hidden = true;
-        return;
-      }
-      if (!window.supabase) {
-        $('authCopy').textContent = 'Supabase could not load in this browser. Use Explore Mode, or try again after the page can reach the Supabase script.';
-        $('loginForm').hidden = true;
-        return;
-      }
-      db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      const { data } = await db.auth.getSession();
-      state.pendingSession = data.session || null;
-      if (state.pendingSession) $('authCopy').textContent = 'You are signed in. Press Enter to open your family tracker.';
-      db.auth.onAuthStateChange((_event, session) => {
-        state.pendingSession = session || null;
-        if (session) $('authCopy').textContent = 'Sign-in confirmed. Press Enter to open your family tracker.';
-      });
+    async function boot(){
+      bindEvents();fillSelects();startAtmosphere();$('enterBtn').disabled=true;
+      fileReady=(async()=>{try{const saved=await fileStore.get();if(saved){linkedHandle=saved.handle;linkedId=saved.id;}}catch{}})();
+      await fileReady;$('enterBtn').disabled=false;
+      $('connectionStatus').textContent=linkedHandle?'Ready to open '+linkedHandle.name+'. Click Enter to allow file access.':'Choose your JSON in Google Drive for desktop, or create a new tracker file there.';
+      if(!window.showOpenFilePicker)$('connectionStatus').textContent='Shared file saving requires desktop Chrome or Edge on an HTTPS site such as GitHub Pages. Explore is available here.';
     }
 
-    function configured() {
-      return SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.length > 40;
-    }
+    function configured(){return !!window.showOpenFilePicker;}
 
     function parseMaybeJson(value) {
       if (typeof value !== 'string') return value;
@@ -495,6 +701,7 @@
     }
 
     function enterDemoApp() {
+      drive.dirty=false;drive.conflict=false;clearTimeout(drive.timer);clearInterval(state.autosaveTimer);
       state.demoMode = true;
       loadDemoData();
       $('authGate').hidden = true;
@@ -506,8 +713,10 @@
       setView(state.view);
       state.autosaveArmed = true;
       startAutosave();
-      flash('Explore mode uses local sample data. Connect Supabase for shared family data.');
+      syncMessage('PRACTICE MODE — entries stay in this browser until you click Save to create or link a JSON.');
     }
+
+
 
     function startGuidedTour() {
       enterDemoApp();
@@ -618,13 +827,13 @@
       },
       {
         title: 'Shared Workspace Across Devices',
-        body: 'With Supabase connected, the tracker can be used by the family across devices. Save and Load are intentionally visible because application planning is high-stakes; users should know when they are preserving or retrieving the shared state.',
+        body: 'Shared mode saves changes to your selected JSON automatically and checks the local file every 15 seconds. Google Drive for desktop syncs it between computers. One person should edit at a time. Practice data stays in this browser.',
         target: 'manualSaveBtn',
         action: () => setView('dashboard')
       },
       {
-        title: 'Invites And Family Roles',
-        body: 'Invite links help additional family members join the same workspace. Parent/Guardian, Applicant, Sibling, and Other are meant to make the human roles understandable; the tool is still collaborative, so everyone in the family workspace can use the tracker.',
+        title: 'Sharing Your JSON File',
+        body: 'Share the JSON in Drive with family members as editors. Each computer uses Drive for desktop and selects that same file in the tracker. No tracker account is required.',
         target: 'inviteTopBtn',
         action: () => setView('dashboard')
       },
@@ -671,10 +880,9 @@
       showTourStep();
     }
 
-    function endTour() {
-      clearTourGlow();
-      $('tourOverlay').classList.remove('on');
-      $('tourOverlay').innerHTML = '';
+    function endTour(){
+      clearTourGlow();$('tourOverlay').classList.remove('on');$('tourOverlay').innerHTML='';
+      syncMessage('PRACTICE MODE — your entries are still here. Click Save to create a JSON from them and continue in the linked tracker.');
     }
 
     function clearTourGlow() {
@@ -692,18 +900,6 @@
     function bindEvents() {
       $('exploreBtn').addEventListener('click', startGuidedTour);
       $('enterBtn').addEventListener('click', handleEnter);
-      $('loginForm').addEventListener('submit', async event => {
-        event.preventDefault();
-        try {
-          const email = $('loginEmail').value.trim();
-          rememberPendingJoin();
-          const { error } = await db.auth.signInWithOtp({ email, options: { emailRedirectTo: location.href } });
-          if (error) throw error;
-          flash('Magic link sent. Check that email account.');
-        } catch (error) { showError(error); }
-      });
-      $('createFamilyForm').addEventListener('submit', createFamilyWorkspace);
-      $('joinFamilyForm').addEventListener('submit', joinFamilyWorkspace);
       document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
       $('searchInput').addEventListener('input', event => { state.search = event.target.value.trim().toLowerCase(); render(); });
       $('sortSelect').addEventListener('change', event => { state.schoolSort = event.target.value; render(); });
@@ -713,20 +909,7 @@
       $('inviteTopBtn').addEventListener('click', openInviteMembers);
       $('privacyBtn').addEventListener('click', togglePrivacy);
       $('visibilityBtn').addEventListener('click', toggleLargeText);
-      $('copyFamilyCodeBtn').addEventListener('click', copyFamilyCode);
-      $('copyInviteFamilyCodeBtn').addEventListener('click', copyFamilyCode);
-      $('openInviteBtn').addEventListener('click', openInviteMembers);
-      $('addInviteRowBtn').addEventListener('click', () => addInviteRow());
-      $('inviteRows').addEventListener('input', updateInviteStatus);
-      $('inviteRows').addEventListener('change', updateInviteStatus);
-      $('inviteRows').addEventListener('click', event => {
-        const button = event.target.closest('[data-remove-invite-row]');
-        if (!button) return;
-        button.closest('.inviteRow').remove();
-        if (!document.querySelector('#inviteRows .inviteRow')) addInviteRow();
-        updateInviteStatus();
-      });
-      $('inviteForm').addEventListener('submit', sendFamilyInvites);
+      $('importJson').addEventListener('change', importJson);
       applyLargeTextMode();
       document.addEventListener('keydown', event => {
         if (event.key === 'Escape') {
@@ -753,86 +936,53 @@
       $('deleteTaskBtn').addEventListener('click', deleteCurrentTask);
     }
 
+
+
     async function handleEnter() {
-      if (!configured() || !window.supabase) {
-        $('loginForm').hidden = true;
-        flash('Supabase is not connected here yet. Use Explore to tour the app.');
-        return;
-      }
-      if (!db) db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      const { data } = await db.auth.getSession();
-      state.pendingSession = data.session || state.pendingSession;
-      if (!state.pendingSession) {
-        $('loginForm').hidden = false;
-        $('familySetup').hidden = true;
-        setTimeout(() => $('loginEmail').focus(), 60);
-        return;
-      }
-      await accessGrantedThenEnter();
-    }
-
-    async function accessGrantedThenEnter() {
-      const gate = document.createElement('div');
-      gate.className = 'accessGranted';
-      gate.innerHTML = `<div class="accessCore"><div class="kicker">SECURE SESSION</div><h1>Access Granted</h1><p class="hint">Opening your family tracker...</p></div>`;
-      document.body.appendChild(gate);
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      gate.remove();
-      await enterApp();
-    }
-
-    async function createFamilyWorkspace(event) {
-      event.preventDefault();
+      if (drive.busy || drive.entering) return;
+      drive.entering = true; $('enterBtn').disabled = true;
+      $('connectionStatus').textContent = 'Opening your JSON file…';
       try {
-        const familyName = $('familyName').value.trim();
-        const displayName = $('creatorName').value.trim();
-        if (!familyName || !displayName) throw new Error('Enter a family name and display name.');
-        const studentName = $('setupStudentName').value.trim() || 'Student';
-        const dadName = $('setupDadName').value.trim() || displayName || 'Dad';
-        const momName = $('setupMomName').value.trim() || 'Mom';
-        const setupOwnerLabels = { Dad:dadName, Mom:momName, Student:studentName, Shared:'Shared', Unassigned:'Unassigned' };
-        const joinCode = makeJoinCode(familyName);
-        const { data: userData, error: userError } = await db.auth.getUser();
-        if (userError) throw userError;
-        const email = userData.user.email;
-        const familyId = crypto.randomUUID();
-        let result = await db.from('families').insert({ id: familyId, family_name: familyName, join_code: joinCode, created_by: email }).select().single();
-        if (result.error) throw result.error;
-        result = await db.from('app_members').insert({ family_id: familyId, email, display_name: displayName, role: 'admin' }).select().single();
-        if (result.error) throw result.error;
-        result = await db.from('settings').upsert([
-          { family_id:familyId, key:'StudentName', value:studentName },
-          { family_id:familyId, key:'OwnerLabels', value:JSON.stringify(setupOwnerLabels) }
-        ], { onConflict:'family_id,key' });
-        if (result.error) throw result.error;
-        flash(`Family created. Join code: ${joinCode}`);
-        state.pendingSession = (await db.auth.getSession()).data.session;
-        await accessGrantedThenEnter();
-      } catch (error) {
-        showError(new Error(`${messageOf(error)} Run the multi-family Supabase migration if this is your first time using Create/Join.`));
-      }
+        if(!linkedHandle){
+          state.demoMode=false;drive.fileId='unlinked-draft';drive.dirty=false;drive.conflict=false;
+          const saved=storage.getItem('act:unlinked-draft');
+          applyDocument(saved?JSON.parse(saved):{schools:[],tasks:[],settings:{},history:[]});
+          $('authGate').hidden=true;$('topbar').hidden=false;$('appShell').hidden=false;
+          $('signedInLabel').textContent='Local draft — choose a JSON on first Save';setView(state.view);
+          syncMessage('Enter your information, then click Save to create or link a JSON file.');return;
+        }
+        await filePermission(true);
+        const result = await driveCall('loadTracker', null);
+        state.demoMode = false; drive.dirty=false;drive.conflict=false;drive.pending=null;drive.fileId = result.fileId; drive.fileUrl = result.fileUrl;
+        drive.revision = result.document.revision; drive.base = structuredClone(result.document);
+        applyDocument(result.document);
+        state.profile = {email:result.email || '',display_name:result.email || 'Family member'};
+        const recovery = storage.getItem(recoveryKey());
+        if (recovery) {
+          try {
+            const saved=JSON.parse(recovery);
+            if(saved.dirty && saved.document) {
+              applyDocument(saved.document); drive.dirty=true; drive.generation++;
+              drive.revision=saved.baseRevision;drive.pending=saved.pending || null;
+              drive.conflict=!drive.pending && saved.baseRevision!==result.document.revision;
+            }
+          } catch { throw new Error('A recovery copy could not be read. Keep this browser data and download a backup before continuing.'); }
+        }
+        $('authGate').hidden=true; $('topbar').hidden=false; $('appShell').hidden=false;
+        $('signedInLabel').textContent='Shared JSON file';
+        state.autosaveArmed=true; setView(state.view); startAutosave();
+        if(drive.conflict) syncMessage('A local recovery copy and newer Drive changes need review.',true);
+        else if(drive.dirty) { syncMessage('Recovered unsynced changes. Saving…'); queueSave(); }
+        else syncMessage('Saved to the selected JSON file. Google Drive for desktop handles cloud sync.');
+      } catch(error) { $('connectionStatus').textContent=error.name==='AbortError'?'No file selected. Click Enter when ready.':messageOf(error); }
+      finally {drive.entering=false; $('enterBtn').disabled=false;}
     }
 
-    async function joinFamilyWorkspace(event) {
-      event.preventDefault();
-      try {
-        const joinCode = $('joinCode').value.trim().toUpperCase();
-        const displayName = $('joinName').value.trim();
-        if (!joinCode || !displayName) throw new Error('Enter a join code and display name.');
-        const { data: userData, error: userError } = await db.auth.getUser();
-        if (userError) throw userError;
-        const email = userData.user.email;
-        const { data: family, error: familyError } = await db.from('families').select('id, family_name').eq('join_code', joinCode).single();
-        if (familyError) throw new Error('Join code not found.');
-        const { error } = await db.from('app_members').upsert({ family_id: family.id, email, display_name: displayName, role: 'member' }, { onConflict: 'email' });
-        if (error) throw error;
-        clearPendingJoin();
-        flash(`Joined ${family.family_name}`);
-        await accessGrantedThenEnter();
-      } catch (error) {
-        showError(new Error(`${messageOf(error)} Run the multi-family Supabase migration if this is your first time using Create/Join.`));
-      }
-    }
+
+
+
+
+
 
     function makeJoinCode(name) {
       const prefix = String(name || 'FAMILY').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8) || 'FAMILY';
@@ -850,158 +1000,19 @@
       history.replaceState({}, document.title, `${url.pathname}${url.search}${url.hash}`);
     }
 
-    function rememberPendingJoin() {
-      const code = ($('loginJoinCode').value || '').trim().toUpperCase();
-      const name = ($('loginDisplayName').value || '').trim();
-      if (code) localStorage.setItem('act:pending-join-code', code);
-      else localStorage.removeItem('act:pending-join-code');
-      if (name) localStorage.setItem('act:pending-display-name', name);
-      else localStorage.removeItem('act:pending-display-name');
-    }
 
-    function clearPendingJoin() {
-      localStorage.removeItem('act:pending-join-code');
-      localStorage.removeItem('act:pending-display-name');
-    }
 
-    async function claimInviteFromUrl(email) {
-      const token = currentInviteToken();
-      if (!token || state.demoMode) return false;
-      try {
-        const { data: invite, error } = await db
-          .from('family_invites')
-          .select('id,family_id,email,display_name,role,status,expires_at')
-          .eq('invite_token', token)
-          .maybeSingle();
-        if (error) throw error;
-        if (!invite) {
-          flash('Invite link not found for this signed-in email.');
-          return false;
-        }
-        if (invite.expires_at && new Date(invite.expires_at) < new Date()) throw new Error('This invite has expired.');
-        const displayName = invite.display_name || email.split('@')[0] || 'Family Member';
-        const role = invite.role === 'admin' ? 'admin' : 'member';
-        const { error: memberError } = await db
-          .from('app_members')
-          .upsert({ family_id: invite.family_id, email, display_name: displayName, role }, { onConflict: 'email' });
-        if (memberError) throw memberError;
-        await db.from('family_invites').update({ status:'accepted', accepted_at:new Date().toISOString() }).eq('id', invite.id);
-        clearPendingJoin();
-        cleanInviteTokenFromUrl();
-        flash('Invite accepted. Opening family tracker.');
-        return true;
-      } catch (error) {
-        if (isMissingInviteError(error)) flash('Run Step 6 SQL to enable invite links.');
-        else showError(error);
-        return false;
-      }
-    }
 
-    async function joinPendingFamilyCode(email) {
-      const joinCode = localStorage.getItem('act:pending-join-code');
-      if (!joinCode || state.demoMode) return false;
-      const displayName = localStorage.getItem('act:pending-display-name') || email.split('@')[0] || 'Family Member';
-      try {
-        const { data: existing } = await db.from('app_members').select('family_id').ilike('email', email).maybeSingle();
-        if (existing) {
-          clearPendingJoin();
-          return false;
-        }
-        const { data: family, error: familyError } = await db.from('families').select('id, family_name').eq('join_code', joinCode).single();
-        if (familyError) throw new Error('Family Code not found.');
-        const { error } = await db.from('app_members').upsert({ family_id: family.id, email, display_name: displayName, role: 'member' }, { onConflict: 'email' });
-        if (error) throw error;
-        clearPendingJoin();
-        flash(`Joined ${family.family_name}`);
-        return true;
-      } catch (error) {
-        showError(error);
-        return false;
-      }
-    }
 
-    async function enterApp() {
-      try {
-        setSaving('saving');
-        const { data: userData, error: userError } = await db.auth.getUser();
-        if (userError) throw userError;
-        const email = userData.user.email;
-        await claimInviteFromUrl(email);
-        await joinPendingFamilyCode(email);
-        const { data: member, error: memberError } = await db
-          .from('app_members')
-          .select('family_id, display_name, email')
-          .ilike('email', email)
-          .maybeSingle();
-        if (memberError || !member) {
-          $('authGate').hidden = false;
-          $('loginForm').hidden = true;
-          $('familySetup').hidden = false;
-          $('authCopy').textContent = 'You are signed in. Create a family tracker or enter a family join code.';
-          const pendingCode = localStorage.getItem('act:pending-join-code') || '';
-          const pendingName = localStorage.getItem('act:pending-display-name') || '';
-          if (pendingCode) $('joinCode').value = pendingCode;
-          if (pendingName) $('joinName').value = pendingName;
-          setSaving('saved');
-          return;
-        }
-        state.profile = member;
-        state.familyId = member.family_id;
-        await loadData();
-        $('authGate').hidden = true;
-        $('topbar').hidden = false;
-        $('appShell').hidden = false;
-        $('signedInLabel').innerHTML = `${escapeHtml(member.display_name || email)} <button class="miniBtn" onclick="signOut()">Sign out</button>`;
-        setView(state.view);
-        setSaving('saved');
-        $('saveText').textContent = 'Load before autosave';
-      } catch (error) {
-        $('authGate').hidden = false;
-        $('authCopy').textContent = messageOf(error);
-        showError(error);
-      }
-    }
 
-    async function loadData() {
-      const [schoolsResult, tasksResult, settingsResult] = await Promise.all([
-        db.from('schools').select('*').eq('family_id', state.familyId),
-        db.from('tasks').select('*').eq('family_id', state.familyId),
-        db.from('settings').select('*').eq('family_id', state.familyId)
-      ]);
-      if (schoolsResult.error) throw schoolsResult.error;
-      if (tasksResult.error) throw tasksResult.error;
-      if (settingsResult.error) throw settingsResult.error;
-      state.schools = schoolsResult.data.map(fromSchoolRow);
-      state.tasks = tasksResult.data.map(fromTaskRow);
-      try {
-        const { data: historyData, error: historyError } = await db.from('activity_log').select('*').eq('family_id', state.familyId).order('created_at', { ascending:false }).limit(300);
-        if (!historyError) state.history = historyData || [];
-      } catch {}
-      settingsResult.data.forEach(row => { state.settings[row.key] = row.value; });
-      state.settings = normalizeSettings(state.settings);
-      refreshCycleLabel();
-      await loadFamilyMeta();
-      refreshTaskSchoolSelect();
-      refreshOwnerSelect();
-      render();
-    }
 
-    async function loadFamilyMeta() {
-      state.familyMeta = null;
-      if (state.demoMode || !state.familyId) {
-        renderFamilyTools();
-        return;
-      }
-      try {
-        const { data, error } = await db
-          .from('families')
-          .select('id,family_name,join_code')
-          .eq('id', state.familyId)
-          .maybeSingle();
-        if (!error && data) state.familyMeta = data;
-      } catch {}
-      renderFamilyTools();
-    }
+
+
+
+
+
+
+
 
     function renderFamilyTools() {
       const box = $('familyTools');
@@ -1027,29 +1038,10 @@
       flash('Family Code copied');
     }
 
-    async function openInviteMembers() {
-      if (state.demoMode) {
-        flash('Invite members is available after Supabase sign-in.');
-        return;
-      }
-      if (!state.familyMeta && state.familyId) await loadFamilyMeta();
-      if (!state.familyMeta || !state.familyMeta.join_code) {
-        flash('Family Code not loaded. Run Step 4 SQL, or Step 7 if this tracker was created before Family Codes.');
-        return;
-      }
-      renderFamilyTools();
-      if (!document.querySelector('#inviteRows .inviteRow')) addInviteRow();
-      updateInviteStatus();
-      openOverlay('inviteOverlay');
-      setTimeout(() => document.querySelector('#inviteRows input')?.focus(), 80);
+    async function openInviteMembers(){
+      flash(state.demoMode?'Practice mode is not linked to a file.':'Selected file: '+linkedHandle.name+'. Google Drive for desktop handles cloud syncing.');
     }
-
-    const INVITE_ROLE_LABELS = {
-      applicant: 'Applicant',
-      parent: 'Parent/Guardian',
-      sibling: 'Sibling',
-      other: 'Other'
-    };
+    const INVITE_ROLE_LABELS={};
 
     function addInviteRow(values = {}) {
       const wrap = $('inviteRows');
@@ -1107,30 +1099,7 @@
       return url.toString();
     }
 
-    async function createManualInviteLinks(invites) {
-      const { data: userData } = await db.auth.getUser();
-      const createdBy = userData?.user?.email || state.profile?.email || '';
-      const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-      const rows = invites.map(invite => ({
-        family_id: state.familyId,
-        email: invite.email,
-        display_name: invite.displayName,
-        role: invite.role,
-        invite_token: makeInviteToken(),
-        status: 'pending',
-        created_by: createdBy,
-        expires_at: expiresAt
-      }));
-      const { error } = await db.from('family_invites').insert(rows);
-      if (error) throw error;
-      return rows.map((row, index) => ({
-        displayName: row.display_name,
-        email: row.email,
-        role: row.role,
-        roleLabel: invites[index]?.roleLabel || (row.role === 'admin' ? 'Parent/Guardian' : 'Family Member'),
-        link: inviteLinkForToken(row.invite_token)
-      }));
-    }
+
 
     function inviteCopyMessage(link) {
       return [
@@ -1176,35 +1145,16 @@
       });
     }
 
-    async function sendFamilyInvites(event) {
-      event.preventDefault();
-      try {
-        if (state.demoMode) throw new Error('Invite members is available after Supabase sign-in.');
-        if (!state.familyId) throw new Error('Open your family tracker before sending invites.');
-        const invites = collectInviteRows();
-        if (!invites.length) throw new Error('Enter at least one invite row.');
-        setSaving('saving');
-        const inviteLinks = await createManualInviteLinks(invites);
-        setSaving('saved');
-        showManualInviteLinks(inviteLinks);
-        flash(`Created ${inviteLinks.length} invite link${inviteLinks.length === 1 ? '' : 's'}`);
-      } catch (error) {
-        setSaving('error');
-        const msg = messageOf(error);
-        showError(new Error(isMissingInviteError(error)
-          ? 'Run Step 6 SQL to enable invite links.'
-          : msg));
-      }
-    }
+
 
     function loadDemoData() {
-      const saved = localStorage.getItem('act:demo-data');
+      const saved = storage.getItem('act:demo-data');
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
           state.schools = (parsed.schools || []).map(fromSchoolRow);
           state.tasks = (parsed.tasks || []).map(fromTaskRow);
-          state.history = JSON.parse(localStorage.getItem('act:demo-history') || '[]');
+          state.history = JSON.parse(storage.getItem('act:demo-history') || '[]');
           return;
         } catch {}
       }
@@ -1283,8 +1233,10 @@
     }
 
     function saveDemoData() {
-      if (!state.demoMode) return;
-      localStorage.setItem('act:demo-data', JSON.stringify({ schools: state.schools, tasks: state.tasks }));
+      if(state.demoMode) {
+        storage.setItem('act:demo-data',JSON.stringify({schools:state.schools,tasks:state.tasks}));
+        syncMessage('PRACTICE MODE — entries are saved in this browser. Click Save to create or link a JSON and keep working.');
+      } else { drive.dirty=true; drive.generation++; persistRecovery(); queueSave(); }
     }
 
     function snapshotPayload() {
@@ -1297,115 +1249,24 @@
     }
 
     function startAutosave() {
-      if (state.autosaveTimer) clearInterval(state.autosaveTimer);
-      if (!state.autosaveArmed) {
-        $('saveText').textContent = 'Load before autosave';
-        return;
-      }
-      state.autosaveTimer = setInterval(() => saveSnapshot('autosave', true), 10000);
+      clearInterval(state.autosaveTimer);
+      if(!state.demoMode) state.autosaveTimer=setInterval(syncTick,15000);
     }
 
-    async function saveSnapshot(kind = 'manual', quiet = false) {
-      try {
-        if (kind === 'manual' && !quiet && !state.demoMode && !state.autosaveArmed) {
-          const ok = await themedConfirm('This browser has not loaded the latest saved family snapshot yet. Saving now can overwrite newer work from another device.\n\nChoose Save Anyway only if you are sure this page is the current version.', {
-            title:'Save before load?',
-            sub:'Protecting shared family data',
-            confirmText:'Save Anyway',
-            cancelText:'Cancel'
-          });
-          if (!ok) {
-            setSaving('saved');
-            $('saveText').textContent = 'Load before autosave';
-            return;
-          }
-        }
-        const payload = snapshotPayload();
-        setSaving('saving');
-        if (state.demoMode) {
-          localStorage.setItem(`act:${kind}-snapshot`, JSON.stringify(payload));
-        } else {
-          const { error } = await db.from('snapshots').upsert({
-            family_id: state.familyId,
-            kind,
-            data: payload,
-            saved_at: payload.savedAt
-          }, { onConflict: 'family_id,kind' });
-          if (error) {
-            if (isMissingSnapshotError(error)) {
-              $('saveText').textContent = 'Run Step 3 for snapshots';
-              if (!quiet) flash('Run Step 3 SQL to enable Save/Load snapshots.');
-              return;
-            }
-            throw error;
-          }
-        }
-        state.lastSaveKind = kind;
-        setSaving('saved');
-        $('saveText').textContent = kind === 'autosave' ? 'Autosaved just now' : state.autosaveArmed ? 'Manual save created' : 'Manual save created; Load enables autosave';
-        if (kind === 'manual' && !quiet && state.autosaveArmed) startAutosave();
-        if (!quiet) flash(kind === 'autosave' ? 'Autosaved' : 'Manual save created');
-      } catch (error) {
-        setSaving('error');
-        if (!quiet) showError(error);
-      }
+    async function saveSnapshot(){
+      if(state.demoMode){await firstFileSave();return;}
+      if(!linkedHandle){await firstFileSave();return;}
+      try{await filePermission(true);await flushDrive();if(!drive.dirty)syncMessage('Saved to '+linkedHandle.name+'. Check the Drive desktop icon for cloud sync status.');}
+      catch(error){syncMessage(messageOf(error),true);}
     }
 
     async function loadSnapshotChoice() {
-      const choice = await themedChoice({
-        title:'Load Saved State',
-        sub:'Choose which snapshot to restore',
-        message:'Latest autosave is usually the most recent protected version. Manual save restores the last deliberate Save button snapshot.',
-        actions:[
-          { label:'Latest Autosave', value:'autosave', className:'primary' },
-          { label:'Manual Save', value:'manual', className:'ghost' },
-          { label:'Cancel', value:'', className:'ghost' }
-        ]
-      });
-      if (!choice) return;
-      await loadSnapshot(choice);
+      if(state.demoMode) return flash('Practice mode uses this browser only.');
+      if(drive.dirty || drive.conflict) return syncMessage('There are unsynced edits. Save or review the conflict before refreshing.',true);
+      await syncTick(true);
     }
 
-    async function loadSnapshot(kind) {
-      try {
-        let payload = null;
-        if (state.demoMode) {
-          const raw = localStorage.getItem(`act:${kind}-snapshot`);
-          if (raw) payload = JSON.parse(raw);
-        } else {
-          const { data, error } = await db.from('snapshots')
-            .select('data')
-            .eq('family_id', state.familyId)
-            .eq('kind', kind)
-            .maybeSingle();
-          if (error) {
-            if (isMissingSnapshotError(error)) {
-              flash('Run Step 3 SQL before loading snapshots.');
-              return;
-            }
-            throw error;
-          }
-          payload = data && data.data;
-        }
-        if (!payload) {
-          flash(`No ${kind === 'autosave' ? 'autosave' : 'manual save'} found yet`);
-          return;
-        }
-        state.schools = (payload.schools || []).map(fromSchoolRow);
-        state.tasks = (payload.tasks || []).map(fromTaskRow);
-        state.settings = normalizeSettings(payload.settings || state.settings);
-        if (state.demoMode) saveDemoData();
-        refreshTaskSchoolSelect();
-        refreshOwnerSelect();
-        refreshCycleLabel();
-        render();
-        state.autosaveArmed = true;
-        startAutosave();
-        flash(`Loaded ${kind === 'autosave' ? 'latest autosave' : 'last manual save'}`);
-      } catch (error) {
-        showError(error);
-      }
-    }
+    async function loadSnapshot() { await loadSnapshotChoice(); }
 
     function demoId() {
       return crypto.randomUUID ? crypto.randomUUID() : `demo-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -1418,8 +1279,13 @@
     }
 
     async function signOut() {
-      await db.auth.signOut();
-      location.reload();
+      if(!state.demoMode && drive.dirty) {
+        await flushDrive();
+        if(drive.dirty) {syncMessage('Your edits are not saved to the JSON file. Download a backup or retry before leaving.',true);return;}
+      }
+      clearInterval(state.autosaveTimer); clearTimeout(drive.timer);
+      $('topbar').hidden=true; $('appShell').hidden=true; $('authGate').hidden=false;
+      $('connectionStatus').textContent='Ready to open your shared tracker. Your file connection is remembered in this browser.';
     }
 
     function fillSelects() {
@@ -1485,7 +1351,7 @@
 
     function setView(view) {
       state.view = ['dashboard','schools','tasks','spreadsheet'].includes(view) ? view : 'dashboard';
-      localStorage.setItem('act:view', state.view);
+      storage.setItem('act:view', state.view);
       document.querySelectorAll('[data-view]').forEach(button => button.classList.toggle('on', button.dataset.view === state.view));
       document.querySelectorAll('.view').forEach(section => section.classList.toggle('on', section.id === `${state.view}View`));
       $('viewTitle').textContent = state.view === 'dashboard' ? 'Dashboard' : state.view === 'schools' ? 'Schools' : state.view === 'spreadsheet' ? 'Spreadsheet' : 'Tasks';
@@ -1831,23 +1697,13 @@
         theater: prescreenRequiresItem($('schoolPrescreen').value),
         checklist: id ? checklistForPrescreen(state.schools.find(item => item.id === id) || {}, $('schoolPrescreen').value) : defaultChecklist(prescreenRequiresItem($('schoolPrescreen').value))
       });
+
       try {
-        if (state.demoMode) {
-          const saved = fromSchoolRow({ id: id || demoId(), ...row });
-          upsertById(state.schools, saved);
-          await logActivity({ schoolId: saved.id, action:'updated', detail: id ? 'Edited school details' : 'Added school' });
-          saveDemoData();
-          refreshTaskSchoolSelect(); closeOverlay('schoolOverlay'); setSaving('saved'); flash('Demo school saved'); render();
-          return;
-        }
-        setSaving('saving');
-        const query = id ? db.from('schools').update(row).eq('id', id).select().single() : db.from('schools').insert(row).select().single();
-        const { data, error } = await query;
-        if (error) throw error;
-        upsertById(state.schools, fromSchoolRow(data));
-        await logActivity({ schoolId: data.id, action:'updated', detail: id ? 'Edited school details' : 'Added school' });
-        refreshTaskSchoolSelect(); closeOverlay('schoolOverlay'); setSaving('saved'); flash('School saved'); render();
-      } catch (error) { setSaving('error'); showError(error); }
+        const saved=fromSchoolRow({id:id || demoId(),...row});
+        upsertById(state.schools,saved);
+        await logActivity({schoolId:saved.id,detail:id?'Edited school details':'Added school'});
+        saveDemoData(); refreshTaskSchoolSelect();closeOverlay('schoolOverlay');render();
+      } catch(error) {showError(error);}
     }
 
     async function saveTaskFromForm(event) {
@@ -1864,113 +1720,41 @@
         category: $('taskCategory').value,
         notes: $('taskNotes').value
       };
+
       try {
-        if (batchMode) {
-          const targets = collectTaskBatchTargets();
-          const rows = targets.map(target => cleanTaskRow({ ...base, school_id: target.schoolId, due_date: target.dueDate || null }));
-          if (state.demoMode) {
-            const savedRows = rows.map(row => fromTaskRow({ id: demoId(), ...row }));
-            savedRows.forEach(saved => upsertById(state.tasks, saved));
-            for (const saved of savedRows) await logActivity({ schoolId: saved.school_id, taskId: saved.id, action:'updated', detail: `Added task: ${saved.task}` });
-            saveDemoData();
-            closeOverlay('taskOverlay'); setSaving('saved'); flash(`${savedRows.length} demo tasks saved`); render();
-            return;
-          }
-          setSaving('saving');
-          const { data, error } = await db.from('tasks').insert(rows).select();
-          if (error) throw error;
-          const savedRows = (data || []).map(fromTaskRow);
-          savedRows.forEach(saved => upsertById(state.tasks, saved));
-          for (const saved of savedRows) await logActivity({ schoolId: saved.school_id, taskId: saved.id, action:'updated', detail: `Added task: ${saved.task}` });
-          closeOverlay('taskOverlay'); setSaving('saved'); flash(`${savedRows.length} tasks saved`); render();
-          return;
+        const rows=batchMode ? collectTaskBatchTargets().map(target=>cleanTaskRow({...base,school_id:target.schoolId,due_date:target.dueDate || null}))
+          : [cleanTaskRow({...base,school_id:schoolMode || null,due_date:$('taskDue').value || null})];
+        for(const row of rows) {
+          const saved=fromTaskRow({id:(!batchMode && id) || demoId(),...row});
+          upsertById(state.tasks,saved);
+          await logActivity({schoolId:saved.school_id,taskId:saved.id,detail:saved.task});
         }
-        const row = cleanTaskRow({
-          ...base,
-          school_id: schoolMode || null,
-          due_date: $('taskDue').value || null
-        });
-        if (state.demoMode) {
-          const saved = fromTaskRow({ id: id || demoId(), ...row });
-          upsertById(state.tasks, saved);
-          await logActivity({ schoolId: saved.school_id, taskId: saved.id, action:'updated', detail: id ? `Edited task: ${saved.task}` : `Added task: ${saved.task}` });
-          saveDemoData();
-          closeOverlay('taskOverlay'); setSaving('saved'); flash('Demo task saved'); render();
-          return;
-        }
-        setSaving('saving');
-        const query = id ? db.from('tasks').update(row).eq('id', id).select().single() : db.from('tasks').insert(row).select().single();
-        const { data, error } = await query;
-        if (error) throw error;
-        upsertById(state.tasks, fromTaskRow(data));
-        await logActivity({ schoolId: data.school_id, taskId: data.id, action:'updated', detail: id ? `Edited task: ${data.task}` : `Added task: ${data.task}` });
-        closeOverlay('taskOverlay'); setSaving('saved'); flash('Task saved'); render();
-      } catch (error) { setSaving('error'); showError(error); }
+        saveDemoData();closeOverlay('taskOverlay');render();
+      } catch(error) {showError(error);}
     }
 
     async function deleteCurrentSchool() {
       const id = $('schoolId').value;
       if (!(await ensureLoadedBeforeEditing())) return;
       if (!id || !(await themedConfirm('Delete this school? Tasks linked to it will remain, but their school link will be cleared.', { title:'Delete school?', sub:'This cannot be undone from this screen', confirmText:'Delete', confirmClass:'ghost danger' }))) return;
-      try {
-        if (state.demoMode) {
-          state.schools = state.schools.filter(school => school.id !== id);
-          state.tasks.forEach(task => { if (task.school_id === id) task.school_id = null; });
-          saveDemoData();
-          closeOverlay('schoolOverlay'); setSaving('saved'); flash('Demo school deleted'); render();
-          return;
-        }
-        setSaving('saving');
-        let result = await db.from('tasks').update({ school_id:null }).eq('school_id', id).eq('family_id', state.familyId);
-        if (result.error) throw result.error;
-        result = await db.from('schools').delete().eq('id', id).eq('family_id', state.familyId);
-        if (result.error) throw result.error;
-        state.schools = state.schools.filter(school => school.id !== id);
-        state.tasks.forEach(task => { if (task.school_id === id) task.school_id = null; });
-        closeOverlay('schoolOverlay'); setSaving('saved'); flash('School deleted'); render();
-      } catch (error) { setSaving('error'); showError(error); }
+      state.schools=state.schools.filter(row=>row.id!==id);state.tasks.forEach(row=>{if(row.school_id===id)row.school_id=null;});refreshTaskSchoolSelect();
+      saveDemoData();closeOverlay('schoolOverlay');render();
     }
+
     async function deleteCurrentTask() {
       const id = $('taskId').value;
       if (!(await ensureLoadedBeforeEditing())) return;
       if (!id || !(await themedConfirm('Delete this task?', { title:'Delete task?', sub:'This cannot be undone from this screen', confirmText:'Delete', confirmClass:'ghost danger' }))) return;
-      try {
-        if (state.demoMode) {
-          state.tasks = state.tasks.filter(task => task.id !== id);
-          saveDemoData();
-          closeOverlay('taskOverlay'); setSaving('saved'); flash('Demo task deleted'); render();
-          return;
-        }
-        setSaving('saving');
-        const { error } = await db.from('tasks').delete().eq('id', id).eq('family_id', state.familyId);
-        if (error) throw error;
-        state.tasks = state.tasks.filter(task => task.id !== id);
-        closeOverlay('taskOverlay'); setSaving('saved'); flash('Task deleted'); render();
-      } catch (error) { setSaving('error'); showError(error); }
+      state.tasks=state.tasks.filter(row=>row.id!==id);
+      saveDemoData();closeOverlay('taskOverlay');render();
     }
-    async function toggleTaskDone(id, done) {
-      if (!(await ensureLoadedBeforeEditing())) { render(); return; }
-      const task = state.tasks.find(item => item.id === id);
-      if (!task) return;
-      const previous = task.done;
-      task.done = done; render();
-      const row = document.querySelector(`[data-task-id="${cssEscape(id)}"]`);
-      if (row && done) sparkRect(row.getBoundingClientRect());
-      try {
-        if (state.demoMode) {
-          if (done) await logActivity({ schoolId: task.school_id, taskId: task.id, action:'completed', detail: task.task });
-          saveDemoData();
-          setSaving('saved');
-          render();
-          return;
-        }
-        setSaving('saving');
-        const { data, error } = await db.from('tasks').update({ done }).eq('id', id).eq('family_id', state.familyId).select().single();
-        if (error) throw error;
-        upsertById(state.tasks, fromTaskRow(data));
-        if (done) await logActivity({ schoolId: data.school_id, taskId: data.id, action:'completed', detail: data.task });
-        setSaving('saved'); render();
-      } catch (error) { task.done = previous; setSaving('error'); render(); showError(error); }
+
+    async function toggleTaskDone(id,done) {
+      if(!(await ensureLoadedBeforeEditing())) {render();return;}
+      const task=state.tasks.find(row=>row.id===id);if(!task)return;
+      task.done=done;
+      if(done)await logActivity({schoolId:task.school_id,taskId:id,action:'completed',detail:task.task});
+      saveDemoData();render();
     }
 
     function defaultChecklist(includePrescreen) {
@@ -2001,21 +1785,8 @@
       return checklist;
     }
 
-    async function saveSchoolObject(school, quiet = false) {
-      school = fromSchoolRow(school);
-      upsertById(state.schools, school);
-      if (state.demoMode) {
-        saveDemoData();
-        render();
-        if (!quiet) flash('School updated');
-        return;
-      }
-      const { id, ...row } = school;
-      const { data, error } = await db.from('schools').update(row).eq('id', id).eq('family_id', state.familyId).select().single();
-      if (error) throw error;
-      upsertById(state.schools, fromSchoolRow(data));
-      render();
-      if (!quiet) flash('School updated');
+    async function saveSchoolObject(school) {
+      upsertById(state.schools,fromSchoolRow(school));saveDemoData();render();
     }
 
     async function logActivity({ schoolId = null, taskId = null, action = 'updated', detail = '' }) {
@@ -2031,13 +1802,8 @@
         created_at: new Date().toISOString()
       };
       state.history.unshift(row);
-      if (state.demoMode) {
-        localStorage.setItem('act:demo-history', JSON.stringify(state.history.slice(0, 300)));
-        return;
-      }
-      try {
-        await db.from('activity_log').insert(row);
-      } catch {}
+      state.history=state.history.slice(0,300);
+      if(state.demoMode)storage.setItem('act:demo-history',JSON.stringify(state.history));
     }
 
     async function toggleChecklistItem(schoolId, itemId, done) {
@@ -2245,64 +2011,18 @@
       return choice === 'yes';
     }
 
-    async function latestCloudSnapshot() {
-      if (state.demoMode || !db || !state.familyId) return null;
-      if (state.latestCloudSnapshot) return state.latestCloudSnapshot;
-      try {
-        const { data, error } = await db.from('snapshots')
-          .select('kind,saved_at')
-          .eq('family_id', state.familyId)
-          .order('saved_at', { ascending:false })
-          .limit(1)
-          .maybeSingle();
-        if (error) {
-          if (!isMissingSnapshotError(error)) throw error;
-          return null;
-        }
-        state.latestCloudSnapshot = data || null;
-        return state.latestCloudSnapshot;
-      } catch (error) {
-        console.warn('Snapshot freshness check failed', error);
-        return null;
-      }
-    }
+    async function latestCloudSnapshot() { return null; }
 
     async function ensureLoadedBeforeEditing() {
-      if (state.demoMode || state.autosaveArmed || state.loadGuardBypassed) return true;
-      const snapshot = await latestCloudSnapshot();
-      if (!snapshot) {
-        state.loadGuardBypassed = true;
-        return true;
-      }
-      const kindLabel = snapshot.kind === 'autosave' ? 'latest autosave' : 'manual save';
-      const when = snapshot.saved_at ? formatDateTime(snapshot.saved_at) : 'recently';
-      const choice = await themedChoice({
-        title:'Load before editing?',
-        sub:'A saved cloud state is available',
-        message:`There is a ${kindLabel} from ${when}. Loading it before editing helps prevent working from an older page.\n\nYou can load it now, continue with this page, or cancel this action.`,
-        actions:[
-          { label:'Load Now', value:'load', className:'primary' },
-          { label:'Continue Anyway', value:'continue', className:'ghost' },
-          { label:'Cancel', value:'', className:'ghost' }
-        ]
-      });
-      if (choice === 'load') {
-        await loadSnapshot(snapshot.kind || 'autosave');
-        closeOverlay('schoolOverlay');
-        closeOverlay('taskOverlay');
-        return false;
-      }
-      if (choice === 'continue') {
-        state.loadGuardBypassed = true;
-        return true;
-      }
-      return false;
+      if(state.demoMode) return true;
+      if(drive.conflict) {syncMessage('Resolve the sync conflict before making more edits.',true);return false;}
+      return !!drive.fileId;
     }
 
     function openOverlay(id) { $(id).classList.add('on'); $(id).setAttribute('aria-hidden','false'); }
     function closeOverlay(id) { $(id).classList.remove('on'); $(id).setAttribute('aria-hidden','true'); }
     function togglePrivacy(force) { const show = typeof force === 'boolean' ? force : $('privacyScreen').hidden; $('privacyScreen').hidden = !show; }
-    function toggleLargeText() { state.largeText = !state.largeText; localStorage.setItem('act:large-text', String(state.largeText)); applyLargeTextMode(); }
+    function toggleLargeText() { state.largeText = !state.largeText; storage.setItem('act:large-text', String(state.largeText)); applyLargeTextMode(); }
     function applyLargeTextMode() { document.body.classList.toggle('largeText', !!state.largeText); if ($('visibilityBtn')) $('visibilityBtn').classList.toggle('primary', !!state.largeText); }
     function sortedSchools() {
       const schools = [...state.schools];
@@ -2341,12 +2061,11 @@
     }
     function upsertById(list, item) { const index = list.findIndex(existing => existing.id === item.id); if (index === -1) list.push(item); else list.splice(index, 1, item); }
     function setSaving(mode) {
-      const light = $('saveLight');
-      if (!light) return;
-      light.classList.toggle('on', mode === 'saved');
-      light.title = mode === 'saving' ? 'Saving' : mode === 'error' ? 'Save failed' : 'Saved';
-      if ($('saveText')) $('saveText').textContent = mode === 'saving' ? 'Saving...' : mode === 'error' ? 'Save failed' : 'Saved';
+      const saved=mode==='saved' && !drive.dirty && !drive.conflict;
+      $('saveLight').classList.toggle('on',saved);
+      $('saveText').textContent=state.demoMode?'Practice — browser only':drive.conflict?'Sync conflict':drive.dirty?'Not yet saved to JSON':mode==='error'?'Save failed':saved?'Saved to JSON':'Saving…';
     }
+
     function flash(message) { const toast = $('toast'); toast.textContent = message; toast.classList.add('on'); clearTimeout(flash.timer); flash.timer = setTimeout(() => toast.classList.remove('on'), 2300); }
     function showError(error) { flash(messageOf(error)); }
     function messageOf(error) { return String(error && error.message ? error.message : error || 'Something went wrong.'); }
@@ -2365,14 +2084,10 @@
         field.remove();
       }
     }
-    function isMissingSnapshotError(error) {
-      const text = messageOf(error).toLowerCase();
-      return text.includes('snapshots') && (text.includes('not exist') || text.includes('could not find') || text.includes('schema cache'));
-    }
-    function isMissingInviteError(error) {
-      const text = messageOf(error).toLowerCase();
-      return text.includes('family_invites') && (text.includes('not exist') || text.includes('could not find') || text.includes('schema cache'));
-    }
+
+
+
+
     function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
     function escapeAttr(value) { return escapeHtml(value).replace(/`/g, '&#96;'); }
     function jsString(value) { return String(value ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\r?\n/g, ' '); }
