@@ -132,25 +132,42 @@
     @keyframes celebrateLabel{0%,100%{opacity:0}12%,82%{opacity:1}}
     @media(prefers-reduced-motion:reduce){.celebrationLabel{animation:none}.celebrationConfetti{display:none}}
       .schoolShortcut{text-decoration:none;text-align:center;display:block}.noteBlock{white-space:pre-wrap;overflow-wrap:anywhere}
-  
-    .schoolBranded{border-top:5px solid var(--school-primary);border-bottom:3px solid var(--school-secondary)}
-    .schoolBranded:before{background:radial-gradient(ellipse at top left,color-mix(in srgb,var(--school-primary) 25%,transparent),transparent 65%);filter:none}
-    .schoolBranded:hover{border-top-color:var(--school-primary);border-bottom-color:var(--school-secondary)}
+
+
+
     .schoolBranded .progress span{background:linear-gradient(90deg,var(--school-primary),var(--school-secondary))}
-    .schoolBranded .schoolShortcut{border-left:5px solid var(--school-primary);border-right:5px solid var(--school-secondary);background:rgba(255,255,255,.06);color:var(--ink)}
+
     .schoolColorSettings{padding:12px;border:1px solid var(--line);border-radius:14px}
     .schoolColorControls{display:flex;gap:14px;align-items:end;margin-top:12px}.schoolColorControls input[type=color]{width:70px;height:38px;padding:3px;cursor:pointer}.schoolColorControls input:disabled{opacity:.8;cursor:default}
     #schoolColorPreview{width:100px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:linear-gradient(90deg,var(--school-primary) 65%,var(--school-secondary) 65%)}
     #schoolColorHint a{color:var(--cyan)}
-  
-    .schoolNameAccent{display:inline;padding:.12em .45em .15em .55em;border-left:.28em solid var(--school-primary);border-bottom:.13em solid var(--school-secondary);border-radius:.25em;background:rgba(255,255,255,.065);color:var(--ink);box-decoration-break:clone;-webkit-box-decoration-break:clone;line-height:1.65;overflow-wrap:anywhere;text-shadow:none}
-    h1 .schoolNameAccent{box-decoration-break:clone;-webkit-box-decoration-break:clone;font-size:.88em;line-height:1.45}
-    .schoolSheetRow td:first-child{box-shadow:inset 4px 0 var(--school-primary)}
-    .sheetLink .schoolNameAccent{display:inline-block;line-height:1.45;text-align:left}
-    .schoolAccentField{border-left:5px solid var(--school-primary);border-bottom:3px solid var(--school-secondary)}
-    .schoolAccentField:focus{border-left-color:var(--school-primary);border-bottom-color:var(--school-secondary)}
+
+
+
+
+
+
     .selectedSchoolAccent{margin-top:9px;font:12px var(--mono);line-height:1.6}
-    .schoolCelebrationAccent{border-left:6px solid var(--school-primary);border-bottom:4px solid var(--school-secondary)}
+
+  
+    /* The complete component receives a continuous, rounded two-color border and soft corner washes. */
+    .schoolSurface,.schoolAccentField,.schoolCelebrationAccent{
+      border:2px solid transparent;
+      background:
+        radial-gradient(ellipse at 0% 0%,color-mix(in srgb,var(--school-primary) 22%,transparent),transparent 68%) padding-box,
+        radial-gradient(ellipse at 100% 100%,color-mix(in srgb,var(--school-secondary) 16%,transparent),transparent 68%) padding-box,
+        linear-gradient(145deg,#101e3e,#0b1530) padding-box,
+        linear-gradient(135deg,var(--school-primary) 0%,color-mix(in srgb,var(--school-primary),var(--school-secondary)) 50%,var(--school-secondary) 100%) border-box;
+      color:var(--ink);
+    }
+    .schoolSurface:hover,.schoolAccentField:focus{border-color:transparent}
+    .schoolSurface:before{display:none}
+    .schoolSurface h1{text-shadow:none}
+    .schoolBranded .schoolShortcut{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:var(--ink)}
+    .schoolSheetRow{clip-path:inset(0 round 14px);background:linear-gradient(115deg,color-mix(in srgb,var(--school-primary) 22%,#101e3e),color-mix(in srgb,var(--school-secondary) 16%,#0b1530))}
+    .schoolSheetRow td{background:transparent;border-top:1px solid color-mix(in srgb,var(--school-primary),var(--school-secondary));border-bottom:1px solid color-mix(in srgb,var(--school-primary),var(--school-secondary))}
+    .schoolSheetRow td:first-child{border-left:2px solid color-mix(in srgb,var(--school-primary) 75%,var(--school-secondary));box-shadow:none}
+    .schoolSheetRow td:last-child{border-right:2px solid color-mix(in srgb,var(--school-primary),var(--school-secondary) 75%)}
   </style>
 </head>
 <body>
@@ -1363,7 +1380,7 @@
       box.innerHTML = schools.map(school => {
         const saved = prior.get(school.id) || {};
         const dueValue = saved.due || dueDefault;
-        return `<div class="batchSchoolRow" data-batch-school-row data-school-id="${escapeAttr(school.id)}"><label class="batchSchoolCheck"><input type="checkbox" data-batch-school value="${escapeAttr(school.id)}" ${saved.checked ? 'checked' : ''}><span>${schoolNameLabel(school)}</span></label><div class="batchDue"><label>Due Date</label><input type="date" data-batch-due value="${escapeAttr(dueValue)}"></div></div>`;
+        return `<div class="batchSchoolRow schoolSurface" style="${schoolAccentStyle(school)}" data-batch-school-row data-school-id="${escapeAttr(school.id)}"><label class="batchSchoolCheck"><input type="checkbox" data-batch-school value="${escapeAttr(school.id)}" ${saved.checked ? 'checked' : ''}><span>${schoolNameLabel(school)}</span></label><div class="batchDue"><label>Due Date</label><input type="date" data-batch-due value="${escapeAttr(dueValue)}"></div></div>`;
       }).join('');
     }
     function handleTaskSchoolMode() {
@@ -1428,7 +1445,7 @@
           <div class="quickStrip">${nextActions.length ? nextActions.map(renderNextActionItem).join('') : `<p class="hint">Nothing urgent right now.</p>`}</div>
         </section>
         <div class="dashboardGrid">
-          <section class="panel nextDeadline">
+          <section class="panel nextDeadline ${next?'schoolSurface':''}" style="${next?schoolAccentStyle(next):''}">
             ${next ? `
               <div class="kicker">NEXT DEADLINE</div><h1>${schoolNameLabel(next)}</h1>
               <div class="bigDate">${escapeHtml(formatDate(next.deadline))} ${next.deadline_time ? escapeHtml(next.deadline_time) : ''}</div>
@@ -1477,7 +1494,7 @@
         return !task.done;
       });
       $('tasksView').innerHTML = `
-        <section class="panel"><div class="taskTools"><button class="btn primary" onclick="openTask()">Add Task</button>${focusedSchool ? `<span class="statusPill">School: ${schoolNameLabel(focusedSchool)}</span><button class="btn ghost" onclick="clearSchoolTaskFocus()">All Tasks</button>` : filters.map(([key, label]) => {
+        <section class="panel"><div class="taskTools"><button class="btn primary" onclick="openTask()">Add Task</button>${focusedSchool ? `<span class="statusPill schoolSurface" style="${schoolAccentStyle(focusedSchool)}">School: ${schoolNameLabel(focusedSchool)}</span><button class="btn ghost" onclick="clearSchoolTaskFocus()">All Tasks</button>` : filters.map(([key, label]) => {
           return `<button class="btn ghost filterBtn ${state.taskFilter === key ? 'on' : ''}" onclick="setTaskFilter('${key}')">${escapeHtml(label)}</button>`;
         }).join('')}</div></section>
         <section class="panel"><div class="stack">${tasks.length ? tasks.map(renderTaskItem).join('') : emptyInner('Nothing open right now.', 'Add Task', 'openTask()')}</div></section>
@@ -8468,7 +8485,7 @@
     function schoolAccentStyle(school){const colors=schoolPalette(school);return '--school-primary:'+colors.primary+';--school-secondary:'+colors.secondary;}
     function schoolNameLabel(school, name){
       if(!school)return escapeHtml(name || '');
-      return `<span class="schoolNameAccent" style="${schoolAccentStyle(school)}">${escapeHtml(name === undefined ? school.school : name)}</span>`;
+      return escapeHtml(name === undefined ? school.school : name);
     }
     function schoolNameFieldAccent(field,school){
       if(!field)return;
@@ -8511,7 +8528,7 @@
       const needsAction = !school.submitted && school.status !== 'Submitted' && !String(school.next_action || '').trim();
       const expanded = !!state.expandedSchools[school.id];
       return `
-        <article class="card schoolBranded" style="${schoolAccentStyle(school)}" data-school-card="${escapeAttr(school.id)}">
+        <article class="card schoolBranded schoolSurface" style="${schoolAccentStyle(school)}" data-school-card="${escapeAttr(school.id)}">
           <div class="cardTop"><div><div class="schoolName">${schoolNameLabel(school)}</div><div class="cardMeta">${escapeHtml(school.plan || 'Plan TBD')} | ${school.deadline ? escapeHtml(formatDate(school.deadline)) : 'No deadline'}${school.major ? ` | ${escapeHtml(school.major)}` : ''}</div></div><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span></div>
           <div class="progress" aria-label="Completion ${progress}%"><span style="width:${progress}%"></span></div>
           ${safeSchoolUrl(school.url || school.website) ? `<a class="btn ghost schoolShortcut" href="${escapeAttr(safeSchoolUrl(school.url || school.website))}" target="_blank" rel="noopener noreferrer">Open Website ↗</a>` : ''}
@@ -8535,7 +8552,7 @@
     function renderTaskItem(task) {
       const school = state.schools.find(item => item.id === task.school_id);
       return `
-        <div class="item ${task.done ? 'done' : ''}" data-task-id="${escapeAttr(task.id)}">
+        <div class="item ${task.done ? 'done' : ''} ${school?'schoolSurface':''}" style="${school?schoolAccentStyle(school):''}" data-task-id="${escapeAttr(task.id)}">
           <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTaskDone('${escapeAttr(task.id)}', this.checked)">
           <div><div class="txt">${escapeHtml(task.task)}</div></div>
           <button class="miniBtn" onclick="openTask('${escapeAttr(task.id)}')">Edit</button>
@@ -8544,7 +8561,7 @@
       `;
     }
     function renderDeadlineItem(school) {
-      return `<div class="item"><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span><div><div class="txt">${schoolNameLabel(school)}</div><div class="itemMeta"><span class="pill">${escapeHtml(formatDate(school.deadline))}</span><span class="pill">${escapeHtml(ownerLabel(school.owner || 'Unassigned'))}</span></div></div><button class="miniBtn" onclick="openSchool('${escapeAttr(school.id)}')">Edit</button></div>`;
+      return `<div class="item schoolSurface" style="${schoolAccentStyle(school)}"><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span><div><div class="txt">${schoolNameLabel(school)}</div><div class="itemMeta"><span class="pill">${escapeHtml(formatDate(school.deadline))}</span><span class="pill">${escapeHtml(ownerLabel(school.owner || 'Unassigned'))}</span></div></div><button class="miniBtn" onclick="openSchool('${escapeAttr(school.id)}')">Edit</button></div>`;
     }
     function renderNextActionItem(item) {
       const task=item.kind==='task'?state.tasks.find(t=>t.id===item.id):null;
@@ -8552,7 +8569,7 @@
       const missingAction=school && item.kind==='school' && !school.next_action;
       const title=missingAction?'Add next action for '+schoolNameLabel(school):escapeHtml(item.text);
       const context=school && item.context===school.school?schoolNameLabel(school):escapeHtml(item.context);
-      return `<div class="item" onclick="${item.kind === 'task' ? `openTask('${escapeAttr(item.id)}')` : `openSchool('${escapeAttr(item.id)}')`}"><span class="pill hot">${escapeHtml(item.label)}</span><div><div class="txt">${title}</div><div class="itemMeta"><span class="pill">${context}</span>${task && school?schoolNameLabel(school):''}</div></div><button class="miniBtn">Open</button></div>`;
+      return `<div class="item ${school?'schoolSurface':''}" style="${school?schoolAccentStyle(school):''}" onclick="${item.kind === 'task' ? `openTask('${escapeAttr(item.id)}')` : `openSchool('${escapeAttr(item.id)}')`}"><span class="pill hot">${escapeHtml(item.label)}</span><div><div class="txt">${title}</div><div class="itemMeta"><span class="pill">${context}</span>${task && school?schoolNameLabel(school):''}</div></div><button class="miniBtn">Open</button></div>`;
     }
     function renderChecklistItem(schoolId, item) {
       return `<label class="checkItem ${item.done ? 'done' : ''}"><input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleChecklistItem('${escapeAttr(schoolId)}','${escapeAttr(item.id)}',this.checked)"><span>${escapeHtml(item.label)}</span><button type="button" class="miniBtn" onclick="event.preventDefault(); makeTaskFromChecklist('${escapeAttr(schoolId)}','${escapeAttr(item.id)}')">Task</button></label>`;
@@ -9116,7 +9133,7 @@
       const panel=$('deadlineWarnings');if(!panel)return;
       const items=deadlineWarnings();panel.hidden=!items.length;
       const overdue=items.filter(x=>x.days<0).length,today=items.filter(x=>x.days===0).length;
-      const row=x=>`<button class="deadlineWarningRow ${x.days<=0?'deadlineCritical':''}" data-id="${escapeAttr(x.id)}" onclick="${x.kind==='school'?'openSchool':'openTask'}(this.dataset.id)"><strong>${escapeHtml(x.label)}</strong><span>${x.kind==='school'?schoolNameLabel(state.schools.find(s=>s.id===x.id),x.title):escapeHtml(x.title)}</span><small>${x.kind==='school'?'Application':'Task'} · ${escapeHtml(formatDate(x.date))}</small></button>`;
+      const row=x=>`<button class="deadlineWarningRow ${x.days<=0?'deadlineCritical':''} ${x.kind==='school'?'schoolSurface':''}" style="${x.kind==='school'?schoolAccentStyle(state.schools.find(s=>s.id===x.id)):''}" data-id="${escapeAttr(x.id)}" onclick="${x.kind==='school'?'openSchool':'openTask'}(this.dataset.id)"><strong>${escapeHtml(x.label)}</strong><span>${x.kind==='school'?schoolNameLabel(state.schools.find(s=>s.id===x.id),x.title):escapeHtml(x.title)}</span><small>${x.kind==='school'?'Application':'Task'} · ${escapeHtml(formatDate(x.date))}</small></button>`;
       panel.innerHTML=items.length?`<div class="panelTitle"><b>Deadline reminders</b><span>${overdue?overdue+' overdue · ':''}${today?today+' due today · ':''}${items.length} need attention</span></div><div class="deadlineWarningList">${items.slice(0,5).map(row).join('')}</div>${items.length>5?`<details><summary>Show ${items.length-5} more</summary><div class="deadlineWarningList">${items.slice(5).map(row).join('')}</div></details>`:''}<p class="hint" style="margin-bottom:0">Calendar-day reminders for the next 7 days, using this computer’s date.</p>`:'';
     }
 
