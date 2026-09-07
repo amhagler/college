@@ -142,6 +142,15 @@
     .schoolColorControls{display:flex;gap:14px;align-items:end;margin-top:12px}.schoolColorControls input[type=color]{width:70px;height:38px;padding:3px;cursor:pointer}.schoolColorControls input:disabled{opacity:.8;cursor:default}
     #schoolColorPreview{width:100px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:linear-gradient(90deg,var(--school-primary) 65%,var(--school-secondary) 65%)}
     #schoolColorHint a{color:var(--cyan)}
+  
+    .schoolNameAccent{display:inline;padding:.12em .45em .15em .55em;border-left:.28em solid var(--school-primary);border-bottom:.13em solid var(--school-secondary);border-radius:.25em;background:rgba(255,255,255,.065);color:var(--ink);box-decoration-break:clone;-webkit-box-decoration-break:clone;line-height:1.65;overflow-wrap:anywhere;text-shadow:none}
+    h1 .schoolNameAccent{box-decoration-break:clone;-webkit-box-decoration-break:clone;font-size:.88em;line-height:1.45}
+    .schoolSheetRow td:first-child{box-shadow:inset 4px 0 var(--school-primary)}
+    .sheetLink .schoolNameAccent{display:inline-block;line-height:1.45;text-align:left}
+    .schoolAccentField{border-left:5px solid var(--school-primary);border-bottom:3px solid var(--school-secondary)}
+    .schoolAccentField:focus{border-left-color:var(--school-primary);border-bottom-color:var(--school-secondary)}
+    .selectedSchoolAccent{margin-top:9px;font:12px var(--mono);line-height:1.6}
+    .schoolCelebrationAccent{border-left:6px solid var(--school-primary);border-bottom:4px solid var(--school-secondary)}
   </style>
 </head>
 <body>
@@ -331,7 +340,7 @@
         <div class="wide"><label for="taskTitle">Task</label><input id="taskTitle" required placeholder="Ask teacher for recommendation"></div>
         <div><label for="taskOwner">Owner</label><select id="taskOwner"></select></div>
         <div><label for="taskDue">Due Date</label><input type="date" id="taskDue"></div>
-        <div><label for="taskSchool">School</label><select id="taskSchool"></select></div>
+        <div><label for="taskSchool">School</label><select id="taskSchool"></select><div id="taskSchoolAccent" class="selectedSchoolAccent" hidden></div></div>
         <div class="wide batchSchoolPanel" id="taskBatchPanel" hidden>
           <div class="batchSchoolHead"><b>Apply To Multiple Schools</b><div class="batchSchoolTools"><button class="btn ghost" type="button" id="batchSelectAll">Select All</button><button class="btn ghost" type="button" id="batchClearAll">Clear</button></div></div>
           <div class="helpText">Choose each school that should receive this task. Each checked school can have its own due date.</div>
@@ -1335,7 +1344,7 @@
     function fillSelect(id, values) { $(id).innerHTML = values.map(value => `<option value="${escapeAttr(value)}">${escapeHtml(value)}</option>`).join(''); }
     function refreshTaskSchoolSelect(allowBatch = true) {
       const batchOption = allowBatch && state.schools.length ? `<option value="${TASK_MULTI_VALUE}">Apply to Multiple...</option>` : '';
-      $('taskSchool').innerHTML = `<option value="">No school</option>${batchOption}` + sortedSchools().map(school => `<option value="${escapeAttr(school.id)}">${escapeHtml(school.school)}</option>`).join('');
+      $('taskSchool').innerHTML = `<option value="">No school</option>${batchOption}` + sortedSchools().map(school => `<option style="${schoolOptionStyle(school)}" value="${escapeAttr(school.id)}">${escapeHtml(/*option*/school.school)}</option>`).join('');
     }
     function taskBatchModeActive() { return $('taskSchool') && $('taskSchool').value === TASK_MULTI_VALUE; }
     function renderTaskBatchSchools() {
@@ -1354,10 +1363,11 @@
       box.innerHTML = schools.map(school => {
         const saved = prior.get(school.id) || {};
         const dueValue = saved.due || dueDefault;
-        return `<div class="batchSchoolRow" data-batch-school-row data-school-id="${escapeAttr(school.id)}"><label class="batchSchoolCheck"><input type="checkbox" data-batch-school value="${escapeAttr(school.id)}" ${saved.checked ? 'checked' : ''}><span>${escapeHtml(school.school)}</span></label><div class="batchDue"><label>Due Date</label><input type="date" data-batch-due value="${escapeAttr(dueValue)}"></div></div>`;
+        return `<div class="batchSchoolRow" data-batch-school-row data-school-id="${escapeAttr(school.id)}"><label class="batchSchoolCheck"><input type="checkbox" data-batch-school value="${escapeAttr(school.id)}" ${saved.checked ? 'checked' : ''}><span>${schoolNameLabel(school)}</span></label><div class="batchDue"><label>Due Date</label><input type="date" data-batch-due value="${escapeAttr(dueValue)}"></div></div>`;
       }).join('');
     }
     function handleTaskSchoolMode() {
+      updateTaskSchoolAccent();
       const panel = $('taskBatchPanel');
       if (!panel) return;
       const active = taskBatchModeActive();
@@ -1420,7 +1430,7 @@
         <div class="dashboardGrid">
           <section class="panel nextDeadline">
             ${next ? `
-              <div class="kicker">NEXT DEADLINE</div><h1>${escapeHtml(next.school)}</h1>
+              <div class="kicker">NEXT DEADLINE</div><h1>${schoolNameLabel(next)}</h1>
               <div class="bigDate">${escapeHtml(formatDate(next.deadline))} ${next.deadline_time ? escapeHtml(next.deadline_time) : ''}</div>
               <div class="pillRow"><span class="pill ${urgencyClass(next.deadline)}">${escapeHtml(deadlineLabel(next.deadline))}</span><span class="pill calm">${escapeHtml(next.status)}</span><span class="pill">${escapeHtml(ownerLabel(next.owner))}</span></div>
               <p class="hint">${next.next_action ? `Next: ${escapeHtml(next.next_action)}` : 'No next action yet.'}</p>
@@ -1467,7 +1477,7 @@
         return !task.done;
       });
       $('tasksView').innerHTML = `
-        <section class="panel"><div class="taskTools"><button class="btn primary" onclick="openTask()">Add Task</button>${focusedSchool ? `<span class="statusPill">School: ${escapeHtml(focusedSchool.school)}</span><button class="btn ghost" onclick="clearSchoolTaskFocus()">All Tasks</button>` : filters.map(([key, label]) => {
+        <section class="panel"><div class="taskTools"><button class="btn primary" onclick="openTask()">Add Task</button>${focusedSchool ? `<span class="statusPill">School: ${schoolNameLabel(focusedSchool)}</span><button class="btn ghost" onclick="clearSchoolTaskFocus()">All Tasks</button>` : filters.map(([key, label]) => {
           return `<button class="btn ghost filterBtn ${state.taskFilter === key ? 'on' : ''}" onclick="setTaskFilter('${key}')">${escapeHtml(label)}</button>`;
         }).join('')}</div></section>
         <section class="panel"><div class="stack">${tasks.length ? tasks.map(renderTaskItem).join('') : emptyInner('Nothing open right now.', 'Add Task', 'openTask()')}</div></section>
@@ -1539,7 +1549,7 @@
           : mode === 'plan'
             ? [renderSheetFilter('plan', school.plan || '', planLabel(school.plan)), renderSheetSchool(school), renderSheetFilter('deadline', school.deadline || '', school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetFilter('major', spreadsheetMajor(school), spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false)]
             : [renderSheetSchool(school), renderSheetFilter('deadline', school.deadline || '', school.deadline ? formatDate(school.deadline) : 'No deadline'), renderSheetFilter('major', spreadsheetMajor(school), spreadsheetMajor(school)), renderSheetList(summary.completed, true), renderSheetList(summary.open, false), renderSheetFilter('plan', school.plan || '', planLabel(school.plan))];
-      return `<tr>${cells.map((cell, index) => `<td class="${index === 0 ? 'sheetPrimary' : index === 1 && mode !== 'school' ? 'sheetSecondary' : ''}">${cell}</td>`).join('')}</tr>`;
+      return `<tr class="schoolSheetRow" style="${schoolAccentStyle(school)}">${cells.map((cell, index) => `<td class="${index === 0 ? 'sheetPrimary' : index === 1 && mode !== 'school' ? 'sheetSecondary' : ''}">${cell}</td>`).join('')}</tr>`;
     }
 
     function schoolWorkSummary(school) {
@@ -1560,7 +1570,7 @@
     }
 
     function renderSheetSchool(school) {
-      return `<button type="button" class="sheetLink" onclick="focusSchool('${escapeAttr(school.id)}')">${escapeHtml(school.school)}</button>`;
+      return `<button type="button" class="sheetLink" onclick="focusSchool('${escapeAttr(school.id)}')">${schoolNameLabel(school)}</button>`;
     }
 
     function renderSheetFocus(school, value) {
@@ -8456,14 +8466,37 @@
       return {primary:brand?.primary || '#2D7DFF',secondary:brand?.secondary || '#7BE7FF',custom:false,brand};
     }
     function schoolAccentStyle(school){const colors=schoolPalette(school);return '--school-primary:'+colors.primary+';--school-secondary:'+colors.secondary;}
+    function schoolNameLabel(school, name){
+      if(!school)return escapeHtml(name || '');
+      return `<span class="schoolNameAccent" style="${schoolAccentStyle(school)}">${escapeHtml(name === undefined ? school.school : name)}</span>`;
+    }
+    function schoolNameFieldAccent(field,school){
+      if(!field)return;
+      field.classList.toggle('schoolAccentField',!!school);
+      if(school){const palette=schoolPalette(school);field.style.setProperty('--school-primary',palette.primary);field.style.setProperty('--school-secondary',palette.secondary);}
+    }
+    function updateTaskSchoolAccent(){
+      const school=state.schools.find(s=>s.id===$('taskSchool').value);
+      schoolNameFieldAccent($('taskSchool'),school);
+      $('taskSchoolAccent').innerHTML=school?schoolNameLabel(school):'';
+      $('taskSchoolAccent').hidden=!school;
+    }
+    function schoolOptionStyle(school){
+      const palette=schoolPalette(school);
+      const rgb=palette.primary.slice(1).match(/../g).map(part=>parseInt(part,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);
+      const luminance=rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;
+      return 'background-color:'+palette.primary+';color:'+(luminance>.179?'#000000':'#FFFFFF');
+    }
+
     function updateSchoolColorPreview(){
       const custom=$('schoolColorMode').value==='custom';
       const palette=schoolPalette({school:$('schoolName').value,accentPrimary:custom?$('schoolAccentPrimary').value:'',accentSecondary:custom?$('schoolAccentSecondary').value:''});
       $('schoolAccentPrimary').disabled=!custom;$('schoolAccentSecondary').disabled=!custom;
       if(!custom){$('schoolAccentPrimary').value=palette.primary;$('schoolAccentSecondary').value=palette.secondary;}
+      schoolNameFieldAccent($('schoolName'),{school:$('schoolName').value,accentPrimary:custom?palette.primary:'',accentSecondary:custom?palette.secondary:''});
       const preview=$('schoolColorPreview');preview.style.setProperty('--school-primary',palette.primary);preview.style.setProperty('--school-secondary',palette.secondary);
       $('schoolColorHint').innerHTML=custom?'Custom colors will be saved with this college.':palette.brand?
-        'Matched: '+escapeHtml(palette.brand.name)+' · '+escapeHtml(palette.brand.sourceType || 'University guide')+' · <a href="'+escapeAttr(palette.brand.source)+'" target="_blank" rel="noopener noreferrer">Color source</a>':
+        'Matched: '+schoolNameLabel({school:$('schoolName').value},palette.brand.name)+' · '+escapeHtml(palette.brand.sourceType || 'University guide')+' · <a href="'+escapeAttr(palette.brand.source)+'" target="_blank" rel="noopener noreferrer">Color source</a>':
         'No unique catalog match yet. Use the full college name from the suggestions, or choose Custom colors.';
     }
 
@@ -8479,7 +8512,7 @@
       const expanded = !!state.expandedSchools[school.id];
       return `
         <article class="card schoolBranded" style="${schoolAccentStyle(school)}" data-school-card="${escapeAttr(school.id)}">
-          <div class="cardTop"><div><div class="schoolName">${escapeHtml(school.school)}</div><div class="cardMeta">${escapeHtml(school.plan || 'Plan TBD')} | ${school.deadline ? escapeHtml(formatDate(school.deadline)) : 'No deadline'}${school.major ? ` | ${escapeHtml(school.major)}` : ''}</div></div><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span></div>
+          <div class="cardTop"><div><div class="schoolName">${schoolNameLabel(school)}</div><div class="cardMeta">${escapeHtml(school.plan || 'Plan TBD')} | ${school.deadline ? escapeHtml(formatDate(school.deadline)) : 'No deadline'}${school.major ? ` | ${escapeHtml(school.major)}` : ''}</div></div><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span></div>
           <div class="progress" aria-label="Completion ${progress}%"><span style="width:${progress}%"></span></div>
           ${safeSchoolUrl(school.url || school.website) ? `<a class="btn ghost schoolShortcut" href="${escapeAttr(safeSchoolUrl(school.url || school.website))}" target="_blank" rel="noopener noreferrer">Open Website ↗</a>` : ''}
           <div class="cardActions">
@@ -8506,15 +8539,20 @@
           <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTaskDone('${escapeAttr(task.id)}', this.checked)">
           <div><div class="txt">${escapeHtml(task.task)}</div></div>
           <button class="miniBtn" onclick="openTask('${escapeAttr(task.id)}')">Edit</button>
-          <div class="itemMeta"><span class="pill ${urgencyClass(task.due_date)}">${escapeHtml(task.due_date ? formatDate(task.due_date) : 'No due date')}</span><span class="pill">${escapeHtml(ownerLabel(task.owner || 'Unassigned'))}</span><span class="pill calm">${escapeHtml(task.category || 'Other')}</span>${school ? `<span class="pill">${escapeHtml(school.school)}</span>` : ''}</div>
+          <div class="itemMeta"><span class="pill ${urgencyClass(task.due_date)}">${escapeHtml(task.due_date ? formatDate(task.due_date) : 'No due date')}</span><span class="pill">${escapeHtml(ownerLabel(task.owner || 'Unassigned'))}</span><span class="pill calm">${escapeHtml(task.category || 'Other')}</span>${school ? `<span class="pill">${schoolNameLabel(school)}</span>` : ''}</div>
         </div>
       `;
     }
     function renderDeadlineItem(school) {
-      return `<div class="item"><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span><div><div class="txt">${escapeHtml(school.school)}</div><div class="itemMeta"><span class="pill">${escapeHtml(formatDate(school.deadline))}</span><span class="pill">${escapeHtml(ownerLabel(school.owner || 'Unassigned'))}</span></div></div><button class="miniBtn" onclick="openSchool('${escapeAttr(school.id)}')">Edit</button></div>`;
+      return `<div class="item"><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span><div><div class="txt">${schoolNameLabel(school)}</div><div class="itemMeta"><span class="pill">${escapeHtml(formatDate(school.deadline))}</span><span class="pill">${escapeHtml(ownerLabel(school.owner || 'Unassigned'))}</span></div></div><button class="miniBtn" onclick="openSchool('${escapeAttr(school.id)}')">Edit</button></div>`;
     }
     function renderNextActionItem(item) {
-      return `<div class="item" onclick="${item.kind === 'task' ? `openTask('${escapeAttr(item.id)}')` : `openSchool('${escapeAttr(item.id)}')`}"><span class="pill hot">${escapeHtml(item.label)}</span><div><div class="txt">${escapeHtml(item.text)}</div><div class="itemMeta"><span class="pill">${escapeHtml(item.context)}</span></div></div><button class="miniBtn">Open</button></div>`;
+      const task=item.kind==='task'?state.tasks.find(t=>t.id===item.id):null;
+      const school=state.schools.find(s=>s.id===(item.kind==='school'?item.id:task?.school_id));
+      const missingAction=school && item.kind==='school' && !school.next_action;
+      const title=missingAction?'Add next action for '+schoolNameLabel(school):escapeHtml(item.text);
+      const context=school && item.context===school.school?schoolNameLabel(school):escapeHtml(item.context);
+      return `<div class="item" onclick="${item.kind === 'task' ? `openTask('${escapeAttr(item.id)}')` : `openSchool('${escapeAttr(item.id)}')`}"><span class="pill hot">${escapeHtml(item.label)}</span><div><div class="txt">${title}</div><div class="itemMeta"><span class="pill">${context}</span>${task && school?schoolNameLabel(school):''}</div></div><button class="miniBtn">Open</button></div>`;
     }
     function renderChecklistItem(schoolId, item) {
       return `<label class="checkItem ${item.done ? 'done' : ''}"><input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleChecklistItem('${escapeAttr(schoolId)}','${escapeAttr(item.id)}',this.checked)"><span>${escapeHtml(item.label)}</span><button type="button" class="miniBtn" onclick="event.preventDefault(); makeTaskFromChecklist('${escapeAttr(schoolId)}','${escapeAttr(item.id)}')">Task</button></label>`;
@@ -9044,13 +9082,13 @@
       const colleges=state.schools.filter(s=>completionBaseline.schools.has(s.id) && !completionBaseline.schools.get(s.id) && applicationSent(s));
       const tasks=state.tasks.filter(t=>completionBaseline.tasks.has(t.id) && !completionBaseline.tasks.get(t.id) && t.done);
       rememberCompletions();
-      if(colleges.length)celebrateCompletion(colleges.length===1?'Application submitted! '+colleges[0].school:colleges.length+' applications submitted!',true);
+      if(colleges.length)celebrateCompletion(colleges.length===1?'Application submitted! '+colleges[0].school:colleges.length+' applications submitted!',true,colleges.length===1?colleges[0]:null);
       else if(tasks.length)celebrateCompletion(tasks.length===1?'Task complete! '+tasks[0].task:tasks.length+' tasks completed!',false);
     }
-    function celebrateCompletion(message,big){
+    function celebrateCompletion(message,big,school=null){
       document.querySelectorAll('.completionCelebration').forEach(el=>el.remove());
       const wrap=document.createElement('div');wrap.className='completionCelebration';wrap.setAttribute('role','status');
-      const label=document.createElement('div');label.className='celebrationLabel';label.textContent=message;wrap.appendChild(label);
+      const label=document.createElement('div');label.className='celebrationLabel';label.textContent=message;if(school){label.classList.add('schoolCelebrationAccent');label.style.cssText=schoolAccentStyle(school);}wrap.appendChild(label);
       if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
         for(let i=0;i<(big?65:28);i++){
           const bit=document.createElement('i');bit.className='celebrationConfetti';
@@ -9078,7 +9116,7 @@
       const panel=$('deadlineWarnings');if(!panel)return;
       const items=deadlineWarnings();panel.hidden=!items.length;
       const overdue=items.filter(x=>x.days<0).length,today=items.filter(x=>x.days===0).length;
-      const row=x=>`<button class="deadlineWarningRow ${x.days<=0?'deadlineCritical':''}" data-id="${escapeAttr(x.id)}" onclick="${x.kind==='school'?'openSchool':'openTask'}(this.dataset.id)"><strong>${escapeHtml(x.label)}</strong><span>${escapeHtml(x.title)}</span><small>${x.kind==='school'?'Application':'Task'} · ${escapeHtml(formatDate(x.date))}</small></button>`;
+      const row=x=>`<button class="deadlineWarningRow ${x.days<=0?'deadlineCritical':''}" data-id="${escapeAttr(x.id)}" onclick="${x.kind==='school'?'openSchool':'openTask'}(this.dataset.id)"><strong>${escapeHtml(x.label)}</strong><span>${x.kind==='school'?schoolNameLabel(state.schools.find(s=>s.id===x.id),x.title):escapeHtml(x.title)}</span><small>${x.kind==='school'?'Application':'Task'} · ${escapeHtml(formatDate(x.date))}</small></button>`;
       panel.innerHTML=items.length?`<div class="panelTitle"><b>Deadline reminders</b><span>${overdue?overdue+' overdue · ':''}${today?today+' due today · ':''}${items.length} need attention</span></div><div class="deadlineWarningList">${items.slice(0,5).map(row).join('')}</div>${items.length>5?`<details><summary>Show ${items.length-5} more</summary><div class="deadlineWarningList">${items.slice(5).map(row).join('')}</div></details>`:''}<p class="hint" style="margin-bottom:0">Calendar-day reminders for the next 7 days, using this computer’s date.</p>`:'';
     }
 
