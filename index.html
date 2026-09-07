@@ -118,6 +118,20 @@
     @keyframes saveEdge{0%,100%{opacity:0}25%{opacity:1}75%{opacity:.6}}
     @keyframes saveButtonGlow{30%{box-shadow:0 0 8px #7be7ff,0 0 32px rgba(123,231,255,.65);border-color:#7be7ff}100%{box-shadow:none}}
     @media(prefers-reduced-motion:reduce){.saveSurge{display:none}.saveFlare{animation:none}}
+  
+    .deadlineWarningPanel{border-color:rgba(255,224,102,.35)}
+    .deadlineWarningList{position:relative;z-index:2;display:grid;gap:7px}
+    .deadlineWarningRow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,224,102,.25);background:rgba(255,224,102,.05);color:var(--ink);text-align:left;cursor:pointer;font:12px var(--mono)}
+    .deadlineWarningRow strong{color:var(--gold);min-width:130px}.deadlineWarningRow span{flex:1;overflow-wrap:anywhere}.deadlineWarningRow small{color:var(--muted)}
+    .deadlineCritical{border-color:rgba(255,110,90,.5);background:rgba(255,100,70,.08)}.deadlineCritical strong{color:#ffab96}
+    .deadlineWarningPanel summary{position:relative;cursor:pointer;margin:12px 0;font:12px var(--mono)}
+    .completionCelebration{position:fixed;inset:0;z-index:460;pointer-events:none;overflow:hidden}
+    .celebrationLabel{position:absolute;top:15%;left:50%;transform:translateX(-50%);width:max-content;max-width:88vw;padding:18px 24px;border-radius:20px;background:rgba(9,24,44,.97);border:1px solid #4bffd3;box-shadow:0 0 40px rgba(75,255,211,.3);color:#eafff9;text-align:center;font:900 clamp(15px,3vw,23px) var(--sans);animation:celebrateLabel 3.5s ease both}
+    .celebrationConfetti{position:absolute;top:-20px;left:var(--x);width:8px;height:15px;border-radius:2px;animation:celebrateFall 2.8s var(--delay) cubic-bezier(.15,.5,.6,1) both}
+    @keyframes celebrateFall{0%{transform:translate3d(0,-20px,0) rotate(0);opacity:0}10%{opacity:1}85%{opacity:1}100%{transform:translate3d(var(--drift),100vh,0) rotate(var(--spin));opacity:0}}
+    @keyframes celebrateLabel{0%,100%{opacity:0}12%,82%{opacity:1}}
+    @media(prefers-reduced-motion:reduce){.celebrationLabel{animation:none}.celebrationConfetti{display:none}}
+      .schoolShortcut{text-decoration:none;text-align:center;display:block}.noteBlock{white-space:pre-wrap;overflow-wrap:anywhere}
   </style>
 </head>
 <body>
@@ -169,6 +183,7 @@
   </header>
 
   <main class="shell" id="appShell" hidden>
+    <section class="panel deadlineWarningPanel" id="deadlineWarnings" aria-label="Deadline reminders" hidden></section>
     <section class="panel" aria-live="polite">
       <strong id="syncMessage">Choose a JSON file to begin.</strong>
       <div class="taskTools" style="margin-top:10px">
@@ -262,6 +277,8 @@
         <div><label for="schoolDeadline">Deadline</label><input type="date" id="schoolDeadline"></div>
         <div><label for="schoolPrescreen">Prescreen</label><select id="schoolPrescreen"></select></div>
         <div class="wide"><label for="schoolNext">Next Action</label><input id="schoolNext" placeholder="Finish supplement"></div>
+        <div class="wide"><label for="schoolUrl">College / Application Website</label><input id="schoolUrl" type="url" placeholder="https://www.college.edu/admissions" oninput="this.setCustomValidity('')"><div class="helpText">Optional shortcut to the college website or application portal.</div></div>
+        <div class="wide"><label for="schoolNotes">Comments / Notes</label><textarea id="schoolNotes" rows="4" placeholder="Visit impressions, application details, questions, or reminders…"></textarea></div>
       </div>
       <details class="moreDetails">
         <summary>More Details</summary>
@@ -274,7 +291,7 @@
             <label><input type="checkbox" id="schoolRecommendationsDone"> Recommendations done</label>
             <label><input type="checkbox" id="schoolSubmitted"> Submitted</label>
           </div>
-          <div class="wide"><label for="schoolNotes">Notes</label><textarea id="schoolNotes" rows="4"></textarea></div>
+
         </div>
       </details>
       <div class="modalActions">
@@ -1233,6 +1250,7 @@
     }
 
     function saveDemoData() {
+      celebrateChanges();
       if(state.demoMode) {
         storage.setItem('act:demo-data',JSON.stringify({schools:state.schools,tasks:state.tasks}));
         syncMessage('PRACTICE MODE — entries are saved in this browser. Click Save to create or link a JSON and keep working.');
@@ -1361,7 +1379,7 @@
       render();
     }
 
-    function render() { renderDashboard(); renderSchools(); renderTasks(); renderSpreadsheet(); }
+    function render() { renderDashboard(); renderSchools(); renderTasks(); renderSpreadsheet(); renderDeadlineWarnings(); rememberCompletions(); }
 
     function renderDashboard() {
       const schools = sortedSchools().filter(matchesSearchSchool);
@@ -1567,6 +1585,9 @@
     function spreadsheetMajor(school) { return safeText(school.major) || 'No major entered'; }
     function planLabel(plan) { return OPTIONS.planLabels[plan] || plan || 'No category'; }
 
+    function safeSchoolUrl(value){
+      try{const url=new URL(String(value || '').trim());return ['https:','http:'].includes(url.protocol)?url.href:'';}catch{return '';}
+    }
     function renderSchoolCard(school) {
       const progress = schoolProgress(school);
       const checklist = normalizedChecklist(school);
@@ -1578,6 +1599,7 @@
         <article class="card" data-school-card="${escapeAttr(school.id)}">
           <div class="cardTop"><div><div class="schoolName">${escapeHtml(school.school)}</div><div class="cardMeta">${escapeHtml(school.plan || 'Plan TBD')} | ${school.deadline ? escapeHtml(formatDate(school.deadline)) : 'No deadline'}${school.major ? ` | ${escapeHtml(school.major)}` : ''}</div></div><span class="pill ${urgencyClass(school.deadline)}">${escapeHtml(deadlineLabel(school.deadline))}</span></div>
           <div class="progress" aria-label="Completion ${progress}%"><span style="width:${progress}%"></span></div>
+          ${safeSchoolUrl(school.url || school.website) ? `<a class="btn ghost schoolShortcut" href="${escapeAttr(safeSchoolUrl(school.url || school.website))}" target="_blank" rel="noopener noreferrer">Open Website ↗</a>` : ''}
           <div class="cardActions">
             <button class="btn primary" onclick="openSchool('${escapeAttr(school.id)}')">Edit School</button>
             <button class="btn ghost" onclick="toggleSchoolDetails('${escapeAttr(school.id)}')">${expanded ? 'Hide List' : 'Show List'}</button>
@@ -1637,6 +1659,7 @@
       $('schoolId').value = school.id || '';
       $('schoolName').value = school.school || '';
       $('schoolMajor').value = school.major || '';
+      $('schoolUrl').value = school.url || school.website || ''; $('schoolUrl').setCustomValidity('');
       $('schoolStatus').value = school.status || 'Researching';
       $('schoolPlan').value = school.plan || 'RD';
       $('schoolDeadline').value = school.deadline || '';
@@ -1677,7 +1700,10 @@
       event.preventDefault();
       if (!(await ensureLoadedBeforeEditing())) return;
       const id = $('schoolId').value || null;
+      const website=$('schoolUrl').value.trim();
+      if(website && !safeSchoolUrl(website)){$('schoolUrl').setCustomValidity('Use a complete https:// or http:// website address.');$('schoolUrl').reportValidity();return;}
       const row = cleanSchoolRow({
+        url: website,
         family_id: state.familyId,
         school: $('schoolName').value,
         major: $('schoolMajor').value,
@@ -2123,6 +2149,55 @@
       }
       window.addEventListener('resize', resize); resize(); draw();
     }
+    let completionBaseline={schools:new Map(),tasks:new Map()};
+    function applicationSent(school){return !!school.submitted || ['Submitted','Accepted','Waitlisted','Denied'].includes(school.status);}
+    function rememberCompletions(){
+      completionBaseline={schools:new Map(state.schools.map(s=>[s.id,applicationSent(s)])),tasks:new Map(state.tasks.map(t=>[t.id,!!t.done]))};
+    }
+    function celebrateChanges(){
+      const colleges=state.schools.filter(s=>completionBaseline.schools.has(s.id) && !completionBaseline.schools.get(s.id) && applicationSent(s));
+      const tasks=state.tasks.filter(t=>completionBaseline.tasks.has(t.id) && !completionBaseline.tasks.get(t.id) && t.done);
+      rememberCompletions();
+      if(colleges.length)celebrateCompletion(colleges.length===1?'Application submitted! '+colleges[0].school:colleges.length+' applications submitted!',true);
+      else if(tasks.length)celebrateCompletion(tasks.length===1?'Task complete! '+tasks[0].task:tasks.length+' tasks completed!',false);
+    }
+    function celebrateCompletion(message,big){
+      document.querySelectorAll('.completionCelebration').forEach(el=>el.remove());
+      const wrap=document.createElement('div');wrap.className='completionCelebration';wrap.setAttribute('role','status');
+      const label=document.createElement('div');label.className='celebrationLabel';label.textContent=message;wrap.appendChild(label);
+      if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        for(let i=0;i<(big?65:28);i++){
+          const bit=document.createElement('i');bit.className='celebrationConfetti';
+          bit.style.setProperty('--x',Math.random()*100+'vw');bit.style.setProperty('--drift',(Math.random()-.5)*260+'px');
+          bit.style.setProperty('--spin',(Math.random()-.5)*1000+'deg');bit.style.setProperty('--delay',Math.random()*.35+'s');
+          bit.style.background=['#7BE7FF','#4BFFD3','#FFE066','#B66BFF','#FF9A3D'][i%5];wrap.appendChild(bit);
+        }
+      }
+      document.body.appendChild(wrap);setTimeout(()=>wrap.remove(),3600);
+    }
+    function deadlineWarnings(){
+      const today=startOfToday();const items=[];
+      function add(kind,id,title,date){
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(date || ''))return;
+        const parsed=parseLocalDate(date);
+        if(Number.isNaN(parsed.getTime()) || parsed.getFullYear()!==Number(date.slice(0,4)) || parsed.getMonth()+1!==Number(date.slice(5,7)) || parsed.getDate()!==Number(date.slice(8,10)))return;
+        const days=Math.round((parsed-today)/86400000);if(days>7)return;
+        items.push({kind,id,title,date,days,label:days<0?Math.abs(days)+' day'+(days===-1?'':'s')+' overdue':days===0?'Due today':days===1?'Due tomorrow':'Due in '+days+' days'});
+      }
+      state.schools.filter(s=>!applicationSent(s) && s.status!=='Withdrawn').forEach(s=>add('school',s.id,s.school,s.deadline));
+      state.tasks.filter(t=>!t.done).forEach(t=>add('task',t.id,t.task,t.due_date));
+      return items.sort((a,b)=>a.days-b.days || a.title.localeCompare(b.title));
+    }
+    function renderDeadlineWarnings(){
+      const panel=$('deadlineWarnings');if(!panel)return;
+      const items=deadlineWarnings();panel.hidden=!items.length;
+      const overdue=items.filter(x=>x.days<0).length,today=items.filter(x=>x.days===0).length;
+      const row=x=>`<button class="deadlineWarningRow ${x.days<=0?'deadlineCritical':''}" data-id="${escapeAttr(x.id)}" onclick="${x.kind==='school'?'openSchool':'openTask'}(this.dataset.id)"><strong>${escapeHtml(x.label)}</strong><span>${escapeHtml(x.title)}</span><small>${x.kind==='school'?'Application':'Task'} · ${escapeHtml(formatDate(x.date))}</small></button>`;
+      panel.innerHTML=items.length?`<div class="panelTitle"><b>Deadline reminders</b><span>${overdue?overdue+' overdue · ':''}${today?today+' due today · ':''}${items.length} need attention</span></div><div class="deadlineWarningList">${items.slice(0,5).map(row).join('')}</div>${items.length>5?`<details><summary>Show ${items.length-5} more</summary><div class="deadlineWarningList">${items.slice(5).map(row).join('')}</div></details>`:''}<p class="hint" style="margin-bottom:0">Calendar-day reminders for the next 7 days, using this computer’s date.</p>`:'';
+    }
+
+    setInterval(()=>{if(!document.hidden)renderDeadlineWarnings();},60000);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderDeadlineWarnings();});
     boot();
   </script>
 </body>
