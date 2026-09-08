@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="app-version" content="college-tracker-local-json-v1">
   <title>College Tracker</title>
+  <script type="application/javascript">
+    // Browser-only preference: deliberately separate from tracker data and JSON.
+    try { if(localStorage.getItem('college-tracker:theme')==='light') document.documentElement.dataset.theme='light'; } catch {}
+  </script>
   <style>
     :root{
       --bg0:#070B1A;--bg1:#0B1230;--panel:#0C1638;--ink:#EAF0FF;--muted:#B7C2E6;
@@ -168,6 +172,51 @@
     .schoolSheetRow td{background:transparent;border-top:1px solid color-mix(in srgb,var(--school-primary),var(--school-secondary));border-bottom:1px solid color-mix(in srgb,var(--school-primary),var(--school-secondary))}
     .schoolSheetRow td:first-child{border-left:2px solid color-mix(in srgb,var(--school-primary) 75%,var(--school-secondary));box-shadow:none}
     .schoolSheetRow td:last-child{border-right:2px solid color-mix(in srgb,var(--school-primary),var(--school-secondary) 75%)}
+
+    /* Light mode uses neutral surfaces and dark text; school colors remain decorative accents. */
+    html[data-theme=light]{color-scheme:light;--bg0:#eef0f3;--bg1:#eef0f3;--panel:#f8f9fb;--ink:#172235;--muted:#455369;--cyan:#005a78;--blue:#165ac1;--gold:#785000;--red:#a51d22;--line:#bdc6d2;--shadow:0 4px 16px rgba(24,38,58,.08)}
+    html[data-theme=light] body{background:#eef0f3}
+    html[data-theme=light] :is(#matrix,.fog,.scan){display:none}
+    html[data-theme=light] .topbar{background:#e7ebf0;border-color:#bdc6d2;backdrop-filter:none}
+    html[data-theme=light] :is(.heroPanel,.panel,.grid .card,.modal,.accessPanel,.tourCard,.accessCore,.toast){background:#f8f9fb;border-color:#bdc6d2;box-shadow:var(--shadow)}
+    html[data-theme=light] :is(.heroPanel,.panel,.card,.modal,.accessPanel):before{display:none}
+    html[data-theme=light] :is(.hd,.modalHd,.modalActions){background:#e9edf2;border-color:#bdc6d2}
+    html[data-theme=light] :is(.subtle,.hd span,.modalHd span,label,.hint,.cardMeta,.metric span,.panelTitle span,.checkLine,.sheetSecondary,.sheetOpen,.sheetPrimary,.item,.item.done .txt,.checkItem.done span,.noteBlock,.historyLine,.helpText,.choiceModal .helpText,.saveText,.accessPanel p,.tourCard p,.batchSchoolCheck,.batchDue label,.familyToolsText span,.inviteStatus,.manualInviteBox,.familyCode){color:#26364b}
+    html[data-theme=light] :is(.panelTitle b,.kicker,.moreDetails summary,.batchSchoolHead b,.familyToolsText b,.manualInviteBox b,.tourCard b,.sheetDone:before){color:#005a78}
+    html[data-theme=light] :is(.sheetEmpty,.sheetDone){color:#4d596b}
+    html[data-theme=light] :is(.ghost,.tab,.miniBtn,.schoolBranded .schoolShortcut){color:#203249;background:#e4eaf1;border:1px solid #acb9c9;box-shadow:none}
+    html[data-theme=light] :is(.primary,.tab.on,.sheetMode.on,.filterBtn.on,.sortBtn.on,.toggleBtn.on){color:#102339;background:linear-gradient(180deg,#a3e7ff,#65b6f4);border:1px solid #377fae;box-shadow:0 2px 5px rgba(24,38,58,.12)}
+    html[data-theme=light] .danger{color:#971b23;background:#fbe7e8;border-color:#bf7479}
+    html[data-theme=light] :is(input,select,textarea,.search,input[type=date]){color:#172235;background:#fcfcfd;border:1px solid #8d9aab;color-scheme:light;box-shadow:none}
+    html[data-theme=light] .search input{border:0;background:transparent}
+    html[data-theme=light] :is(input,textarea)::placeholder{color:#58667a;opacity:1}
+    html[data-theme=light] input::-webkit-calendar-picker-indicator{filter:none}
+    html[data-theme=light] :is(button,a,input,select,textarea,summary):focus-visible{outline:3px solid #165ac1;outline-offset:3px}
+    html[data-theme=light] :is(.metric,.item,.checkItem,.noteBlock,.historyLine,.moreDetails,.batchSchoolPanel,.batchSchoolRow,.familyTools,.inviteRow,.manualInviteBox,.manualInviteLink,.empty,.schoolColorSettings){background:#f2f5f8;border-color:#bdc6d2}
+    html[data-theme=light] :is(.pill,.statusPill,.sheetFilterPill){color:#23435d;background:#e5edf5;border-color:#a7b8c9}
+    html[data-theme=light] .pill.hot{color:#794200;background:#fff0d7;border-color:#ba955c}
+    html[data-theme=light] .pill.good{color:#125640;background:#def3e9;border-color:#7ba997}
+    html[data-theme=light] .pill.calm{color:#004e72;background:#e0f0f7;border-color:#8bb5c8}
+    html[data-theme=light] .bigDate{color:#785000}
+    html[data-theme=light] :is(.item.done,.checkItem.done,.cardActions .submitTiny){opacity:1}
+    html[data-theme=light] .progress{background:#d9e0e9;border-color:#9cabbc}
+    html[data-theme=light] .sheetWrap{background:#e7ebf0;border-color:#b2bdcb}
+    html[data-theme=light] .sheetTable{font-size:13px;line-height:1.5}
+    html[data-theme=light] .sheetTable th{background:#e1e7ee;color:#23435d;border-color:#aab8c8}
+    html[data-theme=light] .sheetTable td{background:transparent;border-color:#b8c3d1}
+    html[data-theme=light] :is(.schoolSurface,.grid .card.schoolSurface,.schoolAccentField,.schoolCelebrationAccent){border:2px solid transparent;color:#172235;background:radial-gradient(ellipse at 0% 0%,color-mix(in srgb,var(--school-primary) 6%,transparent),transparent 65%) padding-box,radial-gradient(ellipse at 100% 100%,color-mix(in srgb,var(--school-secondary) 6%,transparent),transparent 65%) padding-box,linear-gradient(#f8f9fb,#f8f9fb) padding-box,linear-gradient(135deg,var(--school-primary),var(--school-secondary)) border-box}
+    html[data-theme=light] .schoolSheetRow{background:linear-gradient(115deg,color-mix(in srgb,var(--school-primary) 5%,#f8f9fb),color-mix(in srgb,var(--school-secondary) 5%,#f8f9fb))}
+    html[data-theme=light] .schoolSheetRow td:first-child{border-left:4px solid var(--school-primary)}
+    html[data-theme=light] .schoolSheetRow td:last-child{border-right:3px solid var(--school-secondary)}
+    html[data-theme=light] :is(.privacyScreen,.loadingGate,.accessWrap,.accessGranted){background:#eef0f3}
+    html[data-theme=light] .overlay{background:rgba(34,47,66,.35)}
+    html[data-theme=light] .deadlineWarningRow{color:#172235;background-color:#fff4dd;border-color:#b49a65}
+    html[data-theme=light] .deadlineWarningRow strong{color:#785000}
+    html[data-theme=light] .deadlineCritical strong{color:#a21f26}
+    html[data-theme=light] .celebrationLabel{color:#172235;background-color:#f8f9fb}
+    html[data-theme=light] h1{text-shadow:none}
+    html[data-theme=light] .cloudStatus{background:#dce7ef;border-color:#91a5b8}
+    html[data-theme=light] .cloudStatus:before{background:#41627d;box-shadow:-5px 1px 0 -1px #41627d,4px -4px 0 -1px #41627d}
   </style>
 </head>
 <body>
@@ -208,6 +257,7 @@
       <div class="topActions">
         <div class="cloudStatus" id="saveLight" title="Save status" aria-label="Save status"></div>
         <div class="saveText" id="saveText">Saved</div>
+        <button class="btn primary" id="themeToggle" type="button" aria-label="Switch to light theme" aria-pressed="false">Light / Dark</button>
         <button class="btn ghost" id="manualSaveBtn">Save</button>
         <button class="btn ghost" id="loadBtn">Refresh</button>
         <button class="btn ghost" id="inviteTopBtn">Linked File</button>
@@ -9141,5 +9191,24 @@
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderDeadlineWarnings();});
     boot();
   </script>
+<script type="application/javascript">
+  (()=>{
+    const button=document.getElementById('themeToggle');
+    function update(){
+      const light=document.documentElement.dataset.theme==='light';
+      button.textContent=light?'Dark Mode':'Light Mode';
+      button.setAttribute('aria-label',light?'Switch to dark theme':'Switch to light theme');
+      button.setAttribute('aria-pressed',String(light));
+      button.title='Appearance on this browser only';
+    }
+    button.addEventListener('click',()=>{
+      const theme=document.documentElement.dataset.theme==='light'?'dark':'light';
+      document.documentElement.dataset.theme=theme;
+      try{localStorage.setItem('college-tracker:theme',theme);}catch{}
+      update();
+    });
+    update();
+  })();
+</script>
 </body>
 </html>
